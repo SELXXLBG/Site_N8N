@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Profil — Freelance Nexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        .sidebar {
+            background: rgba(15, 23, 42, 0.4);
+            border-right: 1px solid var(--border);
+            padding: 40px 24px;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+        }
+
+        .main-content {
+            padding: 40px 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            transform: translateX(4px);
+        }
+
+        .sidebar-link.active {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--green);
+        }
+
+        .profile-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Bandeau de chargement en-tête */
+        .profile-loading-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            border-radius: 12px;
+            margin-bottom: 28px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .profile-loading-bar .spinner-sm {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        .section-title-alt {
+            font-family: var(--font-display);
+            font-size: 28px;
+            color: var(--white);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            color: var(--white);
+            font-family: var(--font-body);
+            font-size: 15px;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.05);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+            outline: none;
+        }
+
+        .form-group input[readonly] {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .form-group input[readonly]:focus {
+            border-color: var(--border);
+            background: rgba(15, 23, 42, 0.6);
+            box-shadow: none;
+        }
+
+        .form-group select option {
+            background: #0f172a;
+            color: var(--white);
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-checkbox { display: none; }
+
+        .category-label {
+            display: block;
+            padding: 11px 14px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            user-select: none;
+        }
+
+        .category-label:hover {
+            border-color: rgba(16, 185, 129, 0.3);
+            color: var(--white);
+        }
+
+        .category-checkbox:checked + .category-label {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: var(--green);
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .profile-section-title {
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 17px;
+            margin: 36px 0 18px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .range-container {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .range-container input[type="range"] {
+            width: 100%;
+            height: 6px;
+            accent-color: var(--green);
+            background: transparent;
+            border: none;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .range-container input[type="range"]:focus {
+            border: none;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .btn-save-premium {
+            background: var(--green);
+            color: #000;
+            border: none;
+            padding: 18px 32px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-save-premium:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .btn-save-premium:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .status-msg {
+            text-align: center;
+            margin-top: 14px;
+            font-weight: 600;
+            font-size: 14px;
+            min-height: 22px;
+            transition: opacity 0.3s;
+        }
+
+        .api-offline-banner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            background: rgba(251, 191, 36, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #fbbf24;
+        }
+
+        .api-offline-banner.visible { display: flex; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .main-content { padding: 24px; }
+        }
+
+        @media (max-width: 640px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .profile-container { padding: 24px; }
+        }
+
+        /* Mobile bottom nav */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(10, 15, 30, 0.97);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+        }
+
+        .mobile-nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            min-width: 72px;
+        }
+
+        .mobile-nav-item .nav-icon { font-size: 20px; line-height: 1; }
+
+        .mobile-nav-item.active {
+            color: var(--green);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .mobile-nav-item:not(.active):hover {
+            color: var(--white);
+        }
+
+        .mobile-nav-logout {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-bottom-nav { display: block; }
+            .main-content { padding-bottom: 90px !important; }
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="index.html" class="nav-brand">FREELANCE // NEXUS</a>
+            <div class="nav-links">
+                <a href="missions.html" class="btn-nav-secondary">Mes Missions</a>
+                <a href="#" class="btn-nav-primary" data-logout>Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-nav">
+                <li><a href="missions.html" class="sidebar-link">🎯 Missions Matchées</a></li>
+                <li><a href="profil.html" class="sidebar-link active">👤 Mon Profil</a></li>
+                <li><a href="abonnement.html" class="sidebar-link">💎 Mon Abonnement</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="profile-container">
+                <h1 class="section-title-alt">👤 Paramètres de Matching</h1>
+                <p class="section-subtitle">Vos préférences guident notre IA pour vous proposer les meilleures missions. Modifiez-les à tout moment.</p>
+
+                <!-- Bandeau chargement API -->
+                <div class="profile-loading-bar" id="loading-bar">
+                    <div class="spinner-sm"></div>
+                    <span>Synchronisation de votre profil en cours…</span>
+                </div>
+
+                <!-- Bannière hors-ligne -->
+                <div class="api-offline-banner" id="offline-banner">
+                    ⚠️ Impossible de joindre le serveur — vos données locales sont affichées. Vous pouvez quand même modifier et sauvegarder.
+                </div>
+
+                <form id="profile-form" novalidate>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Prénom</label>
+                            <input type="text" id="prof-prenom" placeholder="Ex: Jean" autocomplete="given-name">
+                        </div>
+                        <div class="form-group">
+                            <label>Email (non modifiable)</label>
+                            <input type="email" id="prof-email" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Catégories de missions ciblées</label>
+                        <div class="categories-grid" id="categories-list">
+                            <div><input type="checkbox" class="category-checkbox" id="cat-dev" value="Développement"><label for="cat-dev" class="category-label">💻 Développement</label></div>
+                            <div><input type="checkbox" class="category-checkbox" id="cat-design" value="Design"><label for="cat-design" class="category-label">🎨 Design</label></div>
+                            <div><input type="checkbox" class="category-checkbox" id="cat-data" value="Data & IA"><label for="cat-data" class="category-label">📊 Data & IA</label></div>
+                            <div><input type="checkbox" class="category-checkbox" id="cat-marketing" value="Marketing"><label for="cat-marketing" class="category-label">📣 Marketing</label></div>
+                            <div><input type="checkbox" class="category-checkbox" id="cat-product" value="Product"><label for="cat-product" class="category-label">🧩 Product</label></div>
+                            <div><input type="checkbox" class="category-checkbox" id="cat-business" value="Business"><label for="cat-business" class="category-label">💼 Business</label></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Stack Technique</label>
+                        <input type="text" id="prof-stack" placeholder="Ex: React, Node.js, Python, Figma…">
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Séparez par des virgules. Plus vous en mettez, plus le matching est précis.</p>
+                    </div>
+
+                    <div class="profile-section-title">📍 Localisation & Mobilité</div>
+                    <div class="form-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 0;">
+                        <div class="form-group">
+                            <label>Ville de résidence</label>
+                            <input type="text" id="prof-ville" placeholder="Ex: Paris, Lyon, Bordeaux…">
+                        </div>
+                        <div class="form-group">
+                            <label>Rayon max (km)</label>
+                            <select id="prof-radius">
+                                <option value="0">Uniquement ma ville</option>
+                                <option value="20">20 km</option>
+                                <option value="50">50 km</option>
+                                <option value="100">100 km</option>
+                                <option value="999">Toute la France</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Type de mission préféré</label>
+                            <select id="prof-remote">
+                                <option value="À domicile">À domicile</option>
+                                <option value="Hybride">Hybride (quelques jours sur site)</option>
+                                <option value="Sur Site">Sur site</option>
+                                <option value="Indifférent">Peu importe</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="profile-section-title">💰 Critères Financiers & Matching</div>
+                    <div class="form-grid" style="margin-bottom: 0;">
+                        <div class="form-group">
+                            <label>Tarif journalier min. <span style="color:var(--text-muted);font-weight:400;font-size:11px;">(€/jour)</span></label>
+                            <input type="number" id="prof-tjm" placeholder="500" min="0" step="50">
+                        </div>
+                        <div class="form-group">
+                            <label>Seuil de Matching IA — <span id="score-value" style="color: var(--green); font-weight: 800;">40%</span></label>
+                            <div class="range-container">
+                                <input type="range" id="prof-score" min="0" max="100" value="40">
+                                <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                                    <span style="font-size: 11px; color: var(--text-muted);">Plus de missions</span>
+                                    <span style="font-size: 11px; color: var(--text-muted);">Missions élite</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save-premium" id="save-btn">
+                        SAUVEGARDER MES PRÉFÉRENCES
+                    </button>
+                    <div class="status-msg" id="status-msg"></div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+        <div class="mobile-nav-items">
+            <a href="missions.html" class="mobile-nav-item">
+                <span class="nav-icon">🎯</span>
+                <span>Missions</span>
+            </a>
+            <a href="profil.html" class="mobile-nav-item active">
+                <span class="nav-icon">👤</span>
+                <span>Profil</span>
+            </a>
+            <a href="abonnement.html" class="mobile-nav-item">
+                <span class="nav-icon">💎</span>
+                <span>Abonnement</span>
+            </a>
+            <button class="mobile-nav-item mobile-nav-logout" data-logout>
+                <span class="nav-icon">🚪</span>
+                <span>Sortir</span>
+            </button>
+        </div>
+    </nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const session = FreelanceAuth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+
+            const loadingBar    = document.getElementById('loading-bar');
+            const offlineBanner = document.getElementById('offline-banner');
+            const scoreRange    = document.getElementById('prof-score');
+            const scoreValue    = document.getElementById('score-value');
+
+            // Mise à jour live du label du score
+            scoreRange.addEventListener('input', () => {
+                scoreValue.textContent = scoreRange.value + '%';
+            });
+
+            /**
+             * Remplit le formulaire à partir d'un objet profil.
+             * - Accepte categories en string CSV OU en Array (normalisé par api.js)
+             * - Ne force un champ que si la valeur est non-vide (préserve les saisies utilisateur)
+             */
+            function fillForm(profile) {
+                if (!profile) return;
+
+                const set = (id, val) => {
+                    if (val !== undefined && val !== null && val !== '') {
+                        const el = document.getElementById(id);
+                        if (el) el.value = val;
+                    }
+                };
+
+                set('prof-prenom', profile.prenom);
+                set('prof-email',  profile.email || session.email);
+                set('prof-stack',  profile.stack);
+                set('prof-tjm',    profile.budget_min ?? profile.tjm);
+                set('prof-ville',  profile.ville);
+
+                // Selects — on ne force que si la valeur existe dans les options
+                const setSelect = (id, val) => {
+                    if (!val) return;
+                    const el = document.getElementById(id);
+                    if (el && [...el.options].some(o => o.value === String(val))) el.value = String(val);
+                };
+                setSelect('prof-remote', profile.remote);
+                setSelect('prof-radius', profile.rayon);
+
+                // Score qualité
+                const score = profile.score_qualite_min;
+                if (score !== undefined && score !== null && score !== '') {
+                    scoreRange.value       = score;
+                    scoreValue.textContent = score + '%';
+                }
+
+                // Catégories — NexusAPI.normalizeProfile garantit que c'est déjà une string CSV
+                // mais on gère les deux cas par sécurité
+                const rawCats = profile.categories;
+                if (rawCats) {
+                    const catStr = Array.isArray(rawCats) ? rawCats.join(', ') : rawCats;
+                    const saved  = catStr.split(',').map(c => c.trim().toLowerCase()).filter(Boolean);
+                    document.querySelectorAll('.category-checkbox').forEach(cb => {
+                        cb.checked = saved.includes(cb.value.toLowerCase());
+                    });
+                }
+            }
+
+            // 1. Pré-remplir immédiatement depuis la session (réponse instantanée)
+            document.getElementById('prof-email').value = session.email || '';
+            fillForm(session);
+            loadingBar.style.display = 'flex';
+
+            // 2. Charger le profil complet depuis l'API (ou le cache 5 min)
+            const profile = await NexusAPI.getProfile(session.email);
+            loadingBar.style.display = 'none';
+
+            if (profile) {
+                fillForm(profile);
+                // Synchroniser la session locale avec les données fraîches de l'API
+                FreelanceAuth.updateSession(profile);
+            } else {
+                // API injoignable — les données de session restent affichées, on avertit
+                offlineBanner.classList.add('visible');
+            }
+
+            // 3. Sauvegarde
+            document.getElementById('profile-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const btn = document.getElementById('save-btn');
+                const msg = document.getElementById('status-msg');
+
+                btn.textContent = 'SYNCHRONISATION EN COURS…';
+                btn.disabled    = true;
+                msg.innerHTML   = '';
+
+                const cats = Array.from(document.querySelectorAll('.category-checkbox:checked'))
+                    .map(cb => cb.value)
+                    .join(', ');
+
+                const data = {
+                    email:             session.email,
+                    prenom:            document.getElementById('prof-prenom').value.trim(),
+                    categories:        cats,
+                    stack:             document.getElementById('prof-stack').value.trim(),
+                    budget_min:        document.getElementById('prof-tjm').value,
+                    remote:            document.getElementById('prof-remote').value,
+                    ville:             document.getElementById('prof-ville').value.trim(),
+                    rayon:             document.getElementById('prof-radius').value,
+                    score_qualite_min: document.getElementById('prof-score').value
+                };
+
+                const res = await NexusAPI.updateProfile(data);
+
+                btn.disabled    = false;
+                btn.textContent = 'SAUVEGARDER MES PRÉFÉRENCES';
+
+                if (res && !res.error) {
+                    // Mise à jour immédiate de la session → les autres pages voient les données fraîches
+                    FreelanceAuth.updateSession(data);
+                    msg.innerHTML = '<span style="color: var(--green);">✅ Profil synchronisé avec succès !</span>';
+                    setTimeout(() => { msg.innerHTML = ''; }, 5000);
+                } else {
+                    const errMsg = (res && res.message) ? res.message : 'Erreur lors de la sauvegarde';
+                    msg.innerHTML = `<span style="color: #ef4444;">❌ ${errMsg}</span>`;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

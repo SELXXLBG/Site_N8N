@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Missions — Freelance Nexus</title>
+  <meta name="description" content="Dashboard personnalisé de vos missions premium matchées par IA.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <style>
+    .dashboard-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      min-height: 100vh;
+      padding-top: 70px;
+    }
+
+    .sidebar {
+      background: rgba(15, 23, 42, 0.4);
+      border-right: 1px solid var(--border);
+      padding: 40px 24px;
+      position: sticky;
+      top: 70px;
+      height: calc(100vh - 70px);
+      backdrop-filter: blur(10px);
+      overflow-y: auto;
+    }
+
+    .main-content {
+      padding: 40px 48px;
+    }
+
+    .sidebar-nav {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-link:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--white);
+      transform: translateX(4px);
+    }
+
+    .sidebar-link.active {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--green);
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .missions-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .mission-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 30px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mission-item:hover {
+      border-color: rgba(16, 185, 129, 0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      transform: translateY(-4px);
+      background: rgba(30, 41, 59, 0.4);
+    }
+
+    .mission-info h3 {
+      font-family: var(--font-display);
+      font-size: 22px;
+      color: var(--white);
+      margin: 12px 0 8px;
+      line-height: 1.3;
+    }
+
+    .match-score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--green);
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .mission-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .meta-tag {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      padding: 7px 13px;
+      border-radius: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-tag b { color: var(--white); }
+
+    .mission-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: center;
+      min-width: 190px;
+    }
+
+    .btn-apply {
+      background: var(--green);
+      color: #000;
+      text-decoration: none;
+      padding: 13px 22px;
+      border-radius: 12px;
+      font-weight: 800;
+      text-align: center;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      display: block;
+    }
+
+    .btn-apply:hover {
+      transform: scale(1.02);
+      filter: brightness(1.1);
+    }
+
+    .btn-save {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      color: var(--white);
+      padding: 13px 22px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-save:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--text-muted);
+    }
+
+    /* ---- Skeleton loader ---- */
+    .skeleton-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .skeleton-line {
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+      background-size: 200% 100%;
+      border-radius: 8px;
+      animation: shimmer 1.6s infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* ---- Alerte timeout / restriction ---- */
+    .alert-box {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px 22px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: fade-in 0.4s ease;
+    }
+
+    .alert-box.warning {
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      color: #fbbf24;
+    }
+
+    .alert-box.info {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: #818cf8;
+    }
+
+    .alert-box .alert-icon { font-size: 20px; flex-shrink: 0; }
+    .alert-box .alert-body { flex: 1; }
+    .alert-box .alert-body strong { display: block; margin-bottom: 4px; font-size: 15px; }
+    .alert-box a { color: inherit; text-decoration: underline; }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- Empty state ---- */
+    .empty-state {
+      text-align: center;
+      padding: 80px 40px;
+      background: rgba(15, 23, 42, 0.4);
+      border: 2px dashed var(--border);
+      border-radius: 32px;
+    }
+
+    /* ---- Compteur missions ---- */
+    .missions-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-layout { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .main-content { padding: 24px; }
+    }
+
+    @media (max-width: 768px) {
+      .mission-item {
+        grid-template-columns: 1fr;
+        padding: 22px;
+      }
+      .mission-actions { min-width: 100%; }
+      .page-header { flex-direction: column; align-items: flex-start; }
+    }
+
+    .filter-btn {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: var(--font-body);
+    }
+    .filter-btn:hover {
+      border-color: rgba(16,185,129,0.4);
+      color: var(--white);
+    }
+    .filter-btn.active {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .mission-item.hidden { display: none; }
+
+    /* Mobile bottom nav */
+    .mobile-bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 999;
+        background: rgba(10, 15, 30, 0.97);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border);
+        padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+    }
+
+    .mobile-nav-items {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
+    .mobile-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        padding: 6px 16px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+        min-width: 72px;
+    }
+
+    .mobile-nav-item .nav-icon { font-size: 20px; line-height: 1; }
+
+    .mobile-nav-item.active {
+        color: var(--green);
+        background: rgba(16, 185, 129, 0.08);
+    }
+
+    .mobile-nav-item:not(.active):hover {
+        color: var(--white);
+    }
+
+    .mobile-nav-logout {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: var(--font-body);
+    }
+
+    @media (max-width: 1024px) {
+        .mobile-bottom-nav { display: block; }
+        .main-content { padding-bottom: 90px !important; }
+    }
+  </style>
+</head>
+
+<body class="dashboard">
+
+  <nav class="navbar scrolled">
+    <div class="container">
+      <a href="index.html" class="nav-brand">FREELANCE // NEXUS</a>
+      <div class="nav-links">
+        <a href="profil.html" class="btn-nav-secondary">Mon Profil</a>
+        <a href="#" class="btn-nav-primary" data-logout>Déconnexion</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <ul class="sidebar-nav">
+        <li><a href="missions.html" class="sidebar-link active">🎯 Missions Matchées</a></li>
+        <li><a href="profil.html" class="sidebar-link">👤 Mon Profil</a></li>
+        <li><a href="abonnement.html" class="sidebar-link">💎 Mon Abonnement</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <div class="page-header">
+        <div>
+          <p class="missions-count" id="missions-count"></p>
+          <h1 class="section-title" style="margin-bottom: 4px;">Missions recommandées</h1>
+          <p style="color: var(--text-secondary); font-size: 14px;">
+            Bonjour <strong data-user-name style="color: var(--white);"></strong> — matchées sur votre stack et vos préférences.
+          </p>
+        </div>
+        <div class="hero-badge" style="background: rgba(16, 185, 129, 0.1); color: var(--green); border: 1px solid rgba(16, 185, 129, 0.2);">
+          LIVE • Mis à jour à 07:00
+        </div>
+      </div>
+
+      <!-- Zone alertes dynamiques -->
+      <div id="alerts-zone"></div>
+
+      <!-- Filtres rapides -->
+      <div id="filter-bar" style="display:none;margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap;" >
+        <button class="filter-btn active" data-filter="all" onclick="applyFilter('all')">Toutes</button>
+        <button class="filter-btn" data-filter="domicile" onclick="applyFilter('domicile')">🏠 À domicile</button>
+        <button class="filter-btn" data-filter="hybride" onclick="applyFilter('hybride')">🔄 Hybride</button>
+        <button class="filter-btn" data-filter="site" onclick="applyFilter('site')">🏢 Sur site</button>
+      </div>
+
+      <!-- Zone missions -->
+      <div class="missions-grid" id="missions-container">
+        <!-- Skeleton par défaut -->
+        <div class="skeleton-card" id="sk1">
+          <div class="skeleton-line" style="height:14px;width:80px;"></div>
+          <div class="skeleton-line" style="height:22px;width:65%;"></div>
+          <div class="skeleton-line" style="height:14px;width:90%;"></div>
+          <div class="skeleton-line" style="height:14px;width:75%;"></div>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <div class="skeleton-line" style="height:30px;width:90px;"></div>
+            <div class="skeleton-line" style="height:30px;width:90px;"></div>
+          </div>
+        </div>
+        <div class="skeleton-card" id="sk2">
+          <div class="skeleton-line" style="height:14px;width:80px;"></div>
+          <div class="skeleton-line" style="height:22px;width:55%;"></div>
+          <div class="skeleton-line" style="height:14px;width:85%;"></div>
+          <div class="skeleton-line" style="height:14px;width:70%;"></div>
+          <div style="display:flex;gap:10px;margin-top:6px;">
+            <div class="skeleton-line" style="height:30px;width:90px;"></div>
+            <div class="skeleton-line" style="height:30px;width:90px;"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+    <div class="mobile-nav-items">
+        <a href="missions.html" class="mobile-nav-item active">
+            <span class="nav-icon">🎯</span>
+            <span>Missions</span>
+        </a>
+        <a href="profil.html" class="mobile-nav-item">
+            <span class="nav-icon">👤</span>
+            <span>Profil</span>
+        </a>
+        <a href="abonnement.html" class="mobile-nav-item">
+            <span class="nav-icon">💎</span>
+            <span>Abonnement</span>
+        </a>
+        <button class="mobile-nav-item mobile-nav-logout" data-logout>
+            <span class="nav-icon">🚪</span>
+            <span>Sortir</span>
+        </button>
+    </div>
+  </nav>
+
+  <script src="js/auth.js"></script>
+  <script src="js/api.js"></script>
+  <script>
+    /* ---- Clé localStorage pour les missions sauvegardées ---- */
+    const SAVED_KEY = 'fn_saved_missions';
+
+    function getSavedIds() {
+      try { return JSON.parse(localStorage.getItem(SAVED_KEY)) || []; } catch { return []; }
+    }
+    function toggleSaved(id) {
+      const ids = getSavedIds();
+      const idx = ids.indexOf(id);
+      if (idx === -1) ids.push(id); else ids.splice(idx, 1);
+      try { localStorage.setItem(SAVED_KEY, JSON.stringify(ids)); } catch {}
+      return idx === -1; // true = ajouté
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const session    = FreelanceAuth.getSession();
+      const container  = document.getElementById('missions-container');
+      const alertsZone = document.getElementById('alerts-zone');
+      const countEl    = document.getElementById('missions-count');
+
+      /* ---- Utilisateur non connecté ---- */
+      if (!session) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div style="font-size:64px;margin-bottom:24px;">🔒</div>
+            <h2 style="color:var(--white);font-family:var(--font-display);font-size:28px;margin-bottom:14px;">Accès restreint</h2>
+            <p style="color:var(--text-secondary);max-width:480px;margin:0 auto 28px;line-height:1.6;">
+              Connectez-vous ou abonnez-vous pour accéder aux missions matchées en temps réel par notre IA.
+            </p>
+            <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+              <a href="index.html#pricing" class="btn-primary-large" style="padding:14px 28px;">VOIR LES OFFRES</a>
+              <a href="login.html" class="btn-plan" style="padding:14px 28px;">SE CONNECTER</a>
+            </div>
+          </div>`;
+        return;
+      }
+
+      /* ---- Prénom affiché immédiatement depuis la session ---- */
+      const displayName = session.prenom || session.email || '';
+      document.querySelectorAll('[data-user-name]').forEach(el => { el.textContent = displayName; });
+
+      /* ---- Profil incomplet → bannière contextuelle ---- */
+      if (!FreelanceAuth.isProfileComplete(session)) {
+        addAlert('info',
+          '👤 Complétez votre profil pour un matching optimal',
+          `Votre profil ne contient pas encore vos catégories ou votre stack technique. 
+           Sans ces informations, notre IA ne peut pas cibler les bonnes missions pour vous. 
+           <strong><a href="profil.html">Remplir mon profil maintenant →</a></strong>`
+        );
+      }
+
+      /* ---- Alerte après 5 s si toujours en chargement ---- */
+      const timeoutAlert = setTimeout(() => {
+        if (document.getElementById('sk1')) {
+          addAlert('warning',
+            '⏳ Le chargement prend plus de temps que prévu…',
+            `Notre serveur met parfois quelques secondes à démarrer. Si rien n'apparaît, 
+             <strong><a href="missions.html">rafraîchissez la page</a></strong> ou 
+             <strong><a href="profil.html">vérifiez vos critères de matching</a></strong> : 
+             un seuil IA trop élevé ou un tarif journalier trop strict peuvent filtrer toutes les missions.`
+          );
+        }
+      }, 5000);
+
+      /* ---- Appel API missions + mise à jour session profil en parallèle ---- */
+      const [result, freshProfile] = await Promise.all([
+        NexusAPI.getMissions(session.email),
+        NexusAPI.getProfile(session.email)
+      ]);
+      clearTimeout(timeoutAlert);
+
+      // Synchroniser la session avec les données fraîches du profil
+      if (freshProfile) {
+        FreelanceAuth.updateSession(freshProfile);
+        // Mettre à jour le prénom si différent
+        const freshName = freshProfile.prenom || displayName;
+        document.querySelectorAll('[data-user-name]').forEach(el => { el.textContent = freshName; });
+      }
+
+      /* ---- Cas timeout API ---- */
+      if (result && result.timeout) {
+        container.innerHTML = '';
+        addAlert('warning',
+          '🔌 Serveur temporairement injoignable',
+          `Impossible de récupérer vos missions pour l'instant. 
+           <a href="missions.html">Réessayez dans quelques secondes.</a> 
+           Si le problème persiste, contactez le support.`
+        );
+        showEmpty('server-error');
+        return;
+      }
+
+      /* ---- Cas erreur API ---- */
+      if (result && result.error) {
+        container.innerHTML = '';
+        addAlert('warning',
+          '❌ Une erreur est survenue',
+          `Nous n'avons pas pu charger vos missions. 
+           <a href="missions.html">Rafraîchissez la page</a> ou vérifiez votre connexion.`
+        );
+        showEmpty('server-error');
+        return;
+      }
+
+      const missions = Array.isArray(result) ? result : [];
+
+      /* ---- Aucune mission matchée ---- */
+      if (missions.length === 0) {
+        container.innerHTML = '';
+        addAlert('info',
+          '🔭 Aucune mission ne correspond à vos critères actuels',
+          `Votre seuil de matching IA ou votre tarif journalier minimum filtrent peut-être trop les résultats. 
+           Pensez à <strong><a href="profil.html">assouplir vos restrictions</a></strong> : 
+           baisser le seuil IA, élargir le rayon géographique ou ajouter des catégories.`
+        );
+        showEmpty('no-match');
+        return;
+      }
+
+      /* ---- Affichage des missions ---- */
+      countEl.textContent = `${missions.length} mission${missions.length > 1 ? 's' : ''} matchée${missions.length > 1 ? 's' : ''}`;
+      const savedIds = getSavedIds();
+
+      container.innerHTML = missions.map((m, i) => {
+        const titre       = m.titre || m.mission_titre || 'Mission sans titre';
+        const description = m.description
+          ? (m.description.length > 240 ? m.description.substring(0, 240) + '…' : m.description)
+          : 'Cliquez sur "Détails & Postuler" pour découvrir cette mission.';
+        const budget  = m.budget || m.tarif_max || 'À négocier';
+        const remote  = m.remote || 'À domicile';
+        const stackRaw = m.stack || m.competences || '';
+        const stack   = Array.isArray(stackRaw) ? stackRaw.join(', ') : (stackRaw || 'N/A');
+        const score   = m.match_score || '–';
+        const url     = m.url || '#';
+        const missionId = m.id || m.url || `${titre}-${i}`;
+        const alreadySaved = savedIds.includes(String(missionId));
+
+        return `
+        <article class="mission-item" data-mission-id="${missionId}" style="animation: fade-in 0.4s ease ${i * 0.08}s both;"
+                 data-remote="${remote.toLowerCase()}">
+          <div class="mission-info">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+              <span class="match-score-pill">
+                <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+                MATCH ${score}%
+              </span>
+              ${isNew(m) ? '<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(251,191,36,0.12);color:#fbbf24;padding:5px 10px;border-radius:100px;font-size:11px;font-weight:800;border:1px solid rgba(251,191,36,0.25);">✨ NOUVEAU</span>' : ''}
+              ${alreadySaved ? '<span style="display:inline-flex;align-items:center;gap:5px;background:rgba(16,185,129,0.1);color:var(--green);padding:5px 10px;border-radius:100px;font-size:11px;font-weight:700;border:1px solid rgba(16,185,129,0.2);">🔖 Sauvegardée</span>' : ''}
+            </div>
+            <h3>${titre}</h3>
+            <p style="color:var(--text-secondary);line-height:1.6;font-size:14px;margin-top:4px;">${description}</p>
+            <div class="mission-meta">
+              <div class="meta-tag">💰 <b>${budget}</b></div>
+              <div class="meta-tag">📍 ${remote}</div>
+              <div class="meta-tag">🛠️ ${stack}</div>
+            </div>
+          </div>
+          <div class="mission-actions">
+            <a href="${url}" target="_blank" rel="noopener" class="btn-apply">Détails &amp; Postuler →</a>
+            <button class="btn-save ${alreadySaved ? 'saved' : ''}"
+                    onclick="saveMission(this, '${missionId}')"
+                    style="${alreadySaved ? 'color:var(--green);border-color:var(--green);' : ''}">
+              ${alreadySaved ? '✅ Sauvegardée' : '🔖 Sauvegarder'}
+            </button>
+            ${url !== '#' ? `<button class="btn-save" style="font-size:12px;padding:9px 14px;" onclick="copyLink('${url}', this)">🔗 Copier le lien</button>` : ''}
+          </div>
+        </article>`;
+      }).join('');
+
+      // Afficher la barre de filtre si plusieurs missions
+      if (missions.length > 1) {
+        document.getElementById('filter-bar').style.display = 'flex';
+      }
+    });
+
+    /* ---- Helpers ---- */
+    function addAlert(type, title, body) {
+      const zone = document.getElementById('alerts-zone');
+      const div  = document.createElement('div');
+      div.className = `alert-box ${type}`;
+      div.innerHTML = `
+        <div class="alert-body">
+          <strong>${title}</strong>
+          ${body}
+        </div>`;
+      zone.appendChild(div);
+    }
+
+    function showEmpty(reason) {
+      const container = document.getElementById('missions-container');
+      const msgs = {
+        'no-match':     { icon: '🔭', title: 'Aucune mission pour l\'instant', sub: 'Élargissez vos critères dans votre profil pour voir apparaître des missions.' },
+        'server-error': { icon: '🛠️', title: 'Impossible de charger les missions', sub: 'Le serveur est momentanément indisponible. Réessayez dans quelques instants.' }
+      };
+      const m = msgs[reason] || msgs['server-error'];
+      container.innerHTML = `
+        <div class="empty-state">
+          <div style="font-size:56px;margin-bottom:20px;">${m.icon}</div>
+          <h2 style="color:var(--white);font-family:var(--font-display);font-size:24px;margin-bottom:10px;">${m.title}</h2>
+          <p style="color:var(--text-secondary);max-width:440px;margin:0 auto 24px;line-height:1.6;">${m.sub}</p>
+          <a href="profil.html" class="btn-apply" style="display:inline-block;padding:13px 36px;">AJUSTER MON PROFIL</a>
+        </div>`;
+    }
+
+    function saveMission(btn, missionId) {
+      const added = toggleSaved(String(missionId));
+      if (added) {
+        btn.innerHTML = '✅ Sauvegardée';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color       = 'var(--green)';
+      } else {
+        btn.innerHTML = '🔖 Sauvegarder';
+        btn.style.borderColor = '';
+        btn.style.color       = '';
+      }
+    }
+
+    function isNew(mission) {
+      const dateStr = mission.date_publication || mission.created_at || mission.date;
+      if (!dateStr) return false;
+      const pub = new Date(dateStr);
+      return (Date.now() - pub.getTime()) < 48 * 60 * 60 * 1000;
+    }
+
+    function applyFilter(type) {
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.filter === type);
+      });
+      document.querySelectorAll('.mission-item').forEach(card => {
+        const remoteText = (card.dataset.remote || '').toLowerCase();
+        if (type === 'all') {
+          card.classList.remove('hidden');
+        } else if (type === 'domicile') {
+          card.classList.toggle('hidden', !remoteText.includes('domicile') && !remoteText.includes('remote'));
+        } else if (type === 'hybride') {
+          card.classList.toggle('hidden', !remoteText.includes('hybride'));
+        } else if (type === 'site') {
+          card.classList.toggle('hidden', !remoteText.includes('site'));
+        }
+      });
+    }
+
+    function copyLink(url, btn) {
+      navigator.clipboard.writeText(url).then(() => {
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✅ Copié !';
+        btn.style.color = 'var(--green)';
+        btn.style.borderColor = 'var(--green)';
+        setTimeout(() => {
+          btn.innerHTML = orig;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 2000);
+      }).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = url;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        btn.innerHTML = '✅ Copié !';
+        setTimeout(() => { btn.innerHTML = '🔗 Copier le lien'; }, 2000);
+      });
+    }
+  </script>
+
+  <style>
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</body>
+
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Abonnement — Freelance Nexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        .sidebar {
+            background: rgba(15, 23, 42, 0.4);
+            border-right: 1px solid var(--border);
+            padding: 40px 24px;
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            backdrop-filter: blur(10px);
+        }
+
+        .main-content {
+            padding: 40px 60px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--white);
+            transform: translateX(4px);
+        }
+
+        .sidebar-link.active {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--green);
+        }
+
+        .subscription-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subscription-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green), #34d399);
+        }
+
+        .status-badge-premium {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 800;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--green);
+            margin-bottom: 30px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .plan-info-display h2 {
+            font-family: var(--font-display);
+            font-size: 42px;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 20px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .stripe-portal-btn-premium {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--white);
+            color: #000;
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .stripe-portal-btn-premium:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(255, 255, 255, 0.2);
+            background: #f1f1f1;
+        }
+
+        .info-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 40px;
+            text-align: left;
+        }
+
+        .info-box h4 {
+            color: var(--white);
+            font-size: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                padding: 40px 24px;
+            }
+        }
+
+        /* Mobile bottom nav */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            background: rgba(10, 15, 30, 0.97);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+        }
+
+        .mobile-nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 6px 16px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            min-width: 72px;
+        }
+
+        .mobile-nav-item .nav-icon { font-size: 20px; line-height: 1; }
+
+        .mobile-nav-item.active {
+            color: var(--green);
+            background: rgba(16, 185, 129, 0.08);
+        }
+
+        .mobile-nav-item:not(.active):hover {
+            color: var(--white);
+        }
+
+        .mobile-nav-logout {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--font-body);
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-bottom-nav { display: block; }
+            .main-content { padding-bottom: 90px !important; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="dashboard-page">
+
+    <nav class="navbar scrolled">
+        <div class="container">
+            <a href="index.html" class="nav-brand">FREELANCE // NEXUS</a>
+            <div class="nav-links">
+                <a href="missions.html" class="btn-nav-secondary">Mes Missions</a>
+                <a href="profil.html" class="btn-nav-secondary">Mon Profil</a>
+                <a href="#" class="btn-nav-primary" data-logout>Déconnexion</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <ul class="sidebar-nav">
+                <li><a href="missions.html" class="sidebar-link">🎯 Missions Matchées</a></li>
+                <li><a href="profil.html" class="sidebar-link">👤 Mon Profil</a></li>
+                <li><a href="abonnement.html" class="sidebar-link active">💎 Mon Abonnement</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="subscription-card">
+                <div class="status-badge-premium">
+                    <span
+                        style="display: block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green);"></span>
+                    Abonnement Actif
+                </div>
+
+                <div class="plan-info-display">
+                    <p
+                        style="color: var(--text-muted); font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">
+                        Formule actuelle</p>
+                    <h2 id="plan-title">Plan PRO</h2>
+                    <p class="plan-price" id="plan-price">39€ / par mois</p>
+                </div>
+
+                <a href="#" class="stripe-portal-btn-premium" id="stripe-portal-btn"
+                    onclick="openStripePortal(event)">
+                    <span id="stripe-portal-label">GÉRER MON ABONNEMENT</span>
+                    <span id="stripe-portal-spinner" style="display:none; width:18px; height:18px; border:2px solid rgba(0,0,0,0.2); border-top-color:#000; border-radius:50%; animation:spin 0.7s linear infinite;"></span>
+                    <svg id="stripe-portal-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                </a>
+                <div id="stripe-portal-error" style="display:none; margin-top:16px; padding:14px 18px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); border-radius:12px; font-size:13px; color:#ef4444; line-height:1.5;"></div>
+
+                <div class="info-box">
+                    <h4>💡 Gestion de vos factures</h4>
+                    <p>Via le portail sécurisé Stripe, vous pouvez mettre à jour votre moyen de paiement, télécharger
+                        vos factures ou modifier votre formule à tout moment.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigation mobile">
+        <div class="mobile-nav-items">
+            <a href="missions.html" class="mobile-nav-item">
+                <span class="nav-icon">🎯</span>
+                <span>Missions</span>
+            </a>
+            <a href="profil.html" class="mobile-nav-item">
+                <span class="nav-icon">👤</span>
+                <span>Profil</span>
+            </a>
+            <a href="abonnement.html" class="mobile-nav-item active">
+                <span class="nav-icon">💎</span>
+                <span>Abonnement</span>
+            </a>
+            <button class="mobile-nav-item mobile-nav-logout" data-logout>
+                <span class="nav-icon">🚪</span>
+                <span>Sortir</span>
+            </button>
+        </div>
+    </nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const session = FreelanceAuth.getSession();
+            if (!session) { window.location.href = 'login.html'; return; }
+
+            /**
+             * Affiche les infos du plan dans la carte abonnement.
+             * Utilise getPlanLabel() depuis auth.js pour les tarifs corrects.
+             */
+            function displayPlan(plan) {
+                if (!plan) return;
+                const { label, price } = FreelanceAuth.getPlanLabel(plan);
+                document.getElementById('plan-title').textContent = `Plan ${label}`;
+                document.getElementById('plan-price').textContent = price;
+            }
+
+            // 1. Affichage immédiat depuis la session (zéro délai visible)
+            if (session.plan) displayPlan(session.plan);
+
+            // 2. Mise à jour depuis l'API (données fraîches ou cache)
+            const profile = await NexusAPI.getProfile(session.email);
+            if (profile && profile.plan) {
+                displayPlan(profile.plan);
+                FreelanceAuth.updateSession(profile);
+            }
+
+            // Indicateur de profil incomplet
+            if (profile && !FreelanceAuth.isProfileComplete(profile)) {
+                const card = document.querySelector('.subscription-card');
+                const notice = document.createElement('div');
+                notice.style.cssText = 'margin-top:28px;padding:16px 20px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.25);border-radius:14px;font-size:14px;color:#fbbf24;line-height:1.5;text-align:left;';
+                notice.innerHTML = '⚠️ <strong>Profil de matching incomplet</strong> — Renseignez vos catégories et votre stack technique pour recevoir des missions pertinentes. <a href="profil.html" style="color:#fbbf24;text-decoration:underline;font-weight:700;">Compléter mon profil →</a>';
+                card.appendChild(notice);
+            }
+        });
+
+        async function openStripePortal(e) {
+            e.preventDefault();
+
+            const btn     = document.getElementById('stripe-portal-btn');
+            const label   = document.getElementById('stripe-portal-label');
+            const spinner = document.getElementById('stripe-portal-spinner');
+            const icon    = document.getElementById('stripe-portal-icon');
+            const errBox  = document.getElementById('stripe-portal-error');
+
+            // Réinitialise l'état d'erreur précédent
+            errBox.style.display = 'none';
+            errBox.innerHTML = '';
+
+            // Spinner pendant l'appel
+            label.textContent = 'CHARGEMENT…';
+            spinner.style.display = 'inline-block';
+            icon.style.display = 'none';
+            btn.style.pointerEvents = 'none';
+            btn.style.opacity = '0.75';
+
+            const session = FreelanceAuth.getSession();
+            const email = session ? session.email : null;
+
+            let portalUrl = null;
+
+            try {
+                const controller = new AbortController();
+                // Timeout court : 6s — inutile d'attendre plus si le webhook est mort
+                const timer = setTimeout(() => controller.abort(), 6000);
+
+                const response = await fetch('https://n8n.morganjaouen.fr/webhook/stripe/portal', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                    signal: controller.signal
+                });
+                clearTimeout(timer);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    portalUrl = data.url || data.portal_url || null;
+                }
+            } catch (err) {
+                // Erreur réseau ou timeout — on passe en mode fallback silencieusement
+                console.warn('Stripe portal webhook indisponible:', err.message);
+            } finally {
+                // Restaure le bouton dans tous les cas
+                label.textContent = 'GÉRER MON ABONNEMENT';
+                spinner.style.display = 'none';
+                icon.style.display = '';
+                btn.style.pointerEvents = '';
+                btn.style.opacity = '';
+            }
+
+            // ✅ Succès : le webhook a retourné une URL → on redirige
+            if (portalUrl) {
+                window.location.href = portalUrl;
+                return;
+            }
+
+            // ⚠️ Fallback : webhook indisponible → on affiche les options de secours
+            // Si tu as un lien Stripe Customer Portal statique, remplace STRIPE_PORTAL_LINK ci-dessous
+            const STRIPE_PORTAL_LINK = null; // ex: 'https://billing.stripe.com/p/login/xxxxx'
+            const contactEmail = 'selyanpourqueyouhab@gmail.com';
+            const subject = encodeURIComponent('Gestion de mon abonnement Freelance Nexus');
+            const body = encodeURIComponent(`Bonjour,\n\nJe souhaite gérer mon abonnement.\n\nMon email : ${email || '(non renseigné)'}\n\nMerci`);
+
+            errBox.innerHTML = `
+                <strong>⚠️ Le portail de gestion est temporairement indisponible.</strong><br>
+                <span style="color:var(--text-secondary); line-height:1.8;">
+                    Pour modifier ou annuler ton abonnement, tu peux :
+                </span>
+                <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+                    ${STRIPE_PORTAL_LINK ? `
+                    <a href="${STRIPE_PORTAL_LINK}" target="_blank" rel="noopener"
+                       style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:10px;color:var(--green);font-weight:600;text-decoration:none;font-size:13px;">
+                        🔗 Accéder au portail Stripe directement
+                    </a>` : ''}
+                    <a href="mailto:${contactEmail}?subject=${subject}&body=${body}"
+                       style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:10px;color:#ef4444;font-weight:600;text-decoration:none;font-size:13px;">
+                        ✉️ Contacter le support par email
+                    </a>
+                    <button onclick="openStripePortal(event)"
+                       style="display:inline-flex;align-items:center;gap:8px;padding:10px 16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;color:var(--text-secondary);font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;">
+                        🔄 Réessayer
+                    </button>
+                </div>`;
+            errBox.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>

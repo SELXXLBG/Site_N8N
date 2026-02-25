@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freelance Nexus — Missions Premium Livrées à 7h00 par l'IA</title>
+  <meta name="description"
+    content="Recevez chaque matin à 7h00 une sélection ultra-ciblée de missions freelance enrichies par IA. Fini de scraper 15 plateformes. 5 à 20 missions / jour, 100% automatisé.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Freelance Nexus — Missions Premium au Réveil">
+  <meta property="og:description"
+    content="Veille automatisée par IA. 15+ sources scrapées chaque nuit. Votre sélection personnalisée dans votre boîte mail à 7h00.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;800&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" role="navigation" aria-label="Navigation principale">
+    <div class="container">
+      <a href="/" class="nav-brand" aria-label="Freelance Nexus - Accueil">FREELANCE // NEXUS</a>
+      <div class="nav-links" id="nav-links">
+        <a href="#features">Fonctionnalités</a>
+        <a href="#pricing">Tarifs</a>
+        <a href="login.html" id="nav-auth-link" class="btn-nav-secondary">Connexion</a>
+        <a href="#pricing" id="nav-action-btn" class="btn-nav-primary"
+          onclick="scrollToSignup(); return false;">Commencer</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false"
+        aria-controls="nav-links">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" aria-label="Section principale">
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">🚀 +1 247 freelances actifs ce mois</div>
+        <h1 class="hero-title">
+          VOS MISSIONS PREMIUM<br>
+          <span class="gradient-text">AVANT VOTRE CAFÉ.</span>
+        </h1>
+        <p class="hero-subtitle">
+          Fini la chasse aux missions sur 15 plateformes. Recevez chaque matin à 7h00 une sélection ultra-ciblée de
+          missions freelance, enrichies par IA et filtrées selon votre stack et vos tarifs.
+        </p>
+        <div class="hero-cta">
+          <a href="#signup" class="btn-primary-large" onclick="scrollToSignup(); return false;" id="hero-cta-btn">
+            ACTIVER MA VEILLE PREMIUM
+          </a>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <div class="stat-value" data-counter="1247" data-suffix="">0</div>
+              <div class="stat-label">freelances actifs</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-value">100%</div>
+              <div class="stat-label">automatisé</div>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <div class="stat-value">7h00</div>
+              <div class="stat-label">livraison</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Social Proof / Testimonials -->
+  <section class="social-proof" aria-label="Témoignages clients">
+    <div class="container">
+      <div class="testimonial-grid">
+        <div class="testimonial-card animate-on-scroll">
+          <div class="stars" aria-label="5 étoiles">★★★★★</div>
+          <p class="testimonial-text">« J'ai signé une mission à 8 500€ dès la première semaine. Le ROI est juste
+            ridicule. »</p>
+          <div class="testimonial-author">
+            <strong>Marc D.</strong> — Dev Full Stack
+          </div>
+        </div>
+        <div class="testimonial-card animate-on-scroll">
+          <div class="stars" aria-label="5 étoiles">★★★★★</div>
+          <p class="testimonial-text">« Fini de perdre 2h par jour à scroller LinkedIn. Tout arrive parfaitement filtré
+            dans ma boîte. »</p>
+          <div class="testimonial-author">
+            <strong>Sophie L.</strong> — Designer UI/UX
+          </div>
+        </div>
+        <div class="testimonial-card animate-on-scroll">
+          <div class="stars" aria-label="5 étoiles">★★★★★</div>
+          <p class="testimonial-text">« Les budgets estimés par l'IA sont bluffants de précision. Gain de temps énorme
+            sur la négociation. »</p>
+          <div class="testimonial-author">
+            <strong>Thomas K.</strong> — Consultant Data
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features" aria-label="Fonctionnalités">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Pourquoi Freelance Nexus ?</h2>
+        <p class="section-subtitle">Une veille automatisée qui travaille pendant que vous dormez</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card animate-on-scroll">
+          <span class="feature-icon" aria-hidden="true">🎯</span>
+          <h3 class="feature-title">Matching Ultra-Précis</h3>
+          <p class="feature-description">Notre IA analyse 15+ sources quotidiennes et ne vous envoie que les missions
+            correspondant exactement à votre stack, vos tarifs et votre niveau d'expérience.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <span class="feature-icon" aria-hidden="true">🧠</span>
+          <h3 class="feature-title">Enrichissement IA</h3>
+          <p class="feature-description">Budget estimé, score de qualité, séniorité requise, stack complète extraite —
+            toutes les données pour décider en 30 secondes si une mission vaut votre candidature.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <span class="feature-icon" aria-hidden="true">⚡</span>
+          <h3 class="feature-title">Avantage Timing</h3>
+          <p class="feature-description">Livraison à 7h00 précises, avant vos concurrents. Les premières candidatures
+            reçues ont 3x plus de chances d'aboutir selon nos données.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <span class="feature-icon" aria-hidden="true">🔒</span>
+          <h3 class="feature-title">Zéro Spam</h3>
+          <p class="feature-description">Un seul email par jour, uniquement les jours où des missions correspondent à
+            votre profil. Pas de bruit, que du signal actionnable.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <span class="feature-icon" aria-hidden="true">📊</span>
+          <h3 class="feature-title">Dashboard Temps Réel</h3>
+          <p class="feature-description">Accédez 24/7 à toutes vos missions matchées, filtrez par budget, technologie ou
+            date. Historique complet sauvegardé et exportable.</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <span class="feature-icon" aria-hidden="true">🎨</span>
+          <h3 class="feature-title">Configuration Facile</h3>
+          <p class="feature-description">Définissez votre profil en 2 minutes : compétences, tarif journalier minimum, type de
+            contrat préféré. Modifiable à tout moment depuis votre espace membre.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" aria-label="Comment ça marche">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Comment ça marche ?</h2>
+        <p class="section-subtitle">3 étapes pour recevoir vos premières missions demain matin</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card animate-on-scroll">
+          <div class="step-number">01</div>
+          <h3 class="step-title">Créez votre profil</h3>
+          <p class="step-description">Renseignez vos compétences, votre tarif journalier minimum et vos préférences de mission. Prend
+            2 minutes chrono.</p>
+        </div>
+        <div class="step-arrow" aria-hidden="true">→</div>
+        <div class="step-card animate-on-scroll">
+          <div class="step-number">02</div>
+          <h3 class="step-title">Notre IA travaille</h3>
+          <p class="step-description">Chaque nuit, 15+ sources sont scrapées, les offres enrichies et matchées avec
+            précision à votre profil.</p>
+        </div>
+        <div class="step-arrow" aria-hidden="true">→</div>
+        <div class="step-card animate-on-scroll">
+          <div class="step-number">03</div>
+          <h3 class="step-title">Recevez &amp; Postulez</h3>
+          <p class="step-description">À 7h00 précises, votre sélection personnalisée arrive dans votre boîte mail.
+            Postulez en un clic.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="pricing" aria-label="Tarifs">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Tarification Simple &amp; Transparente</h2>
+        <p class="section-subtitle">Une seule mission signée couvre plusieurs années d'abonnement</p>
+      </div>
+      <div class="pricing-grid">
+
+        <!-- Plan Starter -->
+        <div class="pricing-card animate-on-scroll">
+          <div class="pricing-header">
+            <div class="plan-name">STARTER</div>
+            <div class="plan-description">Pour tester la veille premium</div>
+          </div>
+          <div class="plan-price">
+            <div class="price-amount">19€</div>
+            <div class="price-period">/mois</div>
+          </div>
+          <ul class="plan-features" aria-label="Fonctionnalités du plan Starter">
+            <li><span class="check-icon" aria-hidden="true">✓</span> Newsletter quotidienne personnalisée</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Jusqu'à 10 missions / jour</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Enrichissement IA basique</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Accès dashboard web</li>
+            <li class="disabled"><span class="cross-icon" aria-hidden="true">✗</span> Alertes Telegram temps réel</li>
+            <li class="disabled"><span class="cross-icon" aria-hidden="true">✗</span> Rapport hebdomadaire</li>
+          </ul>
+          <a href="#" class="btn-plan" id="btn-starter" onclick="selectPlan('starter'); return false;">COMMENCER
+            STARTER</a>
+        </div>
+
+        <!-- Plan Pro (Recommended) -->
+        <div class="pricing-card recommended animate-on-scroll">
+          <div class="recommended-badge">⭐ RECOMMANDÉ</div>
+          <div class="pricing-header">
+            <div class="plan-name">PRO</div>
+            <div class="plan-description">Pour les freelances sérieux</div>
+          </div>
+          <div class="plan-price">
+            <div class="price-amount">39€</div>
+            <div class="price-period">/mois</div>
+          </div>
+          <ul class="plan-features" aria-label="Fonctionnalités du plan Pro">
+            <li><span class="check-icon" aria-hidden="true">✓</span> Newsletter quotidienne personnalisée</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Jusqu'à 25 missions / jour</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Enrichissement IA premium</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Accès dashboard web</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Alertes Telegram temps réel</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Rapport hebdomadaire</li>
+          </ul>
+          <a href="#" class="btn-plan primary" id="btn-pro" onclick="selectPlan('pro'); return false;">COMMENCER PRO</a>
+        </div>
+
+        <!-- Plan White Label -->
+        <div class="pricing-card animate-on-scroll">
+          <div class="pricing-header">
+            <div class="plan-name">WHITE LABEL</div>
+            <div class="plan-description">Pour agences &amp; collectifs</div>
+          </div>
+          <div class="plan-price">
+            <div class="price-amount">199€</div>
+            <div class="price-period">/mois</div>
+          </div>
+          <ul class="plan-features" aria-label="Fonctionnalités du plan White Label">
+            <li><span class="check-icon" aria-hidden="true">✓</span> Tout du plan Pro</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Multi-profils (équipe)</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> API d'intégration</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Support prioritaire</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Webhooks personnalisés</li>
+            <li><span class="check-icon" aria-hidden="true">✓</span> Onboarding dédié</li>
+          </ul>
+          <a href="#" class="btn-plan" id="btn-whitelabel" onclick="selectPlan('whitelabel'); return false;">COMMENCER
+            WHITE LABEL</a>
+        </div>
+      </div>
+      <div class="pricing-guarantee">
+        <p>💎 <strong>Garantie satisfait ou remboursé 30 jours</strong> — Sans questions posées</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Signup CTA Section -->
+  <section id="signup" class="signup" aria-label="Inscription">
+    <div class="container">
+      <div class="signup-container">
+        <h2 class="signup-title">Prêt à arrêter de perdre du temps ?</h2>
+        <p class="signup-subtitle">Rejoignez les 1 247 freelances qui reçoivent déjà leurs missions au réveil</p>
+        <div class="signup-form-wrapper">
+          <a href="#pricing" class="btn-primary-large" style="display: inline-flex; margin-bottom: 24px;">CHOISIR MON
+            PLAN & COMMENCER →</a>
+          <p class="signup-note">✓ Essai 7 jours gratuits · Annulation en 1 clic · Paiement sécurisé Stripe</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="footer-brand">FREELANCE // NEXUS</div>
+          <p class="footer-tagline">Missions premium au réveil.<br>Automatisé par IA, livré à 7h00.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Produit</h4>
+          <ul>
+            <li><a href="#features">Fonctionnalités</a></li>
+            <li><a href="#pricing">Tarifs</a></li>
+            <li><a href="missions.html">Dashboard</a></li>
+            <li><a href="#">Documentation API</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Entreprise</h4>
+          <ul>
+            <li><a href="#">À propos</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Conditions d'utilisation</a></li>
+            <li><a href="#">Politique de confidentialité</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#">Centre d'aide</a></li>
+            <li><a href="mailto:selyanpourqueyouhab@gmail.com">Contact</a></li>
+            <li><a href="#">Statut système</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Freelance Nexus · Veille Automatisée Pilotée par IA · RGPD Compliant</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
