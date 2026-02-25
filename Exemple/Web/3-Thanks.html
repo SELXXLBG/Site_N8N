@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Audit | Nexus Creator</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Outfit:wght@700&display=swap');
+
+        :root {
+            --primary: #10b981;
+            --bg: #020617;
+            --card: rgba(15, 23, 42, 0.8);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #0f172a 0, #020617 70%);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .brand {
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .status-text {
+            color: var(--muted);
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin: 20px 0 40px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            box-shadow: 0 0 20px var(--primary);
+            transition: width 1s linear;
+        }
+
+        .btn {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--muted);
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 16px;
+            cursor: not-allowed;
+            pointer-events: none;
+            border: 2px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn.ready {
+            background: var(--primary);
+            color: #000;
+            cursor: pointer;
+            pointer-events: auto;
+            animation: pulse 2s infinite;
+            border-color: var(--primary);
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(16, 185, 129, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .highlight {
+            color: var(--primary);
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+            opacity: 0.2;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step.completed {
+            opacity: 1;
+            color: var(--primary);
+        }
+
+        .step-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .step.completed .step-icon {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--primary);
+        }
+
+        .emoji {
+            font-size: 50px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="brand">Nexus // Creator</div>
+        <div id="loading-state">
+            <div class="spinner"></div>
+            <h1>Generating <span class="highlight">Your Audit</span></h1>
+            <p class="status-text">Analysing your data with AI...</p>
+            <div class="progress-track">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div id="steps">
+                <div class="step active" id="s1">
+                    <div class="step-icon">1</div>Processing data...
+                </div>
+                <div class="step" id="s2">
+                    <div class="step-icon">2</div>AI Strategic Analysis...
+                </div>
+                <div class="step" id="s3">
+                    <div class="step-icon">3</div>Building Action Plan...
+                </div>
+                <div class="step" id="s4">
+                    <div class="step-icon">4</div>Finalizing PDF...
+                </div>
+            </div>
+            <a href="#" id="dl-btn" class="btn">⏳ LOADING...</a>
+        </div>
+        <div id="ready-state" class="hidden">
+            <div class="emoji">✨</div>
+            <h1 id="welcome">It's Ready!</h1>
+            <p class="status-text">Your bespoke roadmap is generated and confirmed.</p>
+            <a href="#" id="dl-btn-ready" class="btn ready">DOWNLOAD MY AUDIT →</a>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const sid = urlParams.get('session_id');
+        const email = urlParams.get('email');
+        let progress = 0;
+        let checkCount = 0;
+
+        const debugLog = (msg) => {
+            console.log(`[LOG] ${msg}`);
+        };
+
+        function completeStep(id, nextId = null) {
+            const el = document.getElementById(id);
+            if (el && !el.classList.contains('completed')) {
+                el.className = 'step completed';
+                el.querySelector('.step-icon').innerText = '✓';
+                if (nextId) {
+                    const next = document.getElementById(nextId);
+                    if (next) next.className = 'step active';
+                }
+            }
+        }
+
+        function moveProgress() {
+            if (progress < 98) {
+                progress += (100 - progress) * 0.015;
+                document.getElementById('progress-fill').style.width = progress + '%';
+
+                if (progress > 25) completeStep('s1', 's2');
+                if (progress > 50) completeStep('s2', 's3');
+                if (progress > 75) completeStep('s3', 's4');
+                if (progress > 94) completeStep('s4');
+            }
+        }
+
+        async function check() {
+            if (!sid && !email) {
+                debugLog('ERROR: No session_id or email in URL');
+                return;
+            }
+
+            checkCount++;
+
+            try {
+                const r = await fetch('https://n8n.morganjaouen.fr/webhook/check-audit-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sid, email: email })
+                });
+
+                if (!r.ok) {
+                    setTimeout(check, 5000);
+                    return;
+                }
+
+                const d = await r.json();
+
+                if (d.status === 'ready') {
+                    completeStep('s1'); completeStep('s2'); completeStep('s3'); completeStep('s4');
+                    document.getElementById('progress-fill').style.width = '100%';
+
+                    setTimeout(() => {
+                        document.getElementById('loading-state').className = 'hidden';
+                        document.getElementById('ready-state').className = '';
+                        document.getElementById('dl-btn-ready').href = d.download_url;
+                        if (d.first_name) {
+                            document.getElementById('welcome').innerText = `It's Ready, ${d.first_name}!`;
+                        }
+                    }, 800);
+                } else if (d.status === 'not_found') {
+                    setTimeout(check, 4000);
+                } else {
+                    setTimeout(check, 3500);
+                }
+            } catch (e) {
+                setTimeout(check, 5000);
+            }
+        }
+
+        setInterval(moveProgress, 500);
+        check();
+    </script>
+</body>
+
+</html>

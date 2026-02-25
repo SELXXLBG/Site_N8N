@@ -1,1355 +1,1954 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Automatisations IA n8n pour e-commerçants | AI n8n Automations for E-commerce">
-<title>AutoFlow AI — Automatisations n8n pour E-commerçants</title>
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg-primary:#0a0a0a;
-  --bg-secondary:#111827;
-  --bg-card:#1f2937;
-  --accent-purple:#7c3aed;
-  --accent-blue:#3b82f6;
-  --accent-gradient:linear-gradient(135deg,#7c3aed,#3b82f6);
-  --text-primary:#f9fafb;
-  --text-secondary:#9ca3af;
-  --text-muted:#6b7280;
-  --border:#374151;
-  --radius:12px;
-  --radius-lg:20px;
-  --shadow:0 4px 24px rgba(124,58,237,0.15);
-}
-html{scroll-behavior:smooth}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;
-  background:var(--bg-primary);
-  color:var(--text-primary);
-  line-height:1.6;
-  overflow-x:hidden;
-}
-a{color:inherit;text-decoration:none}
-img{max-width:100%}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Automatisations IA n8n pour e-commerçants | AI n8n Automations for E-commerce">
+  <title>AutoFlow AI — Automatisations n8n pour E-commerçants</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/svg+xml"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c3aed'/%3E%3Cstop offset='100%25' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23g)' opacity='0.9'/%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='Arial Black,sans-serif' font-weight='900' font-size='64' fill='white'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
 
-/* ANIMATIONS */
-@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
-@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+    :root {
+      --bg-primary: #0a0a0a;
+      --bg-secondary: #111827;
+      --bg-card: #1f2937;
+      --accent-purple: #7c3aed;
+      --accent-blue: #3b82f6;
+      --accent-gradient: linear-gradient(135deg, #7c3aed, #3b82f6);
+      --text-primary: #f9fafb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --border: #374151;
+      --radius: 12px;
+      --radius-lg: 20px;
+      --shadow: 0 4px 24px rgba(124, 58, 237, 0.15);
+    }
 
-.animate-fadeInUp{animation:fadeInUp 0.7s ease both}
-.animate-fadeIn{animation:fadeIn 0.5s ease both}
-.delay-1{animation-delay:0.1s}
-.delay-2{animation-delay:0.2s}
-.delay-3{animation-delay:0.3s}
-.delay-4{animation-delay:0.4s}
-.delay-5{animation-delay:0.5s}
+    html {
+      scroll-behavior: smooth
+    }
 
-/* LAYOUT */
-.container{max-width:1100px;margin:0 auto;padding:0 20px}
-section{padding:80px 0}
-@media(max-width:768px){section{padding:60px 0}}
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
 
-/* BUTTONS */
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:14px 28px;border-radius:8px;font-weight:600;
-  font-size:1rem;cursor:pointer;border:none;
-  transition:all 0.3s ease;text-align:center;
-  text-decoration:none;
-}
-.btn-primary{
-  background:var(--accent-gradient);
-  color:#fff;
-  box-shadow:0 4px 20px rgba(124,58,237,0.4);
-}
-.btn-primary:hover{
-  transform:translateY(-2px);
-  box-shadow:0 8px 30px rgba(124,58,237,0.6);
-}
-.btn-outline{
-  background:transparent;
-  color:var(--text-primary);
-  border:2px solid var(--accent-purple);
-}
-.btn-outline:hover{
-  background:var(--accent-purple);
-  transform:translateY(-2px);
-}
-.btn-lg{padding:18px 36px;font-size:1.1rem;border-radius:10px}
-.btn-pulse{animation:pulse 2s infinite}
+    .logo,
+    .footer-logo {
+      font-family: 'Outfit', sans-serif !important;
+      letter-spacing: -0.03em;
+    }
 
-/* HEADER */
-header{
-  position:fixed;top:0;left:0;right:0;z-index:1000;
-  background:rgba(10,10,10,0.85);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  padding:16px 0;
-}
-.header-inner{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:16px;
-}
-.logo{
-  font-size:1.4rem;font-weight:800;
-  background:var(--accent-gradient);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-  white-space:nowrap;
-}
-.lang-switcher{
-  display:flex;align-items:center;gap:8px;
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:4px;
-}
-.lang-btn{
-  padding:6px 14px;border-radius:6px;
-  font-weight:600;font-size:0.875rem;
-  cursor:pointer;border:none;
-  background:transparent;color:var(--text-secondary);
-  transition:all 0.2s ease;
-}
-.lang-btn.active{
-  background:var(--accent-gradient);
-  color:#fff;
-}
-.header-cta{display:flex;align-items:center;gap:12px}
-@media(max-width:480px){
-  .header-cta .btn{display:none}
-  .logo{font-size:1.1rem}
-}
+    a {
+      color: inherit;
+      text-decoration: none
+    }
 
-/* HERO */
-.hero{
-  min-height:100vh;
-  display:flex;align-items:center;justify-content:center;
-  text-align:center;
-  padding:120px 20px 80px;
-  position:relative;
-  overflow:hidden;
-}
-.hero-bg{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124,58,237,0.3) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59,130,246,0.2) 0%, transparent 50%);
-  pointer-events:none;
-}
-.hero-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(124,58,237,0.15);
-  border:1px solid rgba(124,58,237,0.3);
-  color:#a78bfa;
-  padding:8px 16px;border-radius:50px;
-  font-size:0.875rem;font-weight:600;
-  margin-bottom:24px;
-}
-.hero h1{
-  font-size:clamp(2rem,5vw,3.5rem);
-  font-weight:800;line-height:1.15;
-  margin-bottom:20px;
-  letter-spacing:-0.02em;
-}
-.hero h1 .highlight{
-  background:var(--accent-gradient);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.hero-sub{
-  font-size:clamp(1rem,2.5vw,1.25rem);
-  color:var(--text-secondary);
-  max-width:600px;margin:0 auto 40px;
-}
-.hero-ctas{
-  display:flex;flex-wrap:wrap;gap:16px;
-  justify-content:center;margin-bottom:60px;
-}
-.hero-stats{
-  display:flex;flex-wrap:wrap;gap:32px;
-  justify-content:center;
-}
-.hero-stat{text-align:center}
-.hero-stat .number{
-  font-size:2rem;font-weight:800;
-  background:var(--accent-gradient);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.hero-stat .label{font-size:0.875rem;color:var(--text-secondary)}
+    img {
+      max-width: 100%
+    }
 
-/* SECTION TITLES */
-.section-label{
-  display:inline-block;
-  font-size:0.8rem;font-weight:700;letter-spacing:0.1em;
-  text-transform:uppercase;color:#a78bfa;
-  background:rgba(124,58,237,0.1);
-  border:1px solid rgba(124,58,237,0.2);
-  padding:6px 14px;border-radius:50px;
-  margin-bottom:16px;
-}
-.section-title{
-  font-size:clamp(1.75rem,4vw,2.75rem);
-  font-weight:800;line-height:1.2;
-  margin-bottom:16px;
-  letter-spacing:-0.02em;
-}
-.section-sub{
-  font-size:1.05rem;color:var(--text-secondary);
-  max-width:600px;margin:0 auto;
-}
-.text-center{text-align:center}
-.mb-16{margin-bottom:16px}
-.mb-48{margin-bottom:48px}
-.mb-64{margin-bottom:64px}
+    /* ANIMATIONS */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px)
+      }
 
-/* PROBLEMS */
-.problems{background:var(--bg-secondary)}
-.problems-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:24px;margin-top:48px;
-}
-.problem-card{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:28px;
-  transition:all 0.3s ease;
-  position:relative;overflow:hidden;
-}
-.problem-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,#ef4444,#f97316);
-}
-.problem-card:hover{
-  transform:translateY(-4px);
-  border-color:#ef4444;
-  box-shadow:0 8px 30px rgba(239,68,68,0.15);
-}
-.problem-icon{font-size:2rem;margin-bottom:12px}
-.problem-card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
-.problem-card p{color:var(--text-secondary);font-size:0.95rem}
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
 
-/* SOLUTIONS */
-.solutions-wrap{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:64px;align-items:center;
-}
-@media(max-width:768px){.solutions-wrap{grid-template-columns:1fr;gap:40px}}
-.solutions-visual{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  padding:32px;
-  position:relative;
-}
-.solutions-visual::before{
-  content:'';position:absolute;inset:-1px;
-  background:var(--accent-gradient);
-  border-radius:var(--radius-lg);
-  z-index:-1;opacity:0.5;
-}
-.flow-step{
-  display:flex;align-items:center;gap:16px;
-  padding:14px 0;
-  border-bottom:1px solid var(--border);
-}
-.flow-step:last-child{border-bottom:none}
-.flow-dot{
-  width:36px;height:36px;border-radius:50%;
-  background:var(--accent-gradient);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1rem;flex-shrink:0;
-}
-.flow-step-text{flex:1}
-.flow-step-text strong{display:block;font-size:0.95rem;margin-bottom:2px}
-.flow-step-text span{font-size:0.8rem;color:var(--text-secondary)}
-.flow-arrow{
-  color:var(--accent-purple);font-size:1.2rem;
-  text-align:center;padding:4px 0;
-}
-.solutions-list{list-style:none}
-.solutions-list li{
-  display:flex;align-items:flex-start;gap:12px;
-  padding:12px 0;border-bottom:1px solid var(--border);
-  font-size:0.95rem;
-}
-.solutions-list li:last-child{border-bottom:none}
-.check{
-  width:22px;height:22px;border-radius:50%;
-  background:rgba(124,58,237,0.2);
-  border:1px solid var(--accent-purple);
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:0.7rem;color:#a78bfa;
-  margin-top:2px;
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0
+      }
 
-/* AUTOMATIONS */
-.automations{background:var(--bg-secondary)}
-.automations-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:24px;margin-top:48px;
-}
-.auto-card{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:28px;
-  transition:all 0.3s ease;
-  cursor:default;
-}
-.auto-card:hover{
-  transform:translateY(-6px);
-  border-color:var(--accent-purple);
-  box-shadow:var(--shadow);
-}
-.auto-icon{
-  width:56px;height:56px;border-radius:12px;
-  background:rgba(124,58,237,0.15);
-  border:1px solid rgba(124,58,237,0.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.75rem;margin-bottom:16px;
-}
-.auto-card h3{font-size:1.1rem;font-weight:700;margin-bottom:8px}
-.auto-card p{color:var(--text-secondary);font-size:0.9rem;margin-bottom:16px}
-.auto-tag{
-  display:inline-block;
-  background:rgba(59,130,246,0.1);
-  border:1px solid rgba(59,130,246,0.2);
-  color:#60a5fa;
-  font-size:0.75rem;font-weight:600;
-  padding:4px 10px;border-radius:50px;
-}
+      to {
+        opacity: 1
+      }
+    }
 
-/* SOCIAL PROOF */
-.stats-row{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:24px;margin-bottom:64px;
-}
-.stat-card{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:28px;text-align:center;
-  transition:all 0.3s ease;
-}
-.stat-card:hover{
-  border-color:var(--accent-purple);
-  box-shadow:var(--shadow);
-}
-.stat-number{
-  font-size:2.5rem;font-weight:800;
-  background:var(--accent-gradient);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;margin-bottom:8px;
-}
-.stat-label{color:var(--text-secondary);font-size:0.9rem}
-.testimonials{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
-  gap:24px;
-}
-.testimonial{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:28px;
-  position:relative;transition:all 0.3s ease;
-}
-.testimonial:hover{
-  border-color:var(--accent-blue);
-  box-shadow:0 4px 24px rgba(59,130,246,0.15);
-}
-.testimonial::before{
-  content:'"';position:absolute;top:16px;right:20px;
-  font-size:5rem;color:rgba(124,58,237,0.15);
-  font-family:Georgia,serif;line-height:1;
-}
-.testimonial-text{
-  font-size:0.95rem;color:var(--text-secondary);
-  font-style:italic;margin-bottom:20px;line-height:1.7;
-}
-.testimonial-author{display:flex;align-items:center;gap:12px}
-.author-avatar{
-  width:44px;height:44px;border-radius:50%;
-  background:var(--accent-gradient);
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:1rem;color:#fff;
-  flex-shrink:0;
-}
-.author-name{font-weight:700;font-size:0.95rem}
-.author-role{font-size:0.8rem;color:var(--text-secondary)}
-.stars{color:#fbbf24;font-size:0.875rem;margin-bottom:4px}
+    @keyframes pulse {
 
-/* PROCESS */
-.process{background:var(--bg-secondary)}
-.process-steps{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:32px;margin-top:48px;
-  position:relative;
-}
-.process-step{
-  text-align:center;padding:32px 24px;
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  transition:all 0.3s ease;
-  position:relative;
-}
-.process-step:hover{
-  border-color:var(--accent-purple);
-  box-shadow:var(--shadow);
-  transform:translateY(-4px);
-}
-.step-number{
-  width:60px;height:60px;border-radius:50%;
-  background:var(--accent-gradient);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.5rem;font-weight:800;color:#fff;
-  margin:0 auto 20px;
-  box-shadow:0 4px 20px rgba(124,58,237,0.4);
-}
-.process-step h3{font-size:1.2rem;font-weight:700;margin-bottom:12px}
-.process-step p{color:var(--text-secondary);font-size:0.95rem}
-.process-step .step-icon{font-size:2.5rem;margin-bottom:16px}
+      0%,
+      100% {
+        transform: scale(1)
+      }
 
-/* URGENCY */
-.urgency{
-  background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(59,130,246,0.1));
-  border-top:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-}
-.urgency-inner{
-  text-align:center;
-  max-width:700px;margin:0 auto;
-}
-.urgency-badge{
-  display:inline-flex;align-items:center;gap:8px;
-  background:rgba(239,68,68,0.1);
-  border:1px solid rgba(239,68,68,0.3);
-  color:#f87171;
-  padding:8px 20px;border-radius:50px;
-  font-size:0.875rem;font-weight:700;
-  margin-bottom:24px;
-  animation:pulse 2s infinite;
-}
-.urgency h2{
-  font-size:clamp(1.75rem,4vw,2.5rem);
-  font-weight:800;margin-bottom:16px;
-}
-.urgency p{color:var(--text-secondary);font-size:1.05rem;margin-bottom:32px}
-.slots-visual{
-  display:flex;gap:8px;justify-content:center;
-  margin-bottom:32px;
-}
-.slot{
-  width:36px;height:12px;border-radius:4px;
-}
-.slot.taken{background:#374151}
-.slot.available{background:var(--accent-gradient)}
+      50% {
+        transform: scale(1.05)
+      }
+    }
 
-/* CTA FINAL */
-.cta-final{
-  background:var(--bg-secondary);
-  text-align:center;
-}
-.cta-box{
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  padding:60px 40px;
-  position:relative;overflow:hidden;
-}
-.cta-box::before{
-  content:'';position:absolute;inset:-1px;
-  background:var(--accent-gradient);
-  border-radius:var(--radius-lg);
-  z-index:-1;
-}
-.cta-box::after{
-  content:'';position:absolute;
-  top:-50%;left:-50%;width:200%;height:200%;
-  background:radial-gradient(circle,rgba(124,58,237,0.05) 0%,transparent 60%);
-  pointer-events:none;
-}
-.cta-box h2{
-  font-size:clamp(1.75rem,4vw,2.5rem);
-  font-weight:800;margin-bottom:16px;
-}
-.cta-box p{color:var(--text-secondary);font-size:1.05rem;margin-bottom:40px;max-width:500px;margin-left:auto;margin-right:auto}
-.cta-trust{
-  display:flex;flex-wrap:wrap;gap:20px;
-  justify-content:center;margin-top:32px;
-}
-.trust-item{
-  display:flex;align-items:center;gap:8px;
-  color:var(--text-secondary);font-size:0.875rem;
-}
-.trust-icon{color:#a78bfa}
+    @keyframes float {
 
-/* FOOTER */
-footer{
-  background:var(--bg-primary);
-  border-top:1px solid var(--border);
-  padding:40px 0;
-}
-.footer-inner{
-  display:flex;flex-wrap:wrap;gap:24px;
-  align-items:center;justify-content:space-between;
-}
-.footer-logo{
-  font-size:1.2rem;font-weight:800;
-  background:var(--accent-gradient);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;
-}
-.footer-links{display:flex;gap:20px;flex-wrap:wrap}
-.footer-links a{
-  color:var(--text-secondary);font-size:0.9rem;
-  transition:color 0.2s;
-}
-.footer-links a:hover{color:var(--text-primary)}
-.footer-copy{color:var(--text-muted);font-size:0.85rem}
+      0%,
+      100% {
+        transform: translateY(0)
+      }
 
-/* SOCIAL BADGES */
-.social-badges{display:flex;gap:12px;flex-wrap:wrap}
-.social-badge{
-  display:flex;align-items:center;gap:6px;
-  background:var(--bg-card);
-  border:1px solid var(--border);
-  padding:6px 14px;border-radius:50px;
-  font-size:0.8rem;color:var(--text-secondary);
-  transition:all 0.2s;
-}
-.social-badge:hover{border-color:var(--accent-purple);color:var(--text-primary)}
+      50% {
+        transform: translateY(-10px)
+      }
+    }
 
-/* SCROLL INDICATOR */
-.scroll-progress{
-  position:fixed;top:0;left:0;height:3px;
-  background:var(--accent-gradient);
-  z-index:9999;transition:width 0.1s;
-  width:0%;
-}
+    @keyframes gradientShift {
+      0% {
+        background-position: 0% 50%
+      }
 
-/* INTERSECTION OBSERVER CLASSES */
-.reveal{opacity:0;transform:translateY(20px);transition:all 0.6s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-</style>
+      50% {
+        background-position: 100% 50%
+      }
+
+      100% {
+        background-position: 0% 50%
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: -200% 0
+      }
+
+      100% {
+        background-position: 200% 0
+      }
+    }
+
+    .animate-fadeInUp {
+      animation: fadeInUp 0.7s ease both
+    }
+
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease both
+    }
+
+    .delay-1 {
+      animation-delay: 0.1s
+    }
+
+    .delay-2 {
+      animation-delay: 0.2s
+    }
+
+    .delay-3 {
+      animation-delay: 0.3s
+    }
+
+    .delay-4 {
+      animation-delay: 0.4s
+    }
+
+    .delay-5 {
+      animation-delay: 0.5s
+    }
+
+    /* LAYOUT */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 20px
+    }
+
+    section {
+      padding: 80px 0
+    }
+
+    @media(max-width:768px) {
+      section {
+        padding: 60px 0
+      }
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 2px solid var(--accent-purple);
+    }
+
+    .btn-outline:hover {
+      background: var(--accent-purple);
+      transform: translateY(-2px);
+    }
+
+    .btn-lg {
+      padding: 18px 36px;
+      font-size: 1.1rem;
+      border-radius: 10px
+    }
+
+    .btn-pulse {
+      animation: pulse 2s infinite
+    }
+
+    /* HEADER */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 0;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      white-space: nowrap;
+    }
+
+    .lang-switcher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px;
+    }
+
+    .lang-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+    }
+
+    .lang-btn.active {
+      background: var(--accent-gradient);
+      color: #fff;
+    }
+
+    .header-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    @media(max-width:480px) {
+      .header-cta .btn {
+        display: none
+      }
+
+      .logo {
+        font-size: 1.1rem
+      }
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 20px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.3) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(59, 130, 246, 0.2) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      color: #a78bfa;
+      padding: 8px 16px;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 .highlight {
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      justify-content: center;
+    }
+
+    .hero-stat {
+      text-align: center
+    }
+
+    .hero-stat .number {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-stat .label {
+      font-size: 0.875rem;
+      color: var(--text-secondary)
+    }
+
+    /* SECTION TITLES */
+    .section-label {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      padding: 6px 14px;
+      border-radius: 50px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .section-sub {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .text-center {
+      text-align: center
+    }
+
+    .mb-16 {
+      margin-bottom: 16px
+    }
+
+    .mb-48 {
+      margin-bottom: 48px
+    }
+
+    .mb-64 {
+      margin-bottom: 64px
+    }
+
+    /* PROBLEMS */
+    .problems {
+      background: var(--bg-secondary)
+    }
+
+    .problems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .problem-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .problem-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ef4444, #f97316);
+    }
+
+    .problem-card:hover {
+      transform: translateY(-4px);
+      border-color: #ef4444;
+      box-shadow: 0 8px 30px rgba(239, 68, 68, 0.15);
+    }
+
+    .problem-icon {
+      font-size: 2rem;
+      margin-bottom: 12px
+    }
+
+    .problem-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px
+    }
+
+    .problem-card p {
+      color: var(--text-secondary);
+      font-size: 0.95rem
+    }
+
+    /* SOLUTIONS */
+    .solutions-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    @media(max-width:768px) {
+      .solutions-wrap {
+        grid-template-columns: 1fr;
+        gap: 40px
+      }
+    }
+
+    .solutions-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      position: relative;
+    }
+
+    .solutions-visual::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-lg);
+      z-index: -1;
+      opacity: 0.5;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .flow-step:last-child {
+      border-bottom: none
+    }
+
+    .flow-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .flow-step-text {
+      flex: 1
+    }
+
+    .flow-step-text strong {
+      display: block;
+      font-size: 0.95rem;
+      margin-bottom: 2px
+    }
+
+    .flow-step-text span {
+      font-size: 0.8rem;
+      color: var(--text-secondary)
+    }
+
+    .flow-arrow {
+      color: var(--accent-purple);
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    .solutions-list {
+      list-style: none
+    }
+
+    .solutions-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    .solutions-list li:last-child {
+      border-bottom: none
+    }
+
+    .check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(124, 58, 237, 0.2);
+      border: 1px solid var(--accent-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      color: #a78bfa;
+      margin-top: 2px;
+    }
+
+    /* AUTOMATIONS */
+    .automations {
+      background: var(--bg-secondary)
+    }
+
+    .automations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .auto-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+
+    .auto-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent-purple);
+      box-shadow: var(--shadow);
+    }
+
+    .auto-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      background: rgba(124, 58, 237, 0.15);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: 16px;
+    }
+
+    .auto-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px
+    }
+
+    .auto-card p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 16px
+    }
+
+    .auto-tag {
+      display: inline-block;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 50px;
+    }
+
+    /* SOCIAL PROOF */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 24px;
+      margin-bottom: 64px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--accent-purple);
+      box-shadow: var(--shadow);
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem
+    }
+
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .testimonial {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .testimonial:hover {
+      border-color: var(--accent-blue);
+      box-shadow: 0 4px 24px rgba(59, 130, 246, 0.15);
+    }
+
+    .testimonial::before {
+      content: '"';
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 5rem;
+      color: rgba(124, 58, 237, 0.15);
+      font-family: Georgia, serif;
+      line-height: 1;
+    }
+
+    .testimonial-text {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .author-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .author-name {
+      font-weight: 700;
+      font-size: 0.95rem
+    }
+
+    .author-role {
+      font-size: 0.8rem;
+      color: var(--text-secondary)
+    }
+
+    .stars {
+      color: #fbbf24;
+      font-size: 0.875rem;
+      margin-bottom: 4px
+    }
+
+    /* PROCESS */
+    .process {
+      background: var(--bg-secondary)
+    }
+
+    .process-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      margin-top: 48px;
+      position: relative;
+    }
+
+    .process-step {
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .process-step:hover {
+      border-color: var(--accent-purple);
+      box-shadow: var(--shadow);
+      transform: translateY(-4px);
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--accent-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 auto 20px;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+    }
+
+    .process-step h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 12px
+    }
+
+    .process-step p {
+      color: var(--text-secondary);
+      font-size: 0.95rem
+    }
+
+    .process-step .step-icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px
+    }
+
+    /* URGENCY */
+    .urgency {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(59, 130, 246, 0.1));
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .urgency-inner {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .urgency-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #f87171;
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      animation: pulse 2s infinite;
+    }
+
+    .urgency h2 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .urgency p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 32px
+    }
+
+    .slots-visual {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+
+    .slot {
+      width: 36px;
+      height: 12px;
+      border-radius: 4px;
+    }
+
+    .slot.taken {
+      background: #374151
+    }
+
+    .slot.available {
+      background: var(--accent-gradient)
+    }
+
+    /* CTA FINAL */
+    .cta-final {
+      background: var(--bg-secondary);
+      text-align: center;
+    }
+
+    .cta-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      background: var(--accent-gradient);
+      border-radius: var(--radius-lg);
+      z-index: -1;
+    }
+
+    .cta-box::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cta-box h2 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .cta-box p {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      margin-bottom: 40px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto
+    }
+
+    .cta-trust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-top: 32px;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .trust-icon {
+      color: #a78bfa
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--bg-primary);
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: var(--accent-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--text-primary)
+    }
+
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 0.85rem
+    }
+
+    /* SOCIAL BADGES */
+    .social-badges {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap
+    }
+
+    .social-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+
+    .social-badge:hover {
+      border-color: var(--accent-purple);
+      color: var(--text-primary)
+    }
+
+    /* SCROLL INDICATOR */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: var(--accent-gradient);
+      z-index: 9999;
+      transition: width 0.1s;
+      width: 0%;
+    }
+
+    /* INTERSECTION OBSERVER CLASSES */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.6s ease
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0)
+    }
+  </style>
 </head>
+
 <body>
-<div class="scroll-progress" id="scrollProgress"></div>
-<!-- HEADER -->
-<header>
-  <div class="container">
-    <div class="header-inner">
-      <div class="logo">⚡ AutoFlow AI</div>
-      <div class="lang-switcher">
-        <button class="lang-btn active" id="btnFR" onclick="setLang('fr')">🇫🇷 FR</button>
-        <button class="lang-btn" id="btnEN" onclick="setLang('en')">🇬🇧 EN</button>
-      </div>
-      <div class="header-cta">
-        <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="btn btn-primary" data-fr="Audit Gratuit" data-en="Free Audit">Audit Gratuit</a>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <!-- HEADER -->
+  <header>
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo">⚡ AutoFlow AI</div>
+        <div class="lang-switcher">
+          <button class="lang-btn active" id="btnFR" onclick="setLang('fr')">🇫🇷 FR</button>
+          <button class="lang-btn" id="btnEN" onclick="setLang('en')">🇬🇧 EN</button>
+        </div>
+        <div class="header-cta">
+          <a href="https://tally.so/r/QKD61l" target="_blank" class="btn btn-primary" data-fr="Audit Gratuit"
+            data-en="Free Audit">Audit Gratuit</a>
+        </div>
       </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
-  <div class="container" style="position:relative;z-index:1">
-    <div class="hero-badge animate-fadeInUp">
-      <span>🤖</span>
-      <span data-fr="Expert certifié n8n &amp; Automatisation IA" data-en="Certified n8n &amp; AI Automation Expert">Expert certifié n8n &amp; Automatisation IA</span>
-    </div>
-    <h1 class="animate-fadeInUp delay-1">
-      <span class="fr-content">Arrêtez de perdre du temps sur des tâches que <span class="highlight">l'IA peut faire à votre place</span></span>
-      <span class="en-content" style="display:none">Stop Losing Revenue to Manual Tasks <span class="highlight">Your Business Should Never Do</span></span>
-    </h1>
-    <p class="hero-sub animate-fadeInUp delay-2">
-      <span class="fr-content">Transformez votre e-commerce avec des automatisations intelligentes sur mesure. Récupérez des heures chaque semaine et augmentez vos revenus — sans recruter.</span>
-      <span class="en-content" style="display:none">Transform your e-commerce with bespoke AI automations. Reclaim hours every week and grow revenue — without hiring anyone.</span>
-    </p>
-    <div class="hero-ctas animate-fadeInUp delay-3">
-      <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="btn btn-primary btn-lg btn-pulse">
-        <span>🚀</span>
-        <span class="fr-content">Obtenir mon audit gratuit</span>
-        <span class="en-content" style="display:none">Get my free audit</span>
-      </a>
-      <a href="#automations" class="btn btn-outline btn-lg">
-        <span>👀</span>
-        <span class="fr-content">Voir les automatisations</span>
-        <span class="en-content" style="display:none">See automations</span>
-      </a>
-    </div>
-    <div class="hero-stats animate-fadeInUp delay-4">
-      <div class="hero-stat">
-        <div class="number">+47%</div>
-        <div class="label fr-content">Taux de conversion moyen</div>
-        <div class="label en-content" style="display:none">Avg. conversion rate</div>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="container" style="position:relative;z-index:1">
+      <div class="hero-badge animate-fadeInUp">
+        <span>🤖</span>
+        <span data-fr="Expert certifié n8n &amp; Automatisation IA"
+          data-en="Certified n8n &amp; AI Automation Expert">Expert certifié n8n &amp; Automatisation IA</span>
       </div>
-      <div class="hero-stat">
-        <div class="number">120h</div>
-        <div class="label fr-content">Économisées / mois</div>
-        <div class="label en-content" style="display:none">Saved per month</div>
-      </div>
-      <div class="hero-stat">
-        <div class="number">23+</div>
-        <div class="label fr-content">Clients e-commerce</div>
-        <div class="label en-content" style="display:none">E-commerce clients</div>
-      </div>
-      <div class="hero-stat">
-        <div class="number">98%</div>
-        <div class="label fr-content">Taux de satisfaction</div>
-        <div class="label en-content" style="display:none">Satisfaction rate</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROBLEMS -->
-<section class="problems" id="problems">
-  <div class="container">
-    <div class="text-center mb-64">
-      <div class="section-label">
-        <span class="fr-content">❌ Les vrais problèmes</span>
-        <span class="en-content" style="display:none">❌ The real problems</span>
-      </div>
-      <h2 class="section-title">
-        <span class="fr-content">Combien d'heures perdez-vous chaque semaine ?</span>
-        <span class="en-content" style="display:none">How many hours are you wasting every week?</span>
-      </h2>
-      <p class="section-sub">
-        <span class="fr-content">Ces problèmes coûtent aux e-commerçants en moyenne 30 à 40% de leur chiffre d'affaires potentiel.</span>
-        <span class="en-content" style="display:none">These issues cost e-commerce businesses an average of 30–40% of their potential revenue.</span>
+      <h1 class="animate-fadeInUp delay-1">
+        <span class="fr-content">Arrêtez de perdre du temps sur des tâches que <span class="highlight">l'IA peut faire à
+            votre place</span></span>
+        <span class="en-content" style="display:none">Stop Losing Revenue to Manual Tasks <span class="highlight">Your
+            Business Should Never Do</span></span>
+      </h1>
+      <p class="hero-sub animate-fadeInUp delay-2">
+        <span class="fr-content">Transformez votre e-commerce avec des automatisations intelligentes sur mesure.
+          Récupérez des heures chaque semaine et augmentez vos revenus — sans recruter.</span>
+        <span class="en-content" style="display:none">Transform your e-commerce with bespoke AI automations. Reclaim
+          hours every week and grow revenue — without hiring anyone.</span>
       </p>
-    </div>
-    <div class="problems-grid">
-      <div class="problem-card reveal">
-        <div class="problem-icon">⏱️</div>
-        <h3>
-          <span class="fr-content">Tâches répétitives qui épuisent votre équipe</span>
-          <span class="en-content" style="display:none">Repetitive tasks draining your team</span>
-        </h3>
-        <p>
-          <span class="fr-content">Copier-coller des données, mettre à jour des fichiers Excel, envoyer des emails manuellement… Des heures perdues chaque jour sur des tâches sans valeur ajoutée.</span>
-          <span class="en-content" style="display:none">Copy-pasting data, updating spreadsheets, sending emails manually… Hours lost daily on zero-value tasks.</span>
-        </p>
+      <div class="hero-ctas animate-fadeInUp delay-3">
+        <a href="https://tally.so/r/QKD61l" target="_blank" class="btn btn-primary btn-lg btn-pulse">
+          <span>🚀</span>
+          <span class="fr-content">Obtenir mon audit gratuit</span>
+          <span class="en-content" style="display:none">Get my free audit</span>
+        </a>
+        <a href="#automations" class="btn btn-outline btn-lg">
+          <span>👀</span>
+          <span class="fr-content">Voir les automatisations</span>
+          <span class="en-content" style="display:none">See automations</span>
+        </a>
       </div>
-      <div class="problem-card reveal delay-1">
-        <div class="problem-icon">🛒</div>
-        <h3>
-          <span class="fr-content">Paniers abandonnés sans relance efficace</span>
-          <span class="en-content" style="display:none">Abandoned carts with no effective follow-up</span>
-        </h3>
-        <p>
-          <span class="fr-content">69% des paniers sont abandonnés. Sans relance automatisée intelligente, vous perdez des milliers d'euros de revenus chaque mois.</span>
-          <span class="en-content" style="display:none">69% of carts are abandoned. Without smart automated follow-up, you're losing thousands in revenue every month.</span>
-        </p>
-      </div>
-      <div class="problem-card reveal delay-2">
-        <div class="problem-icon">📦</div>
-        <h3>
-          <span class="fr-content">Suivi des commandes géré manuellement</span>
-          <span class="en-content" style="display:none">Order tracking handled manually</span>
-        </h3>
-        <p>
-          <span class="fr-content">Vos clients veulent savoir où est leur colis. Répondre à ces questions manuellement vous coûte des heures et génère de la frustration.</span>
-          <span class="en-content" style="display:none">Your customers want to know where their package is. Answering manually costs hours and generates frustration.</span>
-        </p>
-      </div>
-      <div class="problem-card reveal delay-3">
-        <div class="problem-icon">💬</div>
-        <h3>
-          <span class="fr-content">SAV chronophage et énergivore</span>
-          <span class="en-content" style="display:none">Time-consuming customer support</span>
-        </h3>
-        <p>
-          <span class="fr-content">80% des tickets SAV concernent les mêmes 5 questions. Vous passez votre temps à répéter les mêmes réponses au lieu de développer votre business.</span>
-          <span class="en-content" style="display:none">80% of support tickets are the same 5 questions. You're stuck repeating answers instead of growing your business.</span>
-        </p>
-      </div>
-      <div class="problem-card reveal delay-4">
-        <div class="problem-icon">📊</div>
-        <h3>
-          <span class="fr-content">Erreurs de stock sur plusieurs canaux</span>
-          <span class="en-content" style="display:none">Stock errors across multiple channels</span>
-        </h3>
-        <p>
-          <span class="fr-content">Vendre sur Shopify, Amazon et votre site en même temps ? Sans synchronisation automatique, les erreurs de stock détruisent votre réputation.</span>
-          <span class="en-content" style="display:none">Selling on Shopify, Amazon, and your own site? Without auto-sync, stock errors destroy your reputation.</span>
-        </p>
+      <div class="hero-stats animate-fadeInUp delay-4">
+        <div class="hero-stat">
+          <div class="number">+47%</div>
+          <div class="label fr-content">Taux de conversion moyen</div>
+          <div class="label en-content" style="display:none">Avg. conversion rate</div>
+        </div>
+        <div class="hero-stat">
+          <div class="number">120h</div>
+          <div class="label fr-content">Économisées / mois</div>
+          <div class="label en-content" style="display:none">Saved per month</div>
+        </div>
+        <div class="hero-stat">
+          <div class="number">23+</div>
+          <div class="label fr-content">Clients e-commerce</div>
+          <div class="label en-content" style="display:none">E-commerce clients</div>
+        </div>
+        <div class="hero-stat">
+          <div class="number">98%</div>
+          <div class="label fr-content">Taux de satisfaction</div>
+          <div class="label en-content" style="display:none">Satisfaction rate</div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- SOLUTIONS -->
-<section class="solutions" id="solutions">
-  <div class="container">
-    <div class="solutions-wrap">
-      <div>
+  <!-- PROBLEMS -->
+  <section class="problems" id="problems">
+    <div class="container">
+      <div class="text-center mb-64">
         <div class="section-label">
-          <span class="fr-content">✅ La solution</span>
-          <span class="en-content" style="display:none">✅ The solution</span>
+          <span class="fr-content">❌ Les vrais problèmes</span>
+          <span class="en-content" style="display:none">❌ The real problems</span>
         </div>
         <h2 class="section-title">
-          <span class="fr-content">n8n + IA = votre équipe invisible qui travaille 24h/24</span>
-          <span class="en-content" style="display:none">n8n + AI = your invisible team working 24/7</span>
+          <span class="fr-content">Combien d'heures perdez-vous chaque semaine ?</span>
+          <span class="en-content" style="display:none">How many hours are you wasting every week?</span>
         </h2>
-        <p style="color:var(--text-secondary);margin-bottom:32px">
-          <span class="fr-content">Je construis des automatisations sur mesure qui connectent tous vos outils, éliminent les tâches répétitives et font croître votre chiffre d'affaires — même quand vous dormez.</span>
-          <span class="en-content" style="display:none">I build bespoke automations that connect all your tools, eliminate repetitive tasks, and grow your revenue — even while you sleep.</span>
+        <p class="section-sub">
+          <span class="fr-content">Ces problèmes coûtent aux e-commerçants en moyenne 30 à 40% de leur chiffre
+            d'affaires potentiel.</span>
+          <span class="en-content" style="display:none">These issues cost e-commerce businesses an average of 30–40% of
+            their potential revenue.</span>
         </p>
-        <ul class="solutions-list">
-          <li>
-            <div class="check">✓</div>
-            <span>
-              <span class="fr-content"><strong>Zéro code requis de votre côté</strong> — je gère tout de A à Z</span>
-              <span class="en-content" style="display:none"><strong>Zero code required from you</strong> — I handle everything A to Z</span>
-            </span>
-          </li>
-          <li>
-            <div class="check">✓</div>
-            <span>
-              <span class="fr-content"><strong>Résultats mesurables</strong> — ROI visible dès le premier mois</span>
-              <span class="en-content" style="display:none"><strong>Measurable results</strong> — visible ROI from month one</span>
-            </span>
-          </li>
-          <li>
-            <div class="check">✓</div>
-            <span>
-              <span class="fr-content"><strong>Compatible avec vos outils</strong> — Shopify, WooCommerce, HubSpot, Klaviyo, Notion...</span>
-              <span class="en-content" style="display:none"><strong>Works with your tools</strong> — Shopify, WooCommerce, HubSpot, Klaviyo, Notion...</span>
-            </span>
-          </li>
-          <li>
-            <div class="check">✓</div>
-            <span>
-              <span class="fr-content"><strong>Maintenance incluse</strong> — je surveille et optimise vos automatisations</span>
-              <span class="en-content" style="display:none"><strong>Maintenance included</strong> — I monitor and optimize your automations</span>
-            </span>
-          </li>
-          <li>
-            <div class="check">✓</div>
-            <span>
-              <span class="fr-content"><strong>Scalable à l'infini</strong> — vos automatisations grandissent avec votre business</span>
-              <span class="en-content" style="display:none"><strong>Infinitely scalable</strong> — your automations grow with your business</span>
-            </span>
-          </li>
-        </ul>
-        <div style="margin-top:32px">
-          <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="btn btn-primary">
-            <span>🎯</span>
-            <span class="fr-content">Je veux mes automatisations</span>
-            <span class="en-content" style="display:none">I want my automations</span>
+      </div>
+      <div class="problems-grid">
+        <div class="problem-card reveal">
+          <div class="problem-icon">⏱️</div>
+          <h3>
+            <span class="fr-content">Tâches répétitives qui épuisent votre équipe</span>
+            <span class="en-content" style="display:none">Repetitive tasks draining your team</span>
+          </h3>
+          <p>
+            <span class="fr-content">Copier-coller des données, mettre à jour des fichiers Excel, envoyer des emails
+              manuellement… Des heures perdues chaque jour sur des tâches sans valeur ajoutée.</span>
+            <span class="en-content" style="display:none">Copy-pasting data, updating spreadsheets, sending emails
+              manually… Hours lost daily on zero-value tasks.</span>
+          </p>
+        </div>
+        <div class="problem-card reveal delay-1">
+          <div class="problem-icon">🛒</div>
+          <h3>
+            <span class="fr-content">Paniers abandonnés sans relance efficace</span>
+            <span class="en-content" style="display:none">Abandoned carts with no effective follow-up</span>
+          </h3>
+          <p>
+            <span class="fr-content">69% des paniers sont abandonnés. Sans relance automatisée intelligente, vous perdez
+              des milliers d'euros de revenus chaque mois.</span>
+            <span class="en-content" style="display:none">69% of carts are abandoned. Without smart automated follow-up,
+              you're losing thousands in revenue every month.</span>
+          </p>
+        </div>
+        <div class="problem-card reveal delay-2">
+          <div class="problem-icon">📦</div>
+          <h3>
+            <span class="fr-content">Suivi des commandes géré manuellement</span>
+            <span class="en-content" style="display:none">Order tracking handled manually</span>
+          </h3>
+          <p>
+            <span class="fr-content">Vos clients veulent savoir où est leur colis. Répondre à ces questions manuellement
+              vous coûte des heures et génère de la frustration.</span>
+            <span class="en-content" style="display:none">Your customers want to know where their package is. Answering
+              manually costs hours and generates frustration.</span>
+          </p>
+        </div>
+        <div class="problem-card reveal delay-3">
+          <div class="problem-icon">💬</div>
+          <h3>
+            <span class="fr-content">SAV chronophage et énergivore</span>
+            <span class="en-content" style="display:none">Time-consuming customer support</span>
+          </h3>
+          <p>
+            <span class="fr-content">80% des tickets SAV concernent les mêmes 5 questions. Vous passez votre temps à
+              répéter les mêmes réponses au lieu de développer votre business.</span>
+            <span class="en-content" style="display:none">80% of support tickets are the same 5 questions. You're stuck
+              repeating answers instead of growing your business.</span>
+          </p>
+        </div>
+        <div class="problem-card reveal delay-4">
+          <div class="problem-icon">📊</div>
+          <h3>
+            <span class="fr-content">Erreurs de stock sur plusieurs canaux</span>
+            <span class="en-content" style="display:none">Stock errors across multiple channels</span>
+          </h3>
+          <p>
+            <span class="fr-content">Vendre sur Shopify, Amazon et votre site en même temps ? Sans synchronisation
+              automatique, les erreurs de stock détruisent votre réputation.</span>
+            <span class="en-content" style="display:none">Selling on Shopify, Amazon, and your own site? Without
+              auto-sync, stock errors destroy your reputation.</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOLUTIONS -->
+  <section class="solutions" id="solutions">
+    <div class="container">
+      <div class="solutions-wrap">
+        <div>
+          <div class="section-label">
+            <span class="fr-content">✅ La solution</span>
+            <span class="en-content" style="display:none">✅ The solution</span>
+          </div>
+          <h2 class="section-title">
+            <span class="fr-content">n8n + IA = votre équipe invisible qui travaille 24h/24</span>
+            <span class="en-content" style="display:none">n8n + AI = your invisible team working 24/7</span>
+          </h2>
+          <p style="color:var(--text-secondary);margin-bottom:32px">
+            <span class="fr-content">Je construis des automatisations sur mesure qui connectent tous vos outils,
+              éliminent les tâches répétitives et font croître votre chiffre d'affaires — même quand vous dormez.</span>
+            <span class="en-content" style="display:none">I build bespoke automations that connect all your tools,
+              eliminate repetitive tasks, and grow your revenue — even while you sleep.</span>
+          </p>
+          <ul class="solutions-list">
+            <li>
+              <div class="check">✓</div>
+              <span>
+                <span class="fr-content"><strong>Zéro code requis de votre côté</strong> — je gère tout de A à Z</span>
+                <span class="en-content" style="display:none"><strong>Zero code required from you</strong> — I handle
+                  everything A to Z</span>
+              </span>
+            </li>
+            <li>
+              <div class="check">✓</div>
+              <span>
+                <span class="fr-content"><strong>Résultats mesurables</strong> — ROI visible dès le premier mois</span>
+                <span class="en-content" style="display:none"><strong>Measurable results</strong> — visible ROI from
+                  month one</span>
+              </span>
+            </li>
+            <li>
+              <div class="check">✓</div>
+              <span>
+                <span class="fr-content"><strong>Compatible avec vos outils</strong> — Shopify, WooCommerce, HubSpot,
+                  Klaviyo, Notion...</span>
+                <span class="en-content" style="display:none"><strong>Works with your tools</strong> — Shopify,
+                  WooCommerce, HubSpot, Klaviyo, Notion...</span>
+              </span>
+            </li>
+            <li>
+              <div class="check">✓</div>
+              <span>
+                <span class="fr-content"><strong>Maintenance incluse</strong> — je surveille et optimise vos
+                  automatisations</span>
+                <span class="en-content" style="display:none"><strong>Maintenance included</strong> — I monitor and
+                  optimize your automations</span>
+              </span>
+            </li>
+            <li>
+              <div class="check">✓</div>
+              <span>
+                <span class="fr-content"><strong>Scalable à l'infini</strong> — vos automatisations grandissent avec
+                  votre business</span>
+                <span class="en-content" style="display:none"><strong>Infinitely scalable</strong> — your automations
+                  grow with your business</span>
+              </span>
+            </li>
+          </ul>
+          <div style="margin-top:32px">
+            <a href="https://tally.so/r/QKD61l" target="_blank" class="btn btn-primary">
+              <span>🎯</span>
+              <span class="fr-content">Je veux mes automatisations</span>
+              <span class="en-content" style="display:none">I want my automations</span>
+            </a>
+          </div>
+        </div>
+        <div class="solutions-visual reveal">
+          <div
+            style="font-size:0.75rem;color:var(--text-muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.08em">
+            <span class="fr-content">Exemple de flux automatisé</span>
+            <span class="en-content" style="display:none">Example automated flow</span>
+          </div>
+          <div class="flow-step">
+            <div class="flow-dot">🛒</div>
+            <div class="flow-step-text">
+              <strong class="fr-content">Panier abandonné détecté</strong>
+              <strong class="en-content" style="display:none">Abandoned cart detected</strong>
+              <span class="fr-content">Shopify → Trigger n8n</span>
+              <span class="en-content" style="display:none">Shopify → n8n Trigger</span>
+            </div>
+            <span style="color:#10b981;font-size:0.75rem;font-weight:600">LIVE</span>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">
+            <div class="flow-dot">🤖</div>
+            <div class="flow-step-text">
+              <strong class="fr-content">IA génère un email personnalisé</strong>
+              <strong class="en-content" style="display:none">AI generates personalized email</strong>
+              <span>OpenAI GPT-4o</span>
+            </div>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">
+            <div class="flow-dot">📧</div>
+            <div class="flow-step-text">
+              <strong class="fr-content">Email envoyé + SMS si pas ouvert</strong>
+              <strong class="en-content" style="display:none">Email sent + SMS if unopened</strong>
+              <span>Klaviyo + Twilio</span>
+            </div>
+          </div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-step">
+            <div class="flow-dot">💰</div>
+            <div class="flow-step-text">
+              <strong class="fr-content">Commande récupérée</strong>
+              <strong class="en-content" style="display:none">Order recovered</strong>
+              <span class="fr-content">+23% de récupération en moyenne</span>
+              <span class="en-content" style="display:none">+23% average recovery rate</span>
+            </div>
+            <span style="color:#fbbf24;font-size:0.75rem;font-weight:600">€€€</span>
+          </div>
+          <div
+            style="margin-top:20px;padding:16px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:8px;font-size:0.85rem;color:#6ee7b7;text-align:center">
+            <span class="fr-content">⚡ Ce flux tourne 24h/24, 7j/7 — sans intervention humaine</span>
+            <span class="en-content" style="display:none">⚡ This flow runs 24/7 — with zero human intervention</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUTOMATIONS -->
+  <section class="automations" id="automations">
+    <div class="container">
+      <div class="text-center mb-64">
+        <div class="section-label">
+          <span class="fr-content">⚙️ Cas concrets</span>
+          <span class="en-content" style="display:none">⚙️ Real use cases</span>
+        </div>
+        <h2 class="section-title">
+          <span class="fr-content">6 automatisations qui changent tout</span>
+          <span class="en-content" style="display:none">6 automations that change everything</span>
+        </h2>
+        <p class="section-sub">
+          <span class="fr-content">Des solutions clés en main déployées en moins de 2 semaines, avec résultats
+            garantis.</span>
+          <span class="en-content" style="display:none">Turnkey solutions deployed in under 2 weeks, with guaranteed
+            results.</span>
+        </p>
+      </div>
+      <div class="automations-grid">
+
+        <div class="auto-card reveal">
+          <div class="auto-icon">🛒</div>
+          <h3>
+            <span class="fr-content">Récupération de paniers abandonnés</span>
+            <span class="en-content" style="display:none">Abandoned Cart Recovery</span>
+          </h3>
+          <p>
+            <span class="fr-content">Séquence email + SMS personnalisée par IA. Détecte le bon moment, le bon message,
+              le bon canal. Récupérez jusqu'à 23% de vos paniers perdus.</span>
+            <span class="en-content" style="display:none">AI-personalized email + SMS sequence. Detects the right time,
+              message, and channel. Recover up to 23% of lost carts.</span>
+          </p>
+          <span class="auto-tag">
+            <span class="fr-content">💰 ROI moyen : 8x</span>
+            <span class="en-content" style="display:none">💰 Avg. ROI: 8x</span>
+          </span>
+        </div>
+
+        <div class="auto-card reveal delay-1">
+          <div class="auto-icon">📦</div>
+          <h3>
+            <span class="fr-content">Suivi commande automatique</span>
+            <span class="en-content" style="display:none">Automatic Order Tracking</span>
+          </h3>
+          <p>
+            <span class="fr-content">Notifications proactives à chaque étape de livraison. Vos clients sont informés
+              avant même de vous contacter. -60% de tickets SAV liés aux livraisons.</span>
+            <span class="en-content" style="display:none">Proactive notifications at every delivery stage. Customers
+              informed before they even contact you. -60% delivery-related support tickets.</span>
+          </p>
+          <span class="auto-tag">
+            <span class="fr-content">⏱️ -60% tickets SAV</span>
+            <span class="en-content" style="display:none">⏱️ -60% support tickets</span>
+          </span>
+        </div>
+
+        <div class="auto-card reveal delay-2">
+          <div class="auto-icon">🔄</div>
+          <h3>
+            <span class="fr-content">Synchronisation stock multicanal</span>
+            <span class="en-content" style="display:none">Multi-channel Stock Sync</span>
+          </h3>
+          <p>
+            <span class="fr-content">Shopify, Amazon, WooCommerce, marketplace — tout synchronisé en temps réel. Zéro
+              survente, zéro rupture surprise, zéro erreur manuelle.</span>
+            <span class="en-content" style="display:none">Shopify, Amazon, WooCommerce, marketplaces — all synced in
+              real time. Zero overselling, zero surprise stockouts, zero manual errors.</span>
+          </p>
+          <span class="auto-tag">
+            <span class="fr-content">✅ Sync temps réel</span>
+            <span class="en-content" style="display:none">✅ Real-time sync</span>
+          </span>
+        </div>
+
+        <div class="auto-card reveal delay-3">
+          <div class="auto-icon">💌</div>
+          <h3>
+            <span class="fr-content">Relance clients inactifs</span>
+            <span class="en-content" style="display:none">Inactive Customer Re-engagement</span>
+          </h3>
+          <p>
+            <span class="fr-content">Identifiez automatiquement vos clients qui n'ont pas commandé depuis X jours et
+              relancez-les avec une offre personnalisée générée par IA.</span>
+            <span class="en-content" style="display:none">Automatically identify customers inactive for X days and
+              re-engage them with an AI-generated personalized offer.</span>
+          </p>
+          <span class="auto-tag">
+            <span class="fr-content">📈 +31% réactivation</span>
+            <span class="en-content" style="display:none">📈 +31% reactivation</span>
+          </span>
+        </div>
+
+        <div class="auto-card reveal delay-4">
+          <div class="auto-icon">📊</div>
+          <h3>
+            <span class="fr-content">Génération de rapports automatique</span>
+            <span class="en-content" style="display:none">Automatic Report Generation</span>
+          </h3>
+          <p>
+            <span class="fr-content">Rapport quotidien/hebdomadaire/mensuel envoyé dans votre boîte mail ou Slack :
+              ventes, conversions, stock critique, best-sellers — sans lever le petit doigt.</span>
+            <span class="en-content" style="display:none">Daily/weekly/monthly report sent to your inbox or Slack:
+              sales, conversions, critical stock, best-sellers — without lifting a finger.</span>
+          </p>
+          <span class="auto-tag">
+            <span class="fr-content">⏰ 4h/sem économisées</span>
+            <span class="en-content" style="display:none">⏰ 4h/week saved</span>
+          </span>
+        </div>
+
+        <div class="auto-card reveal delay-5">
+          <div class="auto-icon">🤖</div>
+          <h3>
+            <span class="fr-content">SAV intelligent par IA</span>
+            <span class="en-content" style="display:none">AI-powered Smart Support</span>
+          </h3>
+          <p>
+            <span class="fr-content">Un agent IA répond automatiquement aux 80% de questions récurrentes (livraison,
+              retours, taille, dispo). Vos agents humains se concentrent sur les cas complexes.</span>
+            <span class="en-content" style="display:none">An AI agent automatically handles 80% of recurring questions
+              (delivery, returns, sizing, availability). Your human agents focus on complex cases.</span>
+          </p>
+          <span class="auto-tag">
+            <span class="fr-content">🎯 80% tickets résolus auto</span>
+            <span class="en-content" style="display:none">🎯 80% tickets auto-resolved</span>
+          </span>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:48px">
+        <a href="https://tally.so/r/QKD61l" target="_blank" class="btn btn-primary btn-lg">
+          <span>🚀</span>
+          <span class="fr-content">Discuter de mon projet</span>
+          <span class="en-content" style="display:none">Discuss my project</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOCIAL PROOF -->
+  <section class="social-proof" id="proof" style="background:var(--bg-primary)">
+    <div class="container">
+      <div class="text-center mb-64">
+        <div class="section-label">
+          <span class="fr-content">🏆 Résultats prouvés</span>
+          <span class="en-content" style="display:none">🏆 Proven results</span>
+        </div>
+        <h2 class="section-title">
+          <span class="fr-content">Des chiffres qui parlent d'eux-mêmes</span>
+          <span class="en-content" style="display:none">Numbers that speak for themselves</span>
+        </h2>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card reveal">
+          <div class="stat-number">+47%</div>
+          <div class="stat-label">
+            <span class="fr-content">Taux de conversion moyen après automatisation</span>
+            <span class="en-content" style="display:none">Average conversion rate after automation</span>
+          </div>
+        </div>
+        <div class="stat-card reveal delay-1">
+          <div class="stat-number">120h</div>
+          <div class="stat-label">
+            <span class="fr-content">Économisées par mois en moyenne par client</span>
+            <span class="en-content" style="display:none">Saved per month on average per client</span>
+          </div>
+        </div>
+        <div class="stat-card reveal delay-2">
+          <div class="stat-number">23+</div>
+          <div class="stat-label">
+            <span class="fr-content">E-commerçants accompagnés avec succès</span>
+            <span class="en-content" style="display:none">E-commerce businesses successfully served</span>
+          </div>
+        </div>
+        <div class="stat-card reveal delay-3">
+          <div class="stat-number">98%</div>
+          <div class="stat-label">
+            <span class="fr-content">Taux de satisfaction client</span>
+            <span class="en-content" style="display:none">Client satisfaction rate</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonials">
+        <div class="testimonial reveal">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            <span class="fr-content">"En 3 semaines, mes automatisations n8n ont récupéré plus de 12 000€ de paniers
+              abandonnés que je perdais chaque mois. Le ROI est absolument dingue. Je regrette juste de ne pas l'avoir
+              fait plus tôt."</span>
+            <span class="en-content" style="display:none">"In 3 weeks, my n8n automations recovered over €12,000 in
+              abandoned carts I was losing every month. The ROI is absolutely insane. I only regret not doing it
+              sooner."</span>
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar">SL</div>
+            <div>
+              <div class="author-name">Sophie L.</div>
+              <div class="author-role">
+                <span class="fr-content">Fondatrice — Boutique mode en ligne (340k€/an)</span>
+                <span class="en-content" style="display:none">Founder — Online fashion store (€340k/year)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial reveal delay-1">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            <span class="fr-content">"Mon équipe SAV passait 30h/semaine sur des questions basiques. Avec l'agent IA, on
+              est descendus à moins de 8h. Mes collaborateurs font enfin des choses à valeur ajoutée et sont beaucoup
+              plus motivés."</span>
+            <span class="en-content" style="display:none">"My support team was spending 30h/week on basic questions.
+              With the AI agent, we're down to under 8h. My team finally does valuable work and is way more
+              motivated."</span>
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar">MR</div>
+            <div>
+              <div class="author-name">Marc R.</div>
+              <div class="author-role">
+                <span class="fr-content">CEO — E-commerce électronique (1.2M€/an)</span>
+                <span class="en-content" style="display:none">CEO — Electronics e-commerce (€1.2M/year)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial reveal delay-2">
+          <div class="stars">★★★★★</div>
+          <p class="testimonial-text">
+            <span class="fr-content">"La synchronisation stock multicanal a éliminé toutes nos surventes sur Amazon. En
+              plus, on reçoit maintenant un rapport automatique chaque matin dans Slack. C'est comme avoir un employé
+              supplémentaire, mais à 0€/mois."</span>
+            <span class="en-content" style="display:none">"The multi-channel stock sync eliminated all our Amazon
+              overselling. Plus, we now get an automatic report every morning in Slack. It's like having an extra
+              employee, but at €0/month."</span>
+          </p>
+          <div class="testimonial-author">
+            <div class="author-avatar">JT</div>
+            <div>
+              <div class="author-name">Julie T.</div>
+              <div class="author-role">
+                <span class="fr-content">COO — Marketplace beauté multicanal (580k€/an)</span>
+                <span class="en-content" style="display:none">COO — Multi-channel beauty marketplace (€580k/year)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="process" id="process">
+    <div class="container">
+      <div class="text-center mb-64">
+        <div class="section-label">
+          <span class="fr-content">🗺️ Comment ça marche</span>
+          <span class="en-content" style="display:none">🗺️ How it works</span>
+        </div>
+        <h2 class="section-title">
+          <span class="fr-content">3 étapes pour automatiser votre e-commerce</span>
+          <span class="en-content" style="display:none">3 steps to automate your e-commerce</span>
+        </h2>
+        <p class="section-sub">
+          <span class="fr-content">Du premier appel aux résultats mesurables, en moins de 2 semaines.</span>
+          <span class="en-content" style="display:none">From first call to measurable results, in under 2 weeks.</span>
+        </p>
+      </div>
+      <div class="process-steps">
+        <div class="process-step reveal">
+          <div class="step-icon">🔍</div>
+          <div class="step-number">1</div>
+          <h3>
+            <span class="fr-content">Audit Gratuit</span>
+            <span class="en-content" style="display:none">Free Audit</span>
+          </h3>
+          <p>
+            <span class="fr-content">Un appel de 45 minutes pour analyser vos processus, identifier les opportunités
+              d'automatisation à fort impact et calculer votre ROI potentiel. Sans engagement. Sans jargon.</span>
+            <span class="en-content" style="display:none">A 45-minute call to analyze your processes, identify
+              high-impact automation opportunities, and calculate your potential ROI. No commitment. No jargon.</span>
+          </p>
+          <div
+            style="margin-top:16px;padding:12px;background:rgba(124,58,237,0.1);border-radius:8px;font-size:0.85rem;color:#a78bfa;font-weight:600">
+            <span class="fr-content">🎁 100% gratuit — Valeur : 250€</span>
+            <span class="en-content" style="display:none">🎁 100% free — Value: €250</span>
+          </div>
+        </div>
+        <div class="process-step reveal delay-2">
+          <div class="step-icon">⚙️</div>
+          <div class="step-number">2</div>
+          <h3>
+            <span class="fr-content">Automatisation sur mesure</span>
+            <span class="en-content" style="display:none">Bespoke Automation</span>
+          </h3>
+          <p>
+            <span class="fr-content">Je conçois et déploie vos automatisations n8n + IA, connectées à vos outils
+              existants. Vous validez à chaque étape. Mise en production en moins de 14 jours.</span>
+            <span class="en-content" style="display:none">I design and deploy your n8n + AI automations, connected to
+              your existing tools. You validate at every step. Live in under 14 days.</span>
+          </p>
+          <div
+            style="margin-top:16px;padding:12px;background:rgba(59,130,246,0.1);border-radius:8px;font-size:0.85rem;color:#60a5fa;font-weight:600">
+            <span class="fr-content">⚡ Délai moyen : 10 jours</span>
+            <span class="en-content" style="display:none">⚡ Average timeline: 10 days</span>
+          </div>
+        </div>
+        <div class="process-step reveal delay-4">
+          <div class="step-icon">📈</div>
+          <div class="step-number">3</div>
+          <h3>
+            <span class="fr-content">Résultats mesurables</span>
+            <span class="en-content" style="display:none">Measurable Results</span>
+          </h3>
+          <p>
+            <span class="fr-content">Tableau de bord de suivi, rapport mensuel d'impact, optimisations continues. Je
+              reste disponible pour faire évoluer vos automatisations avec votre croissance.</span>
+            <span class="en-content" style="display:none">Tracking dashboard, monthly impact report, continuous
+              optimizations. I remain available to scale your automations as you grow.</span>
+          </p>
+          <div
+            style="margin-top:16px;padding:12px;background:rgba(16,185,129,0.1);border-radius:8px;font-size:0.85rem;color:#6ee7b7;font-weight:600">
+            <span class="fr-content">✅ ROI garanti ou remboursé</span>
+            <span class="en-content" style="display:none">✅ ROI guaranteed or refunded</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- URGENCY -->
+  <section class="urgency" id="urgency">
+    <div class="container">
+      <div class="urgency-inner">
+        <div class="urgency-badge">
+          <span>🔥</span>
+          <span class="fr-content">Places limitées — Mai 2025</span>
+          <span class="en-content" style="display:none">Limited spots — May 2025</span>
+        </div>
+        <h2>
+          <span class="fr-content">Seulement <span style="color:#f87171">5 audits gratuits</span> disponibles ce
+            mois-ci</span>
+          <span class="en-content" style="display:none">Only <span style="color:#f87171">5 free audits</span> available
+            this month</span>
+        </h2>
+        <p>
+          <span class="fr-content">Je travaille avec un nombre limité de clients pour garantir une qualité
+            irréprochable. 3 places sont déjà prises pour ce mois. Ne laissez pas vos concurrents prendre l'avantage à
+            votre place.</span>
+          <span class="en-content" style="display:none">I work with a limited number of clients to ensure uncompromising
+            quality. 3 spots are already taken this month. Don't let your competitors get the edge instead of
+            you.</span>
+        </p>
+        <div class="slots-visual">
+          <div class="slot taken" title="Pris"></div>
+          <div class="slot taken" title="Pris"></div>
+          <div class="slot taken" title="Pris"></div>
+          <div class="slot available" title="Disponible"></div>
+          <div class="slot available" title="Disponible"></div>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:32px">
+          <span class="fr-content">■■■ Pris &nbsp;&nbsp; □□ Disponibles</span>
+          <span class="en-content" style="display:none">■■■ Taken &nbsp;&nbsp; □□ Available</span>
+        </p>
+        <a href="https://tally.so/r/QKD61l" target="_blank" class="btn btn-primary btn-lg btn-pulse">
+          <span>⚡</span>
+          <span class="fr-content">Réserver ma place maintenant</span>
+          <span class="en-content" style="display:none">Reserve my spot now</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section class="cta-final" id="contact">
+    <div class="container">
+      <div class="cta-box">
+        <div class="section-label" style="margin-bottom:20px">
+          <span class="fr-content">🎯 Prêt à passer à l'action ?</span>
+          <span class="en-content" style="display:none">🎯 Ready to take action?</span>
+        </div>
+        <h2>
+          <span class="fr-content">Votre e-commerce mérite mieux que le copier-coller</span>
+          <span class="en-content" style="display:none">Your e-commerce deserves better than copy-paste</span>
+        </h2>
+        <p>
+          <span class="fr-content">Rejoignez les 23 e-commerçants qui ont déjà automatisé leur croissance. Audit
+            gratuit, sans engagement, résultats garantis.</span>
+          <span class="en-content" style="display:none">Join the 23 e-commerce businesses that have already automated
+            their growth. Free audit, no commitment, guaranteed results.</span>
+        </p>
+        <a href="https://tally.so/r/QKD61l" target="_blank" class="btn btn-primary btn-lg" style="margin-bottom:16px">
+          <span>🚀</span>
+          <span class="fr-content">Obtenir mon audit gratuit — C'est parti !</span>
+          <span class="en-content" style="display:none">Get my free audit — Let's go!</span>
+        </a>
+        <div class="cta-trust">
+          <div class="trust-item">
+            <span class="trust-icon">🔒</span>
+            <span class="fr-content">Zéro engagement</span>
+            <span class="en-content" style="display:none">No commitment</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">⚡</span>
+            <span class="fr-content">Réponse sous 24h</span>
+            <span class="en-content" style="display:none">Reply within 24h</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">🎁</span>
+            <span class="fr-content">Audit 100% gratuit</span>
+            <span class="en-content" style="display:none">100% free audit</span>
+          </div>
+          <div class="trust-item">
+            <span class="trust-icon">✅</span>
+            <span class="fr-content">ROI garanti</span>
+            <span class="en-content" style="display:none">Guaranteed ROI</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">⚡ AutoFlow AI</div>
+        <div class="social-badges">
+          <a href="https://linkedin.com" target="_blank" class="social-badge">
+            <span>💼</span> LinkedIn
+          </a>
+          <a href="https://twitter.com" target="_blank" class="social-badge">
+            <span>🐦</span> X / Twitter
           </a>
         </div>
-      </div>
-      <div class="solutions-visual reveal">
-        <div style="font-size:0.75rem;color:var(--text-muted);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.08em">
-          <span class="fr-content">Exemple de flux automatisé</span>
-          <span class="en-content" style="display:none">Example automated flow</span>
+        <div class="footer-links">
+          <a href="#problems" class="fr-content">Problèmes</a>
+          <a href="#problems" class="en-content" style="display:none">Problems</a>
+          <a href="#automations" class="fr-content">Automatisations</a>
+          <a href="#automations" class="en-content" style="display:none">Automations</a>
+          <a href="#proof" class="fr-content">Résultats</a>
+          <a href="#proof" class="en-content" style="display:none">Results</a>
+          <a href="https://tally.so/r/QKD61l" target="_blank" class="fr-content"
+            style="color:#a78bfa;font-weight:600">Audit Gratuit</a>
+          <a href="https://tally.so/r/QKD61l" target="_blank" class="en-content"
+            style="display:none;color:#a78bfa;font-weight:600">Free Audit</a>
         </div>
-        <div class="flow-step">
-          <div class="flow-dot">🛒</div>
-          <div class="flow-step-text">
-            <strong class="fr-content">Panier abandonné détecté</strong>
-            <strong class="en-content" style="display:none">Abandoned cart detected</strong>
-            <span class="fr-content">Shopify → Trigger n8n</span>
-            <span class="en-content" style="display:none">Shopify → n8n Trigger</span>
-          </div>
-          <span style="color:#10b981;font-size:0.75rem;font-weight:600">LIVE</span>
-        </div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-step">
-          <div class="flow-dot">🤖</div>
-          <div class="flow-step-text">
-            <strong class="fr-content">IA génère un email personnalisé</strong>
-            <strong class="en-content" style="display:none">AI generates personalized email</strong>
-            <span>OpenAI GPT-4o</span>
-          </div>
-        </div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-step">
-          <div class="flow-dot">📧</div>
-          <div class="flow-step-text">
-            <strong class="fr-content">Email envoyé + SMS si pas ouvert</strong>
-            <strong class="en-content" style="display:none">Email sent + SMS if unopened</strong>
-            <span>Klaviyo + Twilio</span>
-          </div>
-        </div>
-        <div class="flow-arrow">↓</div>
-        <div class="flow-step">
-          <div class="flow-dot">💰</div>
-          <div class="flow-step-text">
-            <strong class="fr-content">Commande récupérée</strong>
-            <strong class="en-content" style="display:none">Order recovered</strong>
-            <span class="fr-content">+23% de récupération en moyenne</span>
-            <span class="en-content" style="display:none">+23% average recovery rate</span>
-          </div>
-          <span style="color:#fbbf24;font-size:0.75rem;font-weight:600">€€€</span>
-        </div>
-        <div style="margin-top:20px;padding:16px;background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:8px;font-size:0.85rem;color:#6ee7b7;text-align:center">
-          <span class="fr-content">⚡ Ce flux tourne 24h/24, 7j/7 — sans intervention humaine</span>
-          <span class="en-content" style="display:none">⚡ This flow runs 24/7 — with zero human intervention</span>
+        <div class="footer-copy">
+          <span class="fr-content">© 2025 AutoFlow AI — Expert n8n &amp; Automatisation IA pour e-commerçants</span>
+          <span class="en-content" style="display:none">© 2025 AutoFlow AI — n8n &amp; AI Automation Expert for
+            e-commerce</span>
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </footer>
 
-<!-- AUTOMATIONS -->
-<section class="automations" id="automations">
-  <div class="container">
-    <div class="text-center mb-64">
-      <div class="section-label">
-        <span class="fr-content">⚙️ Cas concrets</span>
-        <span class="en-content" style="display:none">⚙️ Real use cases</span>
-      </div>
-      <h2 class="section-title">
-        <span class="fr-content">6 automatisations qui changent tout</span>
-        <span class="en-content" style="display:none">6 automations that change everything</span>
-      </h2>
-      <p class="section-sub">
-        <span class="fr-content">Des solutions clés en main déployées en moins de 2 semaines, avec résultats garantis.</span>
-        <span class="en-content" style="display:none">Turnkey solutions deployed in under 2 weeks, with guaranteed results.</span>
-      </p>
-    </div>
-    <div class="automations-grid">
+  <script>
+    // ============================================================
+    // LANGUAGE SWITCHER
+    // ============================================================
+    var currentLang = 'fr';
 
-      <div class="auto-card reveal">
-        <div class="auto-icon">🛒</div>
-        <h3>
-          <span class="fr-content">Récupération de paniers abandonnés</span>
-          <span class="en-content" style="display:none">Abandoned Cart Recovery</span>
-        </h3>
-        <p>
-          <span class="fr-content">Séquence email + SMS personnalisée par IA. Détecte le bon moment, le bon message, le bon canal. Récupérez jusqu'à 23% de vos paniers perdus.</span>
-          <span class="en-content" style="display:none">AI-personalized email + SMS sequence. Detects the right time, message, and channel. Recover up to 23% of lost carts.</span>
-        </p>
-        <span class="auto-tag">
-          <span class="fr-content">💰 ROI moyen : 8x</span>
-          <span class="en-content" style="display:none">💰 Avg. ROI: 8x</span>
-        </span>
-      </div>
+    function detectLang() {
+      var nav = navigator.language || navigator.userLanguage || 'fr';
+      return nav.toLowerCase().startsWith('en') ? 'en' : 'fr';
+    }
 
-      <div class="auto-card reveal delay-1">
-        <div class="auto-icon">📦</div>
-        <h3>
-          <span class="fr-content">Suivi commande automatique</span>
-          <span class="en-content" style="display:none">Automatic Order Tracking</span>
-        </h3>
-        <p>
-          <span class="fr-content">Notifications proactives à chaque étape de livraison. Vos clients sont informés avant même de vous contacter. -60% de tickets SAV liés aux livraisons.</span>
-          <span class="en-content" style="display:none">Proactive notifications at every delivery stage. Customers informed before they even contact you. -60% delivery-related support tickets.</span>
-        </p>
-        <span class="auto-tag">
-          <span class="fr-content">⏱️ -60% tickets SAV</span>
-          <span class="en-content" style="display:none">⏱️ -60% support tickets</span>
-        </span>
-      </div>
+    function setLang(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
 
-      <div class="auto-card reveal delay-2">
-        <div class="auto-icon">🔄</div>
-        <h3>
-          <span class="fr-content">Synchronisation stock multicanal</span>
-          <span class="en-content" style="display:none">Multi-channel Stock Sync</span>
-        </h3>
-        <p>
-          <span class="fr-content">Shopify, Amazon, WooCommerce, marketplace — tout synchronisé en temps réel. Zéro survente, zéro rupture surprise, zéro erreur manuelle.</span>
-          <span class="en-content" style="display:none">Shopify, Amazon, WooCommerce, marketplaces — all synced in real time. Zero overselling, zero surprise stockouts, zero manual errors.</span>
-        </p>
-        <span class="auto-tag">
-          <span class="fr-content">✅ Sync temps réel</span>
-          <span class="en-content" style="display:none">✅ Real-time sync</span>
-        </span>
-      </div>
+      // Show/hide content elements
+      document.querySelectorAll('.fr-content').forEach(function (el) {
+        el.style.display = lang === 'fr' ? '' : 'none';
+      });
+      document.querySelectorAll('.en-content').forEach(function (el) {
+        el.style.display = lang === 'en' ? '' : 'none';
+      });
 
-      <div class="auto-card reveal delay-3">
-        <div class="auto-icon">💌</div>
-        <h3>
-          <span class="fr-content">Relance clients inactifs</span>
-          <span class="en-content" style="display:none">Inactive Customer Re-engagement</span>
-        </h3>
-        <p>
-          <span class="fr-content">Identifiez automatiquement vos clients qui n'ont pas commandé depuis X jours et relancez-les avec une offre personnalisée générée par IA.</span>
-          <span class="en-content" style="display:none">Automatically identify customers inactive for X days and re-engage them with an AI-generated personalized offer.</span>
-        </p>
-        <span class="auto-tag">
-          <span class="fr-content">📈 +31% réactivation</span>
-          <span class="en-content" style="display:none">📈 +31% reactivation</span>
-        </span>
-      </div>
+      // Update lang buttons
+      document.getElementById('btnFR').classList.toggle('active', lang === 'fr');
+      document.getElementById('btnEN').classList.toggle('active', lang === 'en');
 
-      <div class="auto-card reveal delay-4">
-        <div class="auto-icon">📊</div>
-        <h3>
-          <span class="fr-content">Génération de rapports automatique</span>
-          <span class="en-content" style="display:none">Automatic Report Generation</span>
-        </h3>
-        <p>
-          <span class="fr-content">Rapport quotidien/hebdomadaire/mensuel envoyé dans votre boîte mail ou Slack : ventes, conversions, stock critique, best-sellers — sans lever le petit doigt.</span>
-          <span class="en-content" style="display:none">Daily/weekly/monthly report sent to your inbox or Slack: sales, conversions, critical stock, best-sellers — without lifting a finger.</span>
-        </p>
-        <span class="auto-tag">
-          <span class="fr-content">⏰ 4h/sem économisées</span>
-          <span class="en-content" style="display:none">⏰ 4h/week saved</span>
-        </span>
-      </div>
+      // Update page title
+      document.title = lang === 'fr'
+        ? 'AutoFlow AI — Automatisations n8n pour E-commerçants'
+        : 'AutoFlow AI — n8n AI Automations for E-commerce';
 
-      <div class="auto-card reveal delay-5">
-        <div class="auto-icon">🤖</div>
-        <h3>
-          <span class="fr-content">SAV intelligent par IA</span>
-          <span class="en-content" style="display:none">AI-powered Smart Support</span>
-        </h3>
-        <p>
-          <span class="fr-content">Un agent IA répond automatiquement aux 80% de questions récurrentes (livraison, retours, taille, dispo). Vos agents humains se concentrent sur les cas complexes.</span>
-          <span class="en-content" style="display:none">An AI agent automatically handles 80% of recurring questions (delivery, returns, sizing, availability). Your human agents focus on complex cases.</span>
-        </p>
-        <span class="auto-tag">
-          <span class="fr-content">🎯 80% tickets résolus auto</span>
-          <span class="en-content" style="display:none">🎯 80% tickets auto-resolved</span>
-        </span>
-      </div>
-
-    </div>
-    <div style="text-align:center;margin-top:48px">
-      <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="btn btn-primary btn-lg">
-        <span>🚀</span>
-        <span class="fr-content">Discuter de mon projet</span>
-        <span class="en-content" style="display:none">Discuss my project</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- SOCIAL PROOF -->
-<section class="social-proof" id="proof" style="background:var(--bg-primary)">
-  <div class="container">
-    <div class="text-center mb-64">
-      <div class="section-label">
-        <span class="fr-content">🏆 Résultats prouvés</span>
-        <span class="en-content" style="display:none">🏆 Proven results</span>
-      </div>
-      <h2 class="section-title">
-        <span class="fr-content">Des chiffres qui parlent d'eux-mêmes</span>
-        <span class="en-content" style="display:none">Numbers that speak for themselves</span>
-      </h2>
-    </div>
-    <div class="stats-row">
-      <div class="stat-card reveal">
-        <div class="stat-number">+47%</div>
-        <div class="stat-label">
-          <span class="fr-content">Taux de conversion moyen après automatisation</span>
-          <span class="en-content" style="display:none">Average conversion rate after automation</span>
-        </div>
-      </div>
-      <div class="stat-card reveal delay-1">
-        <div class="stat-number">120h</div>
-        <div class="stat-label">
-          <span class="fr-content">Économisées par mois en moyenne par client</span>
-          <span class="en-content" style="display:none">Saved per month on average per client</span>
-        </div>
-      </div>
-      <div class="stat-card reveal delay-2">
-        <div class="stat-number">23+</div>
-        <div class="stat-label">
-          <span class="fr-content">E-commerçants accompagnés avec succès</span>
-          <span class="en-content" style="display:none">E-commerce businesses successfully served</span>
-        </div>
-      </div>
-      <div class="stat-card reveal delay-3">
-        <div class="stat-number">98%</div>
-        <div class="stat-label">
-          <span class="fr-content">Taux de satisfaction client</span>
-          <span class="en-content" style="display:none">Client satisfaction rate</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="testimonials">
-      <div class="testimonial reveal">
-        <div class="stars">★★★★★</div>
-        <p class="testimonial-text">
-          <span class="fr-content">"En 3 semaines, mes automatisations n8n ont récupéré plus de 12 000€ de paniers abandonnés que je perdais chaque mois. Le ROI est absolument dingue. Je regrette juste de ne pas l'avoir fait plus tôt."</span>
-          <span class="en-content" style="display:none">"In 3 weeks, my n8n automations recovered over €12,000 in abandoned carts I was losing every month. The ROI is absolutely insane. I only regret not doing it sooner."</span>
-        </p>
-        <div class="testimonial-author">
-          <div class="author-avatar">SL</div>
-          <div>
-            <div class="author-name">Sophie L.</div>
-            <div class="author-role">
-              <span class="fr-content">Fondatrice — Boutique mode en ligne (340k€/an)</span>
-              <span class="en-content" style="display:none">Founder — Online fashion store (€340k/year)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="testimonial reveal delay-1">
-        <div class="stars">★★★★★</div>
-        <p class="testimonial-text">
-          <span class="fr-content">"Mon équipe SAV passait 30h/semaine sur des questions basiques. Avec l'agent IA, on est descendus à moins de 8h. Mes collaborateurs font enfin des choses à valeur ajoutée et sont beaucoup plus motivés."</span>
-          <span class="en-content" style="display:none">"My support team was spending 30h/week on basic questions. With the AI agent, we're down to under 8h. My team finally does valuable work and is way more motivated."</span>
-        </p>
-        <div class="testimonial-author">
-          <div class="author-avatar">MR</div>
-          <div>
-            <div class="author-name">Marc R.</div>
-            <div class="author-role">
-              <span class="fr-content">CEO — E-commerce électronique (1.2M€/an)</span>
-              <span class="en-content" style="display:none">CEO — Electronics e-commerce (€1.2M/year)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="testimonial reveal delay-2">
-        <div class="stars">★★★★★</div>
-        <p class="testimonial-text">
-          <span class="fr-content">"La synchronisation stock multicanal a éliminé toutes nos surventes sur Amazon. En plus, on reçoit maintenant un rapport automatique chaque matin dans Slack. C'est comme avoir un employé supplémentaire, mais à 0€/mois."</span>
-          <span class="en-content" style="display:none">"The multi-channel stock sync eliminated all our Amazon overselling. Plus, we now get an automatic report every morning in Slack. It's like having an extra employee, but at €0/month."</span>
-        </p>
-        <div class="testimonial-author">
-          <div class="author-avatar">JT</div>
-          <div>
-            <div class="author-name">Julie T.</div>
-            <div class="author-role">
-              <span class="fr-content">COO — Marketplace beauté multicanal (580k€/an)</span>
-              <span class="en-content" style="display:none">COO — Multi-channel beauty marketplace (€580k/year)</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROCESS -->
-<section class="process" id="process">
-  <div class="container">
-    <div class="text-center mb-64">
-      <div class="section-label">
-        <span class="fr-content">🗺️ Comment ça marche</span>
-        <span class="en-content" style="display:none">🗺️ How it works</span>
-      </div>
-      <h2 class="section-title">
-        <span class="fr-content">3 étapes pour automatiser votre e-commerce</span>
-        <span class="en-content" style="display:none">3 steps to automate your e-commerce</span>
-      </h2>
-      <p class="section-sub">
-        <span class="fr-content">Du premier appel aux résultats mesurables, en moins de 2 semaines.</span>
-        <span class="en-content" style="display:none">From first call to measurable results, in under 2 weeks.</span>
-      </p>
-    </div>
-    <div class="process-steps">
-      <div class="process-step reveal">
-        <div class="step-icon">🔍</div>
-        <div class="step-number">1</div>
-        <h3>
-          <span class="fr-content">Audit Gratuit</span>
-          <span class="en-content" style="display:none">Free Audit</span>
-        </h3>
-        <p>
-          <span class="fr-content">Un appel de 45 minutes pour analyser vos processus, identifier les opportunités d'automatisation à fort impact et calculer votre ROI potentiel. Sans engagement. Sans jargon.</span>
-          <span class="en-content" style="display:none">A 45-minute call to analyze your processes, identify high-impact automation opportunities, and calculate your potential ROI. No commitment. No jargon.</span>
-        </p>
-        <div style="margin-top:16px;padding:12px;background:rgba(124,58,237,0.1);border-radius:8px;font-size:0.85rem;color:#a78bfa;font-weight:600">
-          <span class="fr-content">🎁 100% gratuit — Valeur : 250€</span>
-          <span class="en-content" style="display:none">🎁 100% free — Value: €250</span>
-        </div>
-      </div>
-      <div class="process-step reveal delay-2">
-        <div class="step-icon">⚙️</div>
-        <div class="step-number">2</div>
-        <h3>
-          <span class="fr-content">Automatisation sur mesure</span>
-          <span class="en-content" style="display:none">Bespoke Automation</span>
-        </h3>
-        <p>
-          <span class="fr-content">Je conçois et déploie vos automatisations n8n + IA, connectées à vos outils existants. Vous validez à chaque étape. Mise en production en moins de 14 jours.</span>
-          <span class="en-content" style="display:none">I design and deploy your n8n + AI automations, connected to your existing tools. You validate at every step. Live in under 14 days.</span>
-        </p>
-        <div style="margin-top:16px;padding:12px;background:rgba(59,130,246,0.1);border-radius:8px;font-size:0.85rem;color:#60a5fa;font-weight:600">
-          <span class="fr-content">⚡ Délai moyen : 10 jours</span>
-          <span class="en-content" style="display:none">⚡ Average timeline: 10 days</span>
-        </div>
-      </div>
-      <div class="process-step reveal delay-4">
-        <div class="step-icon">📈</div>
-        <div class="step-number">3</div>
-        <h3>
-          <span class="fr-content">Résultats mesurables</span>
-          <span class="en-content" style="display:none">Measurable Results</span>
-        </h3>
-        <p>
-          <span class="fr-content">Tableau de bord de suivi, rapport mensuel d'impact, optimisations continues. Je reste disponible pour faire évoluer vos automatisations avec votre croissance.</span>
-          <span class="en-content" style="display:none">Tracking dashboard, monthly impact report, continuous optimizations. I remain available to scale your automations as you grow.</span>
-        </p>
-        <div style="margin-top:16px;padding:12px;background:rgba(16,185,129,0.1);border-radius:8px;font-size:0.85rem;color:#6ee7b7;font-weight:600">
-          <span class="fr-content">✅ ROI garanti ou remboursé</span>
-          <span class="en-content" style="display:none">✅ ROI guaranteed or refunded</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- URGENCY -->
-<section class="urgency" id="urgency">
-  <div class="container">
-    <div class="urgency-inner">
-      <div class="urgency-badge">
-        <span>🔥</span>
-        <span class="fr-content">Places limitées — Mai 2025</span>
-        <span class="en-content" style="display:none">Limited spots — May 2025</span>
-      </div>
-      <h2>
-        <span class="fr-content">Seulement <span style="color:#f87171">5 audits gratuits</span> disponibles ce mois-ci</span>
-        <span class="en-content" style="display:none">Only <span style="color:#f87171">5 free audits</span> available this month</span>
-      </h2>
-      <p>
-        <span class="fr-content">Je travaille avec un nombre limité de clients pour garantir une qualité irréprochable. 3 places sont déjà prises pour ce mois. Ne laissez pas vos concurrents prendre l'avantage à votre place.</span>
-        <span class="en-content" style="display:none">I work with a limited number of clients to ensure uncompromising quality. 3 spots are already taken this month. Don't let your competitors get the edge instead of you.</span>
-      </p>
-      <div class="slots-visual">
-        <div class="slot taken" title="Pris"></div>
-        <div class="slot taken" title="Pris"></div>
-        <div class="slot taken" title="Pris"></div>
-        <div class="slot available" title="Disponible"></div>
-        <div class="slot available" title="Disponible"></div>
-      </div>
-      <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:32px">
-        <span class="fr-content">■■■ Pris &nbsp;&nbsp; □□ Disponibles</span>
-        <span class="en-content" style="display:none">■■■ Taken &nbsp;&nbsp; □□ Available</span>
-      </p>
-      <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="btn btn-primary btn-lg btn-pulse">
-        <span>⚡</span>
-        <span class="fr-content">Réserver ma place maintenant</span>
-        <span class="en-content" style="display:none">Reserve my spot now</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- CTA FINAL -->
-<section class="cta-final" id="contact">
-  <div class="container">
-    <div class="cta-box">
-      <div class="section-label" style="margin-bottom:20px">
-        <span class="fr-content">🎯 Prêt à passer à l'action ?</span>
-        <span class="en-content" style="display:none">🎯 Ready to take action?</span>
-      </div>
-      <h2>
-        <span class="fr-content">Votre e-commerce mérite mieux que le copier-coller</span>
-        <span class="en-content" style="display:none">Your e-commerce deserves better than copy-paste</span>
-      </h2>
-      <p>
-        <span class="fr-content">Rejoignez les 23 e-commerçants qui ont déjà automatisé leur croissance. Audit gratuit, sans engagement, résultats garantis.</span>
-        <span class="en-content" style="display:none">Join the 23 e-commerce businesses that have already automated their growth. Free audit, no commitment, guaranteed results.</span>
-      </p>
-      <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="btn btn-primary btn-lg" style="margin-bottom:16px">
-        <span>🚀</span>
-        <span class="fr-content">Obtenir mon audit gratuit — C'est parti !</span>
-        <span class="en-content" style="display:none">Get my free audit — Let's go!</span>
-      </a>
-      <div class="cta-trust">
-        <div class="trust-item">
-          <span class="trust-icon">🔒</span>
-          <span class="fr-content">Zéro engagement</span>
-          <span class="en-content" style="display:none">No commitment</span>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">⚡</span>
-          <span class="fr-content">Réponse sous 24h</span>
-          <span class="en-content" style="display:none">Reply within 24h</span>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">🎁</span>
-          <span class="fr-content">Audit 100% gratuit</span>
-          <span class="en-content" style="display:none">100% free audit</span>
-        </div>
-        <div class="trust-item">
-          <span class="trust-icon">✅</span>
-          <span class="fr-content">ROI garanti</span>
-          <span class="en-content" style="display:none">Guaranteed ROI</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <div class="container">
-    <div class="footer-inner">
-      <div class="footer-logo">⚡ AutoFlow AI</div>
-      <div class="social-badges">
-        <a href="https://linkedin.com" target="_blank" class="social-badge">
-          <span>💼</span> LinkedIn
-        </a>
-        <a href="https://twitter.com" target="_blank" class="social-badge">
-          <span>🐦</span> X / Twitter
-        </a>
-      </div>
-      <div class="footer-links">
-        <a href="#problems" class="fr-content">Problèmes</a>
-        <a href="#problems" class="en-content" style="display:none">Problems</a>
-        <a href="#automations" class="fr-content">Automatisations</a>
-        <a href="#automations" class="en-content" style="display:none">Automations</a>
-        <a href="#proof" class="fr-content">Résultats</a>
-        <a href="#proof" class="en-content" style="display:none">Results</a>
-        <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="fr-content" style="color:#a78bfa;font-weight:600">Audit Gratuit</a>
-        <a href="https://tally.so/r/VOTRE_FORM_ID" target="_blank" class="en-content" style="display:none;color:#a78bfa;font-weight:600">Free Audit</a>
-      </div>
-      <div class="footer-copy">
-        <span class="fr-content">© 2025 AutoFlow AI — Expert n8n &amp; Automatisation IA pour e-commerçants</span>
-        <span class="en-content" style="display:none">© 2025 AutoFlow AI — n8n &amp; AI Automation Expert for e-commerce</span>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<script>
-// ============================================================
-// LANGUAGE SWITCHER
-// ============================================================
-var currentLang = 'fr';
-
-function detectLang() {
-  var nav = navigator.language || navigator.userLanguage || 'fr';
-  return nav.toLowerCase().startsWith('en') ? 'en' : 'fr';
-}
-
-function setLang(lang) {
-  currentLang = lang;
-  document.documentElement.lang = lang;
-
-  // Show/hide content elements
-  document.querySelectorAll('.fr-content').forEach(function(el) {
-    el.style.display = lang === 'fr' ? '' : 'none';
-  });
-  document.querySelectorAll('.en-content').forEach(function(el) {
-    el.style.display = lang === 'en' ? '' : 'none';
-  });
-
-  // Update lang buttons
-  document.getElementById('btnFR').classList.toggle('active', lang === 'fr');
-  document.getElementById('btnEN').classList.toggle('active', lang === 'en');
-
-  // Update page title
-  document.title = lang === 'fr'
-    ? 'AutoFlow AI — Automatisations n8n pour E-commerçants'
-    : 'AutoFlow AI — n8n AI Automations for E-commerce';
-
-  // Update meta description
-  var meta = document.querySelector('meta[name="description"]');
-  if (meta) {
-    meta.setAttribute('content', lang === 'fr'
-      ? 'Automatisations IA n8n sur mesure pour e-commerçants. Récupérez 120h/mois, +47% de conversion. Audit gratuit.'
-      : 'Bespoke n8n AI automations for e-commerce. Reclaim 120h/month, +47% conversion. Free audit.');
-  }
-
-  // Save preference
-  try { localStorage.setItem('autoflow-lang', lang); } catch(e) {}
-}
-
-// Init on load
-(function() {
-  var saved = null;
-  try { saved = localStorage.getItem('autoflow-lang'); } catch(e) {}
-  var lang = saved || detectLang();
-  setLang(lang);
-})();
-
-// ============================================================
-// SCROLL PROGRESS BAR
-// ============================================================
-window.addEventListener('scroll', function() {
-  var scrollTop = window.scrollY || document.documentElement.scrollTop;
-  var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-  var bar = document.getElementById('scrollProgress');
-  if (bar) bar.style.width = progress + '%';
-});
-
-// ============================================================
-// INTERSECTION OBSERVER — Reveal animations
-// ============================================================
-(function() {
-  if (!window.IntersectionObserver) return;
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+      // Update meta description
+      var meta = document.querySelector('meta[name="description"]');
+      if (meta) {
+        meta.setAttribute('content', lang === 'fr'
+          ? 'Automatisations IA n8n sur mesure pour e-commerçants. Récupérez 120h/mois, +47% de conversion. Audit gratuit.'
+          : 'Bespoke n8n AI automations for e-commerce. Reclaim 120h/month, +47% conversion. Free audit.');
       }
+
+      // Save preference
+      try { localStorage.setItem('autoflow-lang', lang); } catch (e) { }
+    }
+
+    // Init on load
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('autoflow-lang'); } catch (e) { }
+      var lang = saved || detectLang();
+      setLang(lang);
+    })();
+
+    // ============================================================
+    // SCROLL PROGRESS BAR
+    // ============================================================
+    window.addEventListener('scroll', function () {
+      var scrollTop = window.scrollY || document.documentElement.scrollTop;
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      var bar = document.getElementById('scrollProgress');
+      if (bar) bar.style.width = progress + '%';
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-  document.querySelectorAll('.reveal').forEach(function(el) {
-    observer.observe(el);
-  });
-})();
+    // ============================================================
+    // INTERSECTION OBSERVER — Reveal animations
+    // ============================================================
+    (function () {
+      if (!window.IntersectionObserver) return;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-// ============================================================
-// SMOOTH SCROLL for anchor links
-// ============================================================
-document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
-  anchor.addEventListener('click', function(e) {
-    var target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      e.preventDefault();
-      var offset = 80; // header height
-      var top = target.getBoundingClientRect().top + window.scrollY - offset;
-      window.scrollTo({ top: top, behavior: 'smooth' });
-    }
-  });
-});
+      document.querySelectorAll('.reveal').forEach(function (el) {
+        observer.observe(el);
+      });
+    })();
 
-// ============================================================
-// URGENCY COUNTER — dynamic date label
-// ============================================================
-(function() {
-  var badge = document.querySelector('.urgency-badge span:last-child');
-  if (!badge) return;
-  var months_fr = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
-  var months_en = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var now = new Date();
-  var mFR = months_fr[now.getMonth()];
-  var mEN = months_en[now.getMonth()];
-  var y = now.getFullYear();
-  // Update urgency badge text dynamically
-  document.querySelectorAll('.urgency-badge').forEach(function(b) {
-    var fr = b.querySelector('.fr-content');
-    var en = b.querySelector('.en-content');
-    if (fr) fr.textContent = 'Places limitées — ' + mFR + ' ' + y;
-    if (en) en.textContent = 'Limited spots — ' + mEN + ' ' + y;
-  });
-})();
+    // ============================================================
+    // SMOOTH SCROLL for anchor links
+    // ============================================================
+    document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+      anchor.addEventListener('click', function (e) {
+        var target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          var offset = 80; // header height
+          var top = target.getBoundingClientRect().top + window.scrollY - offset;
+          window.scrollTo({ top: top, behavior: 'smooth' });
+        }
+      });
+    });
 
-// ============================================================
-// HEADER SCROLL SHADOW
-// ============================================================
-window.addEventListener('scroll', function() {
-  var header = document.querySelector('header');
-  if (header) {
-    if (window.scrollY > 20) {
-      header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.5)';
-    } else {
-      header.style.boxShadow = 'none';
-    }
-  }
-}, { passive: true });
-</script>
+    // ============================================================
+    // URGENCY COUNTER — dynamic date label
+    // ============================================================
+    (function () {
+      var badge = document.querySelector('.urgency-badge span:last-child');
+      if (!badge) return;
+      var months_fr = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+      var months_en = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      var now = new Date();
+      var mFR = months_fr[now.getMonth()];
+      var mEN = months_en[now.getMonth()];
+      var y = now.getFullYear();
+      // Update urgency badge text dynamically
+      document.querySelectorAll('.urgency-badge').forEach(function (b) {
+        var fr = b.querySelector('.fr-content');
+        var en = b.querySelector('.en-content');
+        if (fr) fr.textContent = 'Places limitées — ' + mFR + ' ' + y;
+        if (en) en.textContent = 'Limited spots — ' + mEN + ' ' + y;
+      });
+    })();
+
+    // ============================================================
+    // HEADER SCROLL SHADOW
+    // ============================================================
+    window.addEventListener('scroll', function () {
+      var header = document.querySelector('header');
+      if (header) {
+        if (window.scrollY > 20) {
+          header.style.boxShadow = '0 4px 30px rgba(0,0,0,0.5)';
+        } else {
+          header.style.boxShadow = 'none';
+        }
+      }
+    }, { passive: true });
+  </script>
 </body>
+
 </html>

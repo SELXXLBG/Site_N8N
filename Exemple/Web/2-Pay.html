@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Préparation de votre audit... | Nexus Creator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Abstract Background */
+        .bg-orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+                transform: translateX(-50%) scale(1);
+            }
+
+            100% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1.1);
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 3rem;
+            background-image: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0.8;
+        }
+
+        /* Loading Card */
+        .loading-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(16, 185, 129, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem auto;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .status-text {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 2rem;
+            min-height: 1.6em;
+        }
+
+        /* Progress Steps */
+        .steps {
+            text-align: left;
+            margin-top: 1rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            background: #334155;
+            border-radius: 50%;
+        }
+
+        .step.active .step-dot {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Error States */
+        #error-panel {
+            display: none;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .retry-btn {
+            display: inline-block;
+            margin-top: 1rem;
+            background: #fff;
+            color: #000;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-orb"></div>
+
+    <div class="container">
+        <div class="brand">NEXUS // CREATOR</div>
+
+        <div class="loading-card" id="main-panel">
+            <div class="loader" id="spinner"></div>
+
+            <h1 id="title">Préparation...</h1>
+            <p class="status-text" id="status">Connexion sécurisée en cours</p>
+
+            <div class="steps">
+                <div class="step active" id="step1">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Initialisation de l'audit</div>
+                </div>
+                <div class="step" id="step2">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Génération de la feuille de route</div>
+                </div>
+                <div class="step" id="step3">
+                    <div class="step-dot"></div>
+                    <div class="step-label">Redirection vers Stripe Checkout</div>
+                </div>
+            </div>
+
+            <div id="error-panel">
+                <p style="color:#ef4444; font-weight:600; margin-bottom:0.5rem">Une erreur est survenue</p>
+                <p id="error-msg" style="font-size:0.85rem; color:#94a3b8"></p>
+                <a href="#" onclick="window.location.reload()" class="retry-btn">RÉESSAYER</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const N8N_CHECK_URL = 'https://n8n.morganjaouen.fr/webhook/get-stripe-link';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const respondentId = urlParams.get('respondent_id') || urlParams.get('id');
+
+        const statusEl = document.getElementById('status');
+        const titleEl = document.getElementById('title');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+
+        function updateUI(step) {
+            if (step >= 1) step1.classList.add('active');
+            if (step >= 2) step2.classList.add('active');
+            if (step >= 3) step3.classList.add('active');
+        }
+
+        function fail(msg) {
+            document.getElementById('spinner').style.display = 'none';
+            document.getElementById('error-panel').style.display = 'block';
+            document.getElementById('error-msg').textContent = msg;
+            statusEl.textContent = "Échec de la connexion";
+        }
+
+        async function poll() {
+            if (!respondentId) {
+                fail("ID du client manquant. Veuillez soumettre à nouveau le formulaire.");
+                return;
+            }
+
+            try {
+                const response = await fetch(N8N_CHECK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ respondent_id: respondentId })
+                });
+
+                if (!response.ok) throw new Error('Erreur réseau n8n');
+
+                const data = await response.json();
+                console.log('📡 Data from n8n:', data);
+
+                if (data.status === 'ready' && data.stripe_url) {
+                    // C'est prêt !
+                    statusEl.textContent = "Audit prêt ! Redirection...";
+                    updateUI(3);
+                    setTimeout(() => {
+                        window.location.href = data.stripe_url;
+                    }, 800);
+                } else {
+                    // En cours de génération
+                    statusEl.textContent = "Feuille de route en cours de finalisation...";
+                    updateUI(2);
+                    setTimeout(poll, 1500); // On repasse dans 1.5s
+                }
+            } catch (e) {
+                console.error('❌ Fetch error:', e);
+                // On réessaie quand même car n8n peut mettre du temps à répondre
+                setTimeout(poll, 2000);
+            }
+        }
+
+        // Lancer le polling
+        poll();
+    </script>
+
+</body>
+
+</html>

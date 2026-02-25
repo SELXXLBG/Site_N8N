@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votre Audit est Prêt | Nexus Creator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.4);
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Abstract Background */
+        .bg-orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+                transform: translateX(-50%) scale(1);
+            }
+
+            100% {
+                opacity: 0.8;
+                transform: translateX(-50%) scale(1.1);
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .brand {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 3rem;
+            background-image: linear-gradient(to right, #fff, #cbd5e1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            opacity: 0.8;
+        }
+
+        /* Success Card */
+        .success-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem auto;
+            color: var(--primary);
+            font-size: 2.5rem;
+            box-shadow: 0 0 30px var(--primary-glow);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            background-image: linear-gradient(to right, #fff, #e2e8f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* Fake Report Preview */
+        .report-preview {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .file-icon {
+            font-size: 2rem;
+        }
+
+        .file-info h4 {
+            color: #fff;
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .file-info span {
+            font-size: 0.75rem;
+            color: var(--primary);
+            background: rgba(16, 185, 129, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* CTA Button */
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 1.2rem;
+            background: var(--primary);
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px -10px var(--primary-glow);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px var(--primary-glow);
+            filter: brightness(1.1);
+        }
+
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        .guarantee {
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-orb"></div>
+
+    <div class="container">
+        <div class="brand">NEXUS // CREATOR</div>
+
+        <div class="success-card">
+            <div class="success-icon">✨</div>
+
+            <h1>Audit Généré <br>avec Succès !</h1>
+
+            <p>
+                L'analyse stratégique de votre business est terminée.
+                Votre plan d'action personnalisé est prêt à être débloqué.
+            </p>
+
+            <div class="report-preview">
+                <div class="file-icon">📄</div>
+                <div class="file-info">
+                    <h4>AI_Marketing_Audit_V4.pdf</h4>
+                    <span>PRÊT À TÉLÉCHARGER</span>
+                </div>
+            </div>
+
+            <a href="#" id="cta-button" class="btn-primary btn-shine">
+                DÉBLOQUER MON AUDIT →
+            </a>
+
+            <div class="guarantee">
+                🔒 Paiement sécurisé • Satisfait ou remboursé
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Récupérer l'ID du répondant depuis l'URL de Tally
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // On récupère "respondent_id" OU "id" (pour être sûr)
+        const respondentId = urlParams.get('respondent_id') || urlParams.get('id');
+
+        const ctaButton = document.getElementById('cta-button');
+
+        if (respondentId) {
+            console.log('✅ Respondent ID Found:', respondentId);
+
+            // Redirection plus robuste au clic
+            ctaButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('🚀 Redirecting to Pay.html...');
+                window.location.href = `Pay.html?respondent_id=${respondentId}`;
+            });
+        } else {
+            console.error('❌ No Respondent ID found in URL.');
+            ctaButton.style.opacity = '0.5';
+            ctaButton.style.cursor = 'not-allowed';
+            ctaButton.textContent = 'ERREUR : ID MANQUANT';
+            ctaButton.addEventListener('click', (e) => e.preventDefault());
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Votre audit est en cours… | AutoFlow AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%237c3aed'/%3E%3Cstop offset='100%25' stop-color='%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='20' fill='url(%23g)' opacity='0.9'/%3E%3Ctext x='50' y='70' text-anchor='middle' font-family='Arial Black,sans-serif' font-weight='900' font-size='64' fill='white'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --purple: #7c3aed;
+            --blue: #3b82f6;
+            --grad: linear-gradient(135deg, #7c3aed, #3b82f6);
+            --bg: #0a0a0a;
+            --card: rgba(31, 41, 55, 0.7);
+            --border: rgba(124, 58, 237, 0.25);
+            --text: #f9fafb;
+            --muted: #9ca3af;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* ── Ambient background orbs ── */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(124, 58, 237, 0.18) 0%, transparent 70%);
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: drift 10s ease-in-out infinite alternate;
+        }
+
+        .orb-2 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            bottom: -100px;
+            right: -80px;
+            animation: drift 14s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes drift {
+            from {
+                transform: translateX(-50%) scale(1);
+            }
+
+            to {
+                transform: translateX(-50%) scale(1.12);
+            }
+        }
+
+        /* ── Grid dots ── */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+            background-size: 32px 32px;
+            z-index: 0;
+        }
+
+        /* ── Main card ── */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 480px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: var(--grad);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            padding: 2.5rem 2rem 2rem;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(124, 58, 237, 0.1) inset;
+        }
+
+        /* ── AI spinner ── */
+        .spinner-wrap {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.75rem;
+            position: relative;
+        }
+
+        .spinner-wrap .ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+        }
+
+        .ring-outer {
+            border-top-color: var(--purple);
+            border-right-color: var(--purple);
+            animation: spin 1.4s linear infinite;
+        }
+
+        .ring-inner {
+            inset: 12px;
+            border-bottom-color: var(--blue);
+            border-left-color: var(--blue);
+            animation: spin 0.9s linear infinite reverse;
+        }
+
+        .spinner-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(to right, #fff, #c4b5fd);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        /* ── Steps list ── */
+        .steps {
+            list-style: none;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            font-size: 0.9rem;
+            color: var(--muted);
+            transition: color 0.4s;
+        }
+
+        .step.done {
+            color: #d1fae5;
+        }
+
+        .step.active {
+            color: #fff;
+        }
+
+        .step-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+            transition: all 0.4s;
+        }
+
+        .step.pending .step-dot {
+            border: 2px solid #374151;
+            color: #374151;
+        }
+
+        .step.active .step-dot {
+            border: 2px solid var(--purple);
+            background: rgba(124, 58, 237, 0.15);
+            color: var(--purple);
+            box-shadow: 0 0 12px rgba(124, 58, 237, 0.4);
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        .step.done .step-dot {
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid #10b981;
+            color: #10b981;
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(124, 58, 237, 0.8);
+            }
+        }
+
+        /* ── Progress bar ── */
+        .progress-wrap {
+            background: rgba(55, 65, 81, 0.5);
+            border-radius: 99px;
+            height: 6px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 99px;
+            background: var(--grad);
+            width: 0%;
+            transition: width 0.8s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
+        }
+
+        /* ── Timer ── */
+        .timer-line {
+            color: var(--muted);
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .timer-line strong {
+            color: #c4b5fd;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* ── File preview chip ── */
+        .file-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .file-emoji {
+            font-size: 1.8rem;
+        }
+
+        .file-meta h4 {
+            font-size: 0.88rem;
+            color: #fff;
+            margin-bottom: 0.2rem;
+        }
+
+        .file-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--purple);
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.25);
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .file-badge.ready {
+            color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.25);
+        }
+
+        /* ── Footer note ── */
+        .footer-note {
+            margin-top: 1.5rem;
+            font-size: 0.78rem;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="container">
+        <div class="brand">⚡ AutoFlow AI</div>
+
+        <div class="card">
+            <!-- Spinner -->
+            <div class="spinner-wrap" id="spinner">
+                <div class="ring ring-outer"></div>
+                <div class="ring ring-inner"></div>
+                <div class="spinner-icon">🤖</div>
+            </div>
+
+            <h1 id="main-title">Votre audit<br>est en cours…</h1>
+            <p class="subtitle" id="main-sub">Notre IA analyse votre boutique et prépare vos recommandations
+                personnalisées.</p>
+
+            <!-- File chip -->
+            <div class="file-chip">
+                <div class="file-emoji">📋</div>
+                <div class="file-meta">
+                    <h4>AutoFlow_Audit_Ecommerce.pdf</h4>
+                    <span class="file-badge" id="file-badge">EN GÉNÉRATION…</span>
+                </div>
+            </div>
+
+            <!-- Steps -->
+            <ul class="steps" id="steps-list">
+                <li class="step done" id="step-0">
+                    <div class="step-dot">✓</div>
+                    <span>Formulaire reçu &amp; données sécurisées</span>
+                </li>
+                <li class="step active" id="step-1">
+                    <div class="step-dot">◉</div>
+                    <span>Analyse de votre profil e-commerce</span>
+                </li>
+                <li class="step pending" id="step-2">
+                    <div class="step-dot">○</div>
+                    <span>Génération des recommandations IA</span>
+                </li>
+                <li class="step pending" id="step-3">
+                    <div class="step-dot">○</div>
+                    <span>Mise en page du rapport PDF</span>
+                </li>
+                <li class="step pending" id="step-4">
+                    <div class="step-dot">○</div>
+                    <span>Envoi par email à votre adresse</span>
+                </li>
+            </ul>
+
+            <!-- Progress bar -->
+            <div class="progress-wrap">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+
+            <!-- Timer -->
+            <div class="timer-line">
+                ⏱ Disponible dans environ <strong id="countdown">2:00</strong>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            🔒 Vos données sont traitées de manière confidentielle
+        </div>
+    </div>
+
+    <script>
+        // ── Step timings (seconds from start) ──
+        const STEPS = [
+            { id: 'step-1', activate: 0, complete: 22, progress: 20 },
+            { id: 'step-2', activate: 22, complete: 55, progress: 50 },
+            { id: 'step-3', activate: 55, complete: 95, progress: 78 },
+            { id: 'step-4', activate: 95, complete: 118, progress: 95 },
+        ];
+        const TOTAL_SECONDS = 120; // 2 minutes
+
+        let elapsed = 0;
+        const progressBar = document.getElementById('progress');
+        const countdown = document.getElementById('countdown');
+        const fileBadge = document.getElementById('file-badge');
+        const mainTitle = document.getElementById('main-title');
+        const mainSub = document.getElementById('main-sub');
+        const spinner = document.getElementById('spinner');
+
+        function fmt(s) {
+            const m = Math.floor(s / 60);
+            const sec = s % 60;
+            return `${m}:${String(sec).padStart(2, '0')}`;
+        }
+
+        function setStep(id, state) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.className = 'step ' + state;
+            const dot = el.querySelector('.step-dot');
+            dot.textContent = state === 'done' ? '✓' : state === 'active' ? '◉' : '○';
+        }
+
+        function tick() {
+            elapsed++;
+            const remaining = Math.max(0, TOTAL_SECONDS - elapsed);
+
+            // Update countdown
+            countdown.textContent = fmt(remaining);
+
+            // Update steps
+            STEPS.forEach(step => {
+                if (elapsed >= step.complete) {
+                    setStep(step.id, 'done');
+                } else if (elapsed >= step.activate) {
+                    setStep(step.id, 'active');
+                }
+                if (elapsed >= step.activate && elapsed < step.complete) {
+                    progressBar.style.width = step.progress + '%';
+                }
+            });
+
+            // Final state
+            if (elapsed >= TOTAL_SECONDS) {
+                clearInterval(timer);
+                progressBar.style.width = '100%';
+                fileBadge.textContent = 'ENVOYÉ PAR EMAIL ✓';
+                fileBadge.classList.add('ready');
+                mainTitle.innerHTML = 'Votre audit est<br>dans votre boîte mail !';
+                mainSub.textContent = 'Consultez votre email — si vous ne voyez rien d\'ici 5 min, vérifiez vos spams.';
+                spinner.style.display = 'none';
+                countdown.closest('.timer-line').style.display = 'none';
+            }
+        }
+
+        // Start immediately at 20%
+        progressBar.style.width = '5%';
+        const timer = setInterval(tick, 1000);
+    </script>
+</body>
+
+</html>

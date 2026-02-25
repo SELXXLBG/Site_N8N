@@ -1,0 +1,179 @@
+{
+  "name": "A2 - New Payment Link Request (ID Lookup)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-stripe-link",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "f071b9dc-dd4b-4f59-9f13-f13450d37be0",
+      "name": "Webhook Get Link",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        7472,
+        1872
+      ],
+      "webhookId": "get-stripe-link-lookup"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1YwvUor_eOLkkLoHb5x4g2TWIES6leL1R_iNSCjYa5Mw/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Marketing_Clients",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YwvUor_eOLkkLoHb5x4g2TWIES6leL1R_iNSCjYa5Mw/edit#gid=0"
+        },
+        "returnAll": true,
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "notes",
+              "lookupValue": "={{ $json.body.respondent_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7c149aae-c612-413f-b822-a3710d3e65b8",
+      "name": "Lookup in Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        7696,
+        1872
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tYrkqO5ZTN61u0XJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// 1. Transformer en tableau JSON simple\nconst leads = items.map(i => i.json).filter(l => l.id);\n\nif (leads.length === 0) {\n  return [{\n    json: {\n      success: true,\n      status: 'not_found',\n      message: 'No leads found for this session.'\n    }\n  }];\n}\n\n// 2. Trier TOUS les leads par date de création (dernière activité en premier)\nleads.sort((a, b) => {\n  const dateA = a.created_at ? new Date(a.created_at) : new Date(0);\n  const dateB = b.created_at ? new Date(b.created_at) : new Date(0);\n  return dateB - dateA;\n});\n\n// 3. Prendre la décision basée sur le lead le plus récent\nconst latestLead = leads[0];\nconsole.log('Latest Lead found:', latestLead.id, latestLead.payment_status);\n\n// Si le plus récent est en attente de paiement, on donne le lien\nif (latestLead.payment_status === 'payment_pending') {\n  const stripeUrl = latestLead.payment_url || latestLead.stripe_payment_url;\n  \n  if (stripeUrl) {\n    return [{\n      json: {\n        success: true,\n        status: 'ready',\n        stripe_url: stripeUrl,\n        message: 'Payment link is ready'\n      }\n    }];\n  }\n}\n\n// Si le plus récent est déjà payé, on informe\nif (latestLead.payment_status === 'paid') {\n  return [{\n    json: {\n      success: true,\n      status: 'paid',\n      message: 'Payment already completed for the latest session.'\n    }\n  }];\n}\n\n// Par défaut, si rien n'est clair (ou si le lien manque sur un pending)\nreturn [{\n  json: {\n    success: true,\n    status: 'pending',\n    message: 'Processing your request...'\n  }\n}];"
+      },
+      "id": "14c62b8b-8d34-48fa-b3d8-7074c15f3673",
+      "name": "Check Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        7920,
+        1872
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "POST, GET, OPTIONS"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Content-Type"
+              }
+            ]
+          }
+        }
+      },
+      "id": "e95a36d3-ca5c-4ca5-8b26-816bcfe0aba3",
+      "name": "Respond Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        8144,
+        1872
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Get Link": {
+      "main": [
+        [
+          {
+            "node": "Lookup in Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup in Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "Check Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Status": {
+      "main": [
+        [
+          {
+            "node": "Respond Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "9c8a6d4b-e35f-4322-a060-8be2b4457abd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
+  },
+  "id": "yQ-wijPkpSc_rEi6x4tTA",
+  "tags": [
+    {
+      "updatedAt": "2026-02-10T12:10:52.775Z",
+      "createdAt": "2026-02-10T12:10:52.775Z",
+      "id": "3b2gwNeXM8xkAgSO",
+      "name": "Stripe"
+    },
+    {
+      "updatedAt": "2026-02-08T17:48:38.073Z",
+      "createdAt": "2026-02-08T17:48:38.073Z",
+      "id": "I8faJSlQDFDHdKSA",
+      "name": "IVO"
+    },
+    {
+      "updatedAt": "2026-02-10T12:10:52.831Z",
+      "createdAt": "2026-02-10T12:10:52.831Z",
+      "id": "g7wO0s9NlM2cKJSH",
+      "name": "Cloudflare"
+    }
+  ]
+}
