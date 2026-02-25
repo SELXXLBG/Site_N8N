@@ -1,44 +1,45 @@
 {
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "name": "Tally → Audit PDF → Email + Telegram",
   "nodes": [
     {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "name": "Webhook Tally",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        100,
+        300
+      ],
       "parameters": {
-        "jsCode": "// Récupération du body envoyé par Tally\nconst body = $input.first().json.body;\n\nif (!body || !body.data || !Array.isArray(body.data.fields)) {\n  throw new Error('Structure Tally invalide : champ data.fields manquant ou mal formé.');\n}\n\nconst fields = body.data.fields;\n\nfunction getField(label) {\n  const field = fields.find(f => f.label && f.label.trim() === label.trim());\n  if (!field || field.value === null || field.value === undefined || field.value === '') {\n    return 'Non renseigné';\n  }\n  if (Array.isArray(field.value)) {\n    return field.value.join(', ') || 'Non renseigné';\n  }\n  return String(field.value).trim() || 'Non renseigné';\n}\n\nconst nom        = getField('Prénom et Nom');\nconst email      = getField('Email professionnel');\nconst site       = getField('Site e-commerce (URL)');\nconst plateforme = getField('Plateforme utilisée');\nconst probleme   = getField('Problème principal');\nconst objectif   = getField('Objectif business principal');\nconst budget     = getField('Budget estimé');\nconst urgence    = getField('Urgence');\nconst ca         = getField('Taille de la boutique');\nconst autoExist  = getField('Automatisations déjà en place');\nconst source     = getField('Source de découverte');\n\nlet dateFormatee = 'Non renseignée';\ntry {\n  const rawDate = body.data.submittedAt || body.createdAt;\n  if (rawDate) {\n    const d = new Date(rawDate);\n    dateFormatee = d.toLocaleString('fr-FR', {\n      timeZone: 'Europe/Paris',\n      day: '2-digit', month: '2-digit', year: 'numeric',\n      hour: '2-digit', minute: '2-digit'\n    });\n  }\n} catch (e) { dateFormatee = 'Non renseignée'; }\n\nreturn [{\n  json: {\n    nom, email, site, plateforme, probleme, objectif,\n    budget, urgence, ca, autoExist, source,\n    date: dateFormatee,\n    responseId: body.data.responseId || 'N/A',\n    eventId: body.eventId || 'N/A'\n  }\n}];"
-      },
-      "id": "4e15c8e2-8c49-4edf-a0f4-241180737ed7",
+        "httpMethod": "POST",
+        "path": "tally-leads",
+        "responseMode": "responseNode",
+        "options": {}
+      }
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
       "name": "Extraire données Tally",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        928,
-        368
-      ]
-    },
-    {
-      "parameters": {
-        "chatId": "8229030669",
-        "text": "=🔔 *Nouveau Lead E-commerce*\n━━━━━━━━━━━━━━━━━━━━\n👤 *Nom :* {{ $json.nom }}\n📧 *Email :* {{ $json.email }}\n🌐 *Site :* {{ $json.site }}\n🛒 *Plateforme :* {{ $json.plateforme }}\n💰 *CA mensuel :* {{ $json.ca }}\n━━━━━━━━━━━━━━━━━━━━\n🎯 *Problème principal :*\n{{ $json.probleme }}\n\n💼 *Objectif :* {{ $json.objectif }}\n💶 *Budget :* {{ $json.budget }}\n⚡ *Urgence :* {{ $json.urgence }}\n🔧 *Automatisations existantes :* {{ $json.autoExist }}\n━━━━━━━━━━━━━━━━━━━━\n🕐 *Soumis le :* {{ $json.date }}\n\n⏳ _Génération du PDF en cours…_",
-        "additionalFields": {
-          "parse_mode": "Markdown"
-        }
-      },
-      "id": "67a94c3f-ae9a-4b1d-946d-5955803751e1",
-      "name": "Envoyer Telegram",
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        1168,
-        240
+        340,
+        300
       ],
-      "webhookId": "3f7ca3e8-8393-4e4e-a335-c55938063e6c",
-      "credentials": {
-        "telegramApi": {
-          "id": "5qHObKcvTDWQZ7uY",
-          "name": "Telegram SiteNewLead"
-        }
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\n\nif (!body || !body.data || !Array.isArray(body.data.fields)) {\n  throw new Error('Structure Tally invalide : champ data.fields manquant ou mal formé.');\n}\n\nconst fields = body.data.fields;\n\nfunction getField(label) {\n  const field = fields.find(f => f.label && f.label.trim() === label.trim());\n  if (!field || field.value === null || field.value === undefined || field.value === '') return 'Non renseigné';\n  if (Array.isArray(field.value)) return field.value.join(', ') || 'Non renseigné';\n  return String(field.value).trim() || 'Non renseigné';\n}\n\nconst nom        = getField('Prénom et Nom');\nconst email      = getField('Email professionnel');\nconst site       = getField('Site e-commerce (URL)');\nconst plateforme = getField('Plateforme utilisée');\nconst probleme   = getField('Problème principal');\nconst objectif   = getField('Objectif business principal');\nconst budget     = getField('Budget estimé');\nconst urgence    = getField('Urgence');\nconst ca         = getField('Taille de la boutique');\nconst autoExist  = getField('Automatisations déjà en place');\nconst source     = getField('Source de découverte');\n// Langue sélectionnée dans le form (champ optionnel)\nconst langRaw    = getField('Langue préférée');\nconst langue     = (langRaw && langRaw.toLowerCase().includes('en')) ? 'en' : 'fr';\n\nlet dateFormatee = 'Non renseignée';\ntry {\n  const rawDate = body.data.submittedAt || body.createdAt;\n  if (rawDate) {\n    const d = new Date(rawDate);\n    dateFormatee = d.toLocaleString('fr-FR', {\n      timeZone: 'Europe/Paris',\n      day: '2-digit', month: '2-digit', year: 'numeric',\n      hour: '2-digit', minute: '2-digit'\n    });\n  }\n} catch (e) { dateFormatee = 'Non renseignée'; }\n\nreturn [{ json: { nom, email, site, plateforme, probleme, objectif, budget, urgence, ca, autoExist, source, langue, date: dateFormatee, responseId: body.data.responseId || 'N/A', eventId: body.eventId || 'N/A' } }];"
       }
     },
     {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "name": "Générer Audit HTML (Groq)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        580,
+        420
+      ],
       "parameters": {
         "method": "POST",
         "url": "https://api.groq.com/openai/v1/chat/completions",
@@ -54,47 +55,67 @@
           ]
         },
         "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {}
-          ]
-        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.7,\n  \"max_tokens\": 3000,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": {{ $json.langue === 'en' ? '\"You are an expert in e-commerce automation and n8n. You write clear, concrete, actionable audits in English. Return ONLY valid HTML without html/body/head tags — just the inner content to inject into a report.\"' : '\"Tu es un expert en automatisation e-commerce et n8n. Tu rédiges des audits clairs, concrets et actionnables en français. Tu retournes UNIQUEMENT du HTML valide sans balise html/body/head — juste le contenu interne destiné à être injecté dans un rapport.\"' }}\n    },\n    {\n      \"role\": \"user\",\n      \"content\": {{ $json.langue === 'en' ? JSON.stringify('Generate an e-commerce automation audit for this client:\\n\\n- Name: ' + $json.nom + '\\n- Website: ' + $json.site + '\\n- Platform: ' + $json.plateforme + '\\n- Monthly Revenue: ' + $json.ca + '\\n- Main Problem: ' + $json.probleme + '\\n- 6-month Goal: ' + $json.objectif + '\\n- Budget: ' + $json.budget + '\\n- Urgency: ' + $json.urgence + '\\n- Existing automations: ' + $json.autoExist + '\\n\\nResponse structure (HTML only):\\n1. <h2>Executive Summary</h2> — 2-3 sentences about the client situation\\n2. <h2>Identified Opportunities</h2> — 3 concrete opportunities with <h3> for each, description and estimated ROI\\n3. <h2>Top 3 Priority Automations</h2> — the 3 n8n workflows to implement first, with estimated time savings\\n4. <h2>Next Steps</h2> — 3 concrete actions for the next 7 days\\n\\nBe direct, use real numbers. 600 to 900 words.') : JSON.stringify('Génère un audit d\\'automatisation e-commerce pour ce client :\\n\\n- Nom : ' + $json.nom + '\\n- Site : ' + $json.site + '\\n- Plateforme : ' + $json.plateforme + '\\n- CA mensuel : ' + $json.ca + '\\n- Problème principal : ' + $json.probleme + '\\n- Objectif 6 mois : ' + $json.objectif + '\\n- Budget prévu : ' + $json.budget + '\\n- Urgence : ' + $json.urgence + '\\n- Automatisations déjà en place : ' + $json.autoExist + '\\n\\nStructure (HTML uniquement) :\\n1. <h2>Résumé Exécutif</h2> — 2-3 phrases sur la situation du client\\n2. <h2>Opportunités Identifiées</h2> — 3 opportunités concrètes avec <h3> pour chacune, description et bénéfice chiffré estimé\\n3. <h2>Top 3 Automatisations Prioritaires</h2> — les 3 workflows n8n à implémenter en priorité, avec le gain de temps estimé\\n4. <h2>Prochaines Étapes</h2> — 3 actions concrètes à faire dans les 7 prochains jours\\n\\nSois direct, utilise des chiffres concrets. 600 à 900 mots.') }}\n    }\n  ]\n}",
         "options": {
           "timeout": 60000
         }
       },
-      "id": "5f0943c3-050f-4a96-aa41-f0914a0326f1",
-      "name": "Générer Audit HTML (Groq)",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1168,
-        480
-      ],
       "credentials": {
         "httpHeaderAuth": {
-          "id": "qsuD5RyzY51LZFvS",
-          "name": "Groq"
+          "id": "YOUR_GROQ_CREDENTIAL_ID",
+          "name": "Groq API Key"
         }
       }
     },
     {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "name": "Envoyer Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        180
+      ],
       "parameters": {
-        "jsCode": "// Récupérer le contenu IA\nlet aiContent = '';\ntry {\n  aiContent = $input.first().json.choices[0].message.content || '';\n} catch(e) {\n  aiContent = '<p>Contenu indisponible — veuillez contacter AutoFlow AI directement.</p>';\n}\n\n// Récupérer les données client depuis le node précédent\nlet client = {};\ntry {\n  client = $('Extraire données Tally').first().json;\n} catch(e) {\n  client = { nom: 'Client', email: '', site: '', plateforme: '', ca: '', probleme: '', objectif: '', budget: '', urgence: '' };\n}\n\nconst date = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });\n\nconst html = `<!DOCTYPE html>\n<html lang=\"fr\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>Audit AutoFlow AI — ${client.nom}</title>\n<style>\n  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@800;900&display=swap');\n  * { margin:0; padding:0; box-sizing:border-box; }\n  body { font-family:'Inter',sans-serif; background:#fff; color:#111827; }\n  .header { background:linear-gradient(135deg,#7c3aed,#3b82f6); color:#fff; padding:40px 48px; }\n  .header-logo { font-family:'Outfit',sans-serif; font-size:1rem; font-weight:900; letter-spacing:-0.03em; opacity:0.9; margin-bottom:24px; }\n  .header h1 { font-family:'Outfit',sans-serif; font-size:2.2rem; font-weight:900; line-height:1.1; margin-bottom:8px; }\n  .header p { opacity:0.85; font-size:0.95rem; }\n  .meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:32px 48px; background:#f9fafb; border-bottom:1px solid #e5e7eb; }\n  .meta-item label { display:block; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#6b7280; margin-bottom:2px; }\n  .meta-item span { font-size:0.9rem; color:#111827; font-weight:500; }\n  .content { padding:40px 48px; }\n  .content h2 { font-family:'Outfit',sans-serif; font-size:1.35rem; font-weight:900; color:#7c3aed; border-left:4px solid #7c3aed; padding-left:14px; margin:32px 0 16px; }\n  .content h2:first-child { margin-top:0; }\n  .content h3 { font-size:1rem; font-weight:700; color:#111827; margin:20px 0 8px; }\n  .content p { color:#374151; line-height:1.75; margin-bottom:12px; }\n  .content ul, .content ol { padding-left:20px; margin-bottom:12px; }\n  .content li { color:#374151; line-height:1.7; margin-bottom:4px; }\n  .content strong { color:#111827; }\n  .footer { margin-top:48px; padding:24px 48px; border-top:2px solid #7c3aed; background:#faf5ff; display:flex; justify-content:space-between; align-items:center; }\n  .footer-brand { font-family:'Outfit',sans-serif; font-weight:900; font-size:0.95rem; background:linear-gradient(135deg,#7c3aed,#3b82f6); -webkit-background-clip:text; background-clip:text; color:transparent; }\n  .footer small { color:#6b7280; font-size:0.78rem; }\n</style>\n</head>\n<body>\n<div class=\"header\">\n  <div class=\"header-logo\">⚡ AutoFlow AI</div>\n  <h1>Audit d'Automatisation<br>E-commerce</h1>\n  <p>Rapport personnalisé — Confidentiel</p>\n</div>\n<div class=\"meta-grid\">\n  <div class=\"meta-item\"><label>Client</label><span>${client.nom}</span></div>\n  <div class=\"meta-item\"><label>Site</label><span>${client.site}</span></div>\n  <div class=\"meta-item\"><label>Plateforme</label><span>${client.plateforme}</span></div>\n  <div class=\"meta-item\"><label>CA mensuel</label><span>${client.ca}</span></div>\n  <div class=\"meta-item\"><label>Budget prévu</label><span>${client.budget}</span></div>\n  <div class=\"meta-item\"><label>Date</label><span>${date}</span></div>\n</div>\n<div class=\"content\">\n${aiContent}\n</div>\n<div class=\"footer\">\n  <div class=\"footer-brand\">⚡ AutoFlow AI</div>\n  <small>Expert n8n &amp; Automatisation IA pour E-commerçants</small>\n</div>\n</body>\n</html>`;\n\nreturn [{ json: { html, nom: client.nom, email: client.email, site: client.site } }];"
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=🔔 *Nouveau Lead E-commerce*\n━━━━━━━━━━━━━━━━━━━━\n👤 *Nom :* {{ $json.nom }}\n📧 *Email :* {{ $json.email }}\n🌐 *Site :* {{ $json.site }}\n🛒 *Plateforme :* {{ $json.plateforme }}\n💰 *CA mensuel :* {{ $json.ca }}\n🌍 *Langue :* {{ $json.langue }}\n━━━━━━━━━━━━━━━━━━━━\n🎯 *Problème principal :*\n{{ $json.probleme }}\n\n💼 *Objectif :* {{ $json.objectif }}\n💶 *Budget :* {{ $json.budget }}\n⚡ *Urgence :* {{ $json.urgence }}\n🔧 *Automatisations existantes :* {{ $json.autoExist }}\n━━━━━━━━━━━━━━━━━━━━\n🕐 *Soumis le :* {{ $json.date }}\n\n⏳ _Génération du PDF en cours…_",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
       },
-      "id": "cf7e630d-63f7-4a59-954d-bfcd652dc7da",
+      "credentials": {
+        "telegramApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram Bot"
+        }
+      }
+    },
+    {
+      "id": "66666666-6666-6666-6666-666666666666",
       "name": "Préparer HTML Rapport",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1408,
-        480
-      ]
+        820,
+        420
+      ],
+      "parameters": {
+        "jsCode": "let aiContent = '';\ntry {\n  aiContent = $input.first().json.choices[0].message.content || '';\n  // Nettoyer les blocs markdown si l'IA en a ajouté\n  aiContent = aiContent.replace(/^```html\\s*/i, '').replace(/```\\s*$/i, '').trim();\n} catch(e) {\n  aiContent = '<p>Content unavailable — please contact AutoFlow AI directly.</p>';\n}\n\nlet client = {};\ntry { client = $('Extraire données Tally').first().json; } catch(e) {\n  client = { nom: 'Client', email: '', site: '', plateforme: '', ca: '', probleme: '', objectif: '', budget: '', urgence: '', langue: 'fr' };\n}\n\nconst lang = client.langue || 'fr';\nconst isEN = lang === 'en';\n\nconst date = new Date().toLocaleDateString(isEN ? 'en-GB' : 'fr-FR', {\n  day: '2-digit', month: 'long', year: 'numeric'\n});\n\nconst labels = isEN ? {\n  title: 'E-Commerce Automation Audit',\n  subtitle: 'Personalised Report — Confidential',\n  clientLabel: 'Client', siteLabel: 'Website',\n  platformLabel: 'Platform', revenueLabel: 'Monthly Revenue',\n  budgetLabel: 'Planned Budget', dateLabel: 'Date',\n  footerTag: '⚡ AutoFlow AI', footerSub: 'n8n & AI Automation Expert for E-commerce'\n} : {\n  title: \"Audit d'Automatisation E-commerce\",\n  subtitle: 'Rapport personnalisé — Confidentiel',\n  clientLabel: 'Client', siteLabel: 'Site',\n  platformLabel: 'Plateforme', revenueLabel: 'CA mensuel',\n  budgetLabel: 'Budget prévu', dateLabel: 'Date',\n  footerTag: '⚡ AutoFlow AI', footerSub: 'Expert n8n & Automatisation IA pour E-commerçants'\n};\n\nconst html = `<!DOCTYPE html>\n<html lang=\"${lang}\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>${labels.title} — ${client.nom}</title>\n<style>\n  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@800;900&display=swap');\n  * { margin:0; padding:0; box-sizing:border-box; }\n  body { font-family:'Inter',Arial,sans-serif; background:#fff; color:#111827; font-size:14px; line-height:1.6; }\n  .header { background:linear-gradient(135deg,#7c3aed,#3b82f6); color:#fff; padding:40px 48px; }\n  .header-logo { font-family:'Outfit',Arial Black,sans-serif; font-size:1rem; font-weight:900; letter-spacing:-0.02em; opacity:0.9; margin-bottom:20px; }\n  .header h1 { font-family:'Outfit',Arial Black,sans-serif; font-size:2rem; font-weight:900; line-height:1.1; margin-bottom:6px; }\n  .header p { opacity:0.85; font-size:0.9rem; }\n  .meta-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border-bottom:2px solid #e5e7eb; }\n  .meta-item { padding:18px 24px; border-right:1px solid #e5e7eb; }\n  .meta-item:last-child { border-right:none; }\n  .meta-item label { display:block; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#6b7280; margin-bottom:4px; }\n  .meta-item span { font-size:0.88rem; color:#111827; font-weight:600; }\n  .content { padding:40px 48px; }\n  .content h2 { font-family:'Outfit',Arial Black,sans-serif; font-size:1.25rem; font-weight:900; color:#7c3aed; border-left:4px solid #7c3aed; padding-left:14px; margin:36px 0 14px; }\n  .content h2:first-child { margin-top:0; }\n  .content h3 { font-size:0.95rem; font-weight:700; color:#1e1b4b; margin:18px 0 8px; }\n  .content p { color:#374151; line-height:1.75; margin-bottom:12px; font-size:0.88rem; }\n  .content ul, .content ol { padding-left:20px; margin-bottom:12px; }\n  .content li { color:#374151; line-height:1.7; margin-bottom:4px; font-size:0.88rem; }\n  .content strong { color:#111827; }\n  .footer { margin-top:48px; padding:20px 48px; background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(59,130,246,0.06)); border-top:2px solid #7c3aed; display:flex; justify-content:space-between; align-items:center; }\n  .footer-brand { font-family:'Outfit',Arial Black,sans-serif; font-weight:900; font-size:0.9rem; color:#7c3aed; }\n  .footer small { color:#6b7280; font-size:0.75rem; }\n</style>\n</head>\n<body>\n<div class=\"header\">\n  <div class=\"header-logo\">⚡ AutoFlow AI</div>\n  <h1>${labels.title}</h1>\n  <p>${labels.subtitle}</p>\n</div>\n<div class=\"meta-grid\">\n  <div class=\"meta-item\"><label>${labels.clientLabel}</label><span>${client.nom}</span></div>\n  <div class=\"meta-item\"><label>${labels.siteLabel}</label><span>${client.site}</span></div>\n  <div class=\"meta-item\"><label>${labels.platformLabel}</label><span>${client.plateforme}</span></div>\n  <div class=\"meta-item\"><label>${labels.revenueLabel}</label><span>${client.ca}</span></div>\n  <div class=\"meta-item\"><label>${labels.budgetLabel}</label><span>${client.budget}</span></div>\n  <div class=\"meta-item\"><label>${labels.dateLabel}</label><span>${date}</span></div>\n</div>\n<div class=\"content\">\n${aiContent}\n</div>\n<div class=\"footer\">\n  <div class=\"footer-brand\">${labels.footerTag}</div>\n  <small>${labels.footerSub}</small>\n</div>\n</body>\n</html>`;\n\nreturn [{ json: { html, nom: client.nom, email: client.email, site: client.site, langue: client.langue || 'fr' } }];"
+      }
     },
     {
+      "id": "77777777-7777-7777-7777-777777777777",
+      "name": "Convertir HTML en PDF (Google Drive)",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1060,
+        420
+      ],
       "parameters": {
-        "inputDataFieldName": "html",
-        "name": "={{ 'Audit_AutoFlow_' + $json.nom.replace(/ /g, '_') + '.pdf' }}",
+        "operation": "upload",
+        "name": "={{'Audit_AutoFlow_' + $json.nom.replace(/ /g,'_') + '.pdf'}}",
         "driveId": {
           "__rl": true,
           "value": "My Drive",
@@ -107,24 +128,27 @@
           "mode": "list",
           "cachedResultName": "/ (Root)"
         },
-        "options": {}
+        "inputDataFieldName": "html",
+        "options": {
+          "googleFileConvertMimeType": "application/pdf"
+        }
       },
-      "id": "27b4e5aa-1dd9-4c7b-96f3-edc92556a522",
-      "name": "Convertir HTML → PDF (Google Drive)",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        1648,
-        480
-      ],
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "41BJuDPgSpkgDhkp",
-          "name": "Google Drive account"
+          "id": "YOUR_GDRIVE_CREDENTIAL_ID",
+          "name": "Google Drive"
         }
       }
     },
     {
+      "id": "88888888-8888-8888-8888-888888888888",
+      "name": "Créer Lien Partageable",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1300,
+        420
+      ],
       "parameters": {
         "operation": "share",
         "fileId": {
@@ -140,122 +164,109 @@
         },
         "options": {}
       },
-      "id": "5e282b1b-c052-4849-aca2-da4c10789bba",
-      "name": "Créer Lien Partageable",
-      "type": "n8n-nodes-base.googleDrive",
-      "typeVersion": 3,
-      "position": [
-        1888,
-        480
-      ],
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "41BJuDPgSpkgDhkp",
-          "name": "Google Drive account"
+          "id": "YOUR_GDRIVE_CREDENTIAL_ID",
+          "name": "Google Drive"
         }
       }
     },
     {
-      "parameters": {
-        "jsCode": "// Construire le lien de téléchargement direct depuis l'ID du fichier Drive\nconst fileId = $('Convertir HTML → PDF (Google Drive)').first().json.id;\nconst nom    = $('Préparer HTML Rapport').first().json.nom;\nconst email  = $('Préparer HTML Rapport').first().json.email;\nconst site   = $('Préparer HTML Rapport').first().json.site;\n\nconst pdfLink = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;\nconst downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;\n\nreturn [{ json: { pdfLink, downloadLink, fileId, nom, email, site } }];"
-      },
-      "id": "6ac2cfa9-6c8c-4ec5-a86f-cdfced98df5f",
+      "id": "99999999-9999-9999-9999-999999999999",
       "name": "Préparer lien PDF",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2128,
-        480
-      ]
+        1540,
+        420
+      ],
+      "parameters": {
+        "jsCode": "const fileId    = $('Convertir HTML en PDF (Google Drive)').first().json.id;\nconst nom       = $('Préparer HTML Rapport').first().json.nom;\nconst email     = $('Préparer HTML Rapport').first().json.email;\nconst site      = $('Préparer HTML Rapport').first().json.site;\nconst langue    = $('Préparer HTML Rapport').first().json.langue || 'fr';\n\nconst pdfLink      = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;\nconst downloadLink = `https://drive.google.com/uc?export=download&id=${fileId}`;\n\nreturn [{ json: { pdfLink, downloadLink, fileId, nom, email, site, langue } }];"
+      }
     },
     {
-      "parameters": {
-        "fromEmail": "audit@autoflow-ai.com",
-        "toEmail": "={{ $('Préparer HTML Rapport').first().json.email }}",
-        "subject": "⚡ Votre audit AutoFlow AI est prêt !",
-        "options": {}
-      },
-      "id": "09c424a2-3a85-4d6d-9c00-8f6f13d9d40e",
+      "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
       "name": "Envoyer Email Client",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        2368,
-        480
+        1780,
+        420
       ],
-      "webhookId": "a4be1ffc-0f39-4a25-9980-70c5b772b0c9",
+      "parameters": {
+        "fromEmail": "audit@autoflow-ai.com",
+        "toEmail": "={{ $json.email }}",
+        "subject": "={{ $json.langue === 'en' ? '⚡ Your AutoFlow AI audit is ready!' : '⚡ Votre audit AutoFlow AI est prêt !' }}",
+        "emailFormat": "html",
+        "message": "={% set isFR = $json.langue !== 'en' %}\n<!DOCTYPE html>\n<html lang=\"{{ $json.langue }}\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>{{ isFR ? 'Votre audit est prêt' : 'Your audit is ready' }}</title>\n</head>\n<body style=\"margin:0;padding:0;background:#0a0a0a;font-family:Arial,Helvetica,sans-serif;\">\n\n<table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#0a0a0a;padding:40px 16px;\">\n  <tr><td align=\"center\">\n    <table width=\"580\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#111827;border-radius:16px;overflow:hidden;border:1px solid #374151;max-width:580px;width:100%;\">\n\n      <!-- Header -->\n      <tr>\n        <td style=\"background:linear-gradient(135deg,#7c3aed,#3b82f6);padding:36px 40px;text-align:center;\">\n          <div style=\"font-family:Arial Black,Arial,sans-serif;font-size:17px;font-weight:900;color:#fff;margin-bottom:14px;letter-spacing:-0.02em;\">⚡ AutoFlow AI</div>\n          <h1 style=\"margin:0 0 10px;font-family:Arial Black,Arial,sans-serif;font-size:26px;font-weight:900;color:#fff;line-height:1.2;\">{{ isFR ? 'Votre audit est prêt !' : 'Your audit is ready!' }}</h1>\n          <p style=\"margin:0;color:rgba(255,255,255,0.85);font-size:14px;\">{{ isFR ? 'Analyse personnalisée de votre boutique e-commerce' : 'Personalised analysis of your e-commerce store' }}</p>\n        </td>\n      </tr>\n\n      <!-- Body -->\n      <tr>\n        <td style=\"padding:36px 40px;\">\n          <p style=\"margin:0 0 20px;color:#d1d5db;font-size:15px;line-height:1.7;\">{{ isFR ? 'Bonjour' : 'Hello' }} <strong style=\"color:#fff;\">{{ $json.nom }}</strong>,</p>\n\n          <p style=\"margin:0 0 28px;color:#d1d5db;font-size:15px;line-height:1.7;\">\n            {{ isFR\n              ? 'Notre IA a analysé votre boutique <strong style=\"color:#fff;\">' + $json.site + '</strong> et préparé un rapport d\\'automatisation personnalisé avec les opportunités les plus rentables pour votre activité.'\n              : 'Our AI has analysed your store <strong style=\"color:#fff;\">' + $json.site + '</strong> and prepared a personalised automation report with the most profitable opportunities for your business.'\n            }}\n          </p>\n\n          <!-- File chip -->\n          <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#1f2937;border:1px solid #374151;border-radius:12px;margin-bottom:32px;\">\n            <tr>\n              <td style=\"padding:18px 20px;\">\n                <table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\">\n                  <tr>\n                    <td style=\"font-size:28px;padding-right:16px;vertical-align:middle;\">📋</td>\n                    <td style=\"vertical-align:middle;\">\n                      <div style=\"color:#fff;font-weight:700;font-size:14px;margin-bottom:4px;\">AutoFlow_Audit_Ecommerce.pdf</div>\n                      <div style=\"color:#7c3aed;font-size:11px;font-weight:700;letter-spacing:0.06em;\">{{ isFR ? 'PRÊT À CONSULTER' : 'READY TO VIEW' }}</div>\n                    </td>\n                  </tr>\n                </table>\n              </td>\n            </tr>\n          </table>\n\n          <!-- CTA Button -->\n          <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"margin-bottom:20px;\">\n            <tr>\n              <td align=\"center\">\n                <a href=\"{{ $json.pdfLink }}\"\n                   style=\"display:inline-block;background:linear-gradient(135deg,#7c3aed,#3b82f6);color:#fff;font-family:Arial Black,Arial,sans-serif;font-weight:900;font-size:15px;text-decoration:none;padding:16px 40px;border-radius:12px;letter-spacing:0.02em;\">\n                  {{ isFR ? '📥 Accéder à mon audit →' : '📥 Access my audit →' }}\n                </a>\n              </td>\n            </tr>\n          </table>\n\n          <p style=\"color:#6b7280;font-size:12px;text-align:center;margin:0 0 28px;\">\n            {{ isFR ? 'Ou copiez ce lien :' : 'Or copy this link:' }}\n            <a href=\"{{ $json.pdfLink }}\" style=\"color:#a78bfa;\">{{ $json.pdfLink }}</a>\n          </p>\n\n          <!-- What's inside -->\n          <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\" style=\"background:#1f2937;border-radius:12px;padding:4px 0;margin-bottom:8px;\">\n            <tr><td style=\"padding:16px 20px;\">\n              <div style=\"color:#9ca3af;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;\">\n                {{ isFR ? '📄 Contenu de votre audit' : '📄 What\\'s in your audit' }}\n              </div>\n              <table cellpadding=\"0\" cellspacing=\"0\" role=\"presentation\">\n                <tr><td style=\"padding:3px 0;color:#d1d5db;font-size:13px;\">✅ {{ isFR ? 'Résumé exécutif de votre situation' : 'Executive summary of your situation' }}</td></tr>\n                <tr><td style=\"padding:3px 0;color:#d1d5db;font-size:13px;\">✅ {{ isFR ? '3 opportunités d\\'automatisation identifiées' : '3 identified automation opportunities' }}</td></tr>\n                <tr><td style=\"padding:3px 0;color:#d1d5db;font-size:13px;\">✅ {{ isFR ? 'Top 3 workflows n8n prioritaires' : 'Top 3 priority n8n workflows' }}</td></tr>\n                <tr><td style=\"padding:3px 0;color:#d1d5db;font-size:13px;\">✅ {{ isFR ? 'Prochaines étapes concrètes (7 jours)' : 'Concrete next steps (7 days)' }}</td></tr>\n              </table>\n            </td></tr>\n          </table>\n        </td>\n      </tr>\n\n      <!-- Footer -->\n      <tr>\n        <td style=\"padding:20px 40px;border-top:1px solid #374151;text-align:center;\">\n          <p style=\"margin:0 0 6px;color:#6b7280;font-size:12px;\">\n            {{ isFR\n              ? 'Cet audit vous a été envoyé suite à votre demande sur autoflow-ai.com'\n              : 'This audit was sent following your request on autoflow-ai.com' }}\n          </p>\n          <p style=\"margin:0;color:#6b7280;font-size:12px;\">\n            {{ isFR ? 'Questions ? ' : 'Questions? ' }}\n            <a href=\"mailto:contact@autoflow-ai.com\" style=\"color:#a78bfa;\">contact@autoflow-ai.com</a>\n          </p>\n        </td>\n      </tr>\n\n    </table>\n  </td></tr>\n</table>\n</body>\n</html>",
+        "options": {}
+      },
       "credentials": {
         "smtp": {
-          "id": "GovnnvbYUC6tz8Wn",
-          "name": "SMTP account"
+          "id": "YOUR_SMTP_CREDENTIAL_ID",
+          "name": "SMTP"
         }
       }
     },
     {
-      "parameters": {
-        "chatId": "8229030669",
-        "text": "=✅ *PDF Livré !*\n👤 {{ $('Préparer lien PDF').first().json.nom }}\n📧 {{ $('Préparer lien PDF').first().json.email }}\n\n📄 [Voir le PDF]({{ $json.pdfLink }})",
-        "additionalFields": {
-          "disable_web_page_preview": true,
-          "parse_mode": "Markdown"
-        }
-      },
-      "id": "203f6cd0-6145-4523-8aee-c8e06fa79637",
+      "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
       "name": "Telegram PDF Livré",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        2608,
-        480
+        2020,
+        420
       ],
-      "webhookId": "0ad49f2c-a039-43ef-9881-31979bae53da",
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "=✅ *PDF Livré !*\n👤 {{ $json.nom }}\n📧 {{ $json.email }}\n🌍 *Langue :* {{ $json.langue }}\n\n📄 [Voir le PDF]({{ $json.pdfLink }})",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "disable_web_page_preview": true
+        }
+      },
       "credentials": {
         "telegramApi": {
-          "id": "5qHObKcvTDWQZ7uY",
-          "name": "Telegram SiteNewLead"
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Telegram Bot"
         }
       }
     },
     {
+      "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+      "name": "Répondre au Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        340,
+        500
+      ],
       "parameters": {
         "respondWith": "json",
         "responseBody": "{ \"success\": true }",
         "options": {
           "responseCode": 200
         }
-      },
-      "id": "3a769ce5-ce87-4a31-92be-72ddd58bda33",
-      "name": "Répondre au Webhook",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        928,
-        560
-      ]
-    },
-    {
-      "parameters": {
-        "formId": "QKD61l"
-      },
-      "type": "n8n-nodes-tallyforms.tallyTrigger",
-      "typeVersion": 2,
-      "position": [
-        688,
-        368
-      ],
-      "id": "d6d20c69-285c-40fa-be8d-2d4bb29ea3a7",
-      "name": "Tally Trigger",
-      "webhookId": "ed3601f7-4c31-4c17-829c-2db220b059ea",
-      "credentials": {
-        "tallyApi": {
-          "id": "T86MZtW7gn3F8Isj",
-          "name": "Tally account"
-        }
       }
     }
   ],
-  "pinData": {},
   "connections": {
+    "Webhook Tally": {
+      "main": [
+        [
+          {
+            "node": "Extraire données Tally",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Répondre au Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
     "Extraire données Tally": {
       "main": [
         [
@@ -287,14 +298,14 @@
       "main": [
         [
           {
-            "node": "Convertir HTML → PDF (Google Drive)",
+            "node": "Convertir HTML en PDF (Google Drive)",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Convertir HTML → PDF (Google Drive)": {
+    "Convertir HTML en PDF (Google Drive)": {
       "main": [
         [
           {
@@ -337,35 +348,34 @@
           }
         ]
       ]
-    },
-    "Tally Trigger": {
-      "main": [
-        [
-          {
-            "node": "Extraire données Tally",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Répondre au Webhook",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
   },
-  "versionId": "c357990a-87b2-40f4-9a03-09d0f760e0fa",
   "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
+    "instanceId": "",
+    "templateCredsSetupCompleted": true
   },
-  "id": "X5WOC2CvZTOikqVA",
-  "tags": []
+  "tags": [
+    {
+      "name": "tally"
+    },
+    {
+      "name": "telegram"
+    },
+    {
+      "name": "leads"
+    },
+    {
+      "name": "audit"
+    },
+    {
+      "name": "pdf"
+    }
+  ]
 }

@@ -38,6 +38,73 @@
       --shadow: 0 4px 24px rgba(124, 58, 237, 0.15);
     }
 
+    /* ── LIGHT MODE ── */
+    [data-theme="light"] {
+      --bg-primary: #f8f9ff;
+      --bg-secondary: #f0f2ff;
+      --bg-card: #ffffff;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 24px rgba(124, 58, 237, 0.12);
+    }
+
+    [data-theme="light"] header {
+      background: rgba(248, 249, 255, 0.92) !important;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    [data-theme="light"] .hero-bg {
+      opacity: 0.06;
+    }
+
+    [data-theme="light"] .badge {
+      background: rgba(124, 58, 237, 0.08);
+      color: #7c3aed;
+    }
+
+    [data-theme="light"] .token-card {
+      background: rgba(248, 249, 255, 0.8);
+    }
+
+    [data-theme="light"] .lang-btn {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    [data-theme="light"] .lang-btn.active {
+      background: var(--accent-gradient);
+      color: #fff;
+    }
+
+    [data-theme="light"] .social-link:hover {
+      background: rgba(124, 58, 237, 0.1);
+    }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--accent-purple);
+      color: var(--accent-purple);
+      box-shadow: 0 0 12px rgba(124, 58, 237, 0.3);
+    }
+
     html {
       scroll-behavior: smooth
     }
@@ -1076,6 +1143,7 @@
           <button class="lang-btn active" id="btnFR" onclick="setLang('fr')">🇫🇷 FR</button>
           <button class="lang-btn" id="btnEN" onclick="setLang('en')">🇬🇧 EN</button>
         </div>
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Changer le thème">🌙</button>
         <div class="header-cta">
           <a href="https://tally.so/r/QKD61l" target="_blank" class="btn btn-primary" data-fr="Audit Gratuit"
             data-en="Free Audit">Audit Gratuit</a>
@@ -1808,9 +1876,24 @@
           <a href="https://tally.so/r/QKD61l" target="_blank" class="en-content"
             style="display:none;color:#a78bfa;font-weight:600">Free Audit</a>
         </div>
+        <div class="footer-social" style="display:flex;align-items:center;gap:12px;margin-top:16px">
+          <a href="https://x.com/Sel_wwl" target="_blank" rel="noopener" title="X / Twitter"
+            style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.2s;font-size:0.95rem;"
+            onmouseover="this.style.borderColor='#7c3aed';this.style.color='#a78bfa';this.style.boxShadow='0 0 10px rgba(124,58,237,0.3)'"
+            onmouseout="this.style.borderColor='';this.style.color='';this.style.boxShadow=''">
+            𝕏
+          </a>
+          <a href="https://www.linkedin.com/in/selyan-pourquey-a75796382/" target="_blank" rel="noopener"
+            title="LinkedIn"
+            style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.2s;font-size:0.9rem;"
+            onmouseover="this.style.borderColor='#7c3aed';this.style.color='#a78bfa';this.style.boxShadow='0 0 10px rgba(124,58,237,0.3)'"
+            onmouseout="this.style.borderColor='';this.style.color='';this.style.boxShadow=''">
+            in
+          </a>
+        </div>
         <div class="footer-copy">
-          <span class="fr-content">© 2025 AutoFlow AI — Expert n8n &amp; Automatisation IA pour e-commerçants</span>
-          <span class="en-content" style="display:none">© 2025 AutoFlow AI — n8n &amp; AI Automation Expert for
+          <span class="fr-content">© 2026 AutoFlow AI — Expert n8n &amp; Automatisation IA pour e-commerçants</span>
+          <span class="en-content" style="display:none">© 2026 AutoFlow AI — n8n &amp; AI Automation Expert for
             e-commerce</span>
         </div>
       </div>
@@ -1948,6 +2031,34 @@
         }
       }
     }, { passive: true });
+
+    // ============================================================
+    // DARK / LIGHT MODE TOGGLE
+    // ============================================================
+    function toggleTheme() {
+      var current = document.documentElement.getAttribute('data-theme');
+      var next = current === 'light' ? 'dark' : 'light';
+      applyTheme(next);
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        document.getElementById('themeToggle').textContent = '☀️';
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        document.getElementById('themeToggle').textContent = '🌙';
+      }
+      try { localStorage.setItem('autoflow-theme', theme); } catch (e) { }
+    }
+
+    // Init theme on load
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem('autoflow-theme'); } catch (e) { }
+      var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+      applyTheme(saved || (prefersLight ? 'light' : 'dark'));
+    })();
   </script>
 </body>
 
