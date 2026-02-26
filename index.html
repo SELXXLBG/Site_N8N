@@ -42,15 +42,6 @@
       --font-display: 'Outfit', 'Inter', sans-serif;
     }
 
-    /* ── NOISE TEXTURE ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
-    }
 
     /* ── THEME TOGGLE ── */
     .theme-toggle {
@@ -1925,15 +1916,7 @@
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-logo"><span style="opacity:0.5;font-weight:700;font-size:0.85em">N //</span> NEXUS</div>
-        <div class="social-badges">
-          <a href="https://www.linkedin.com/in/selyan-pourquey-a75796382/" target="_blank" class="social-badge">
-            <span>💼</span> LinkedIn
-          </a>
-          <a href="https://x.com/Sel_wwl" target="_blank" class="social-badge">
-            <span>🐦</span> X / Twitter
-          </a>
-        </div>
+        <div class="footer-logo">NEXUS</div>
         <div class="footer-links">
           <a href="#problems" class="fr-content">Problèmes</a>
           <a href="#problems" class="en-content" style="display:none">Problems</a>
@@ -1945,21 +1928,6 @@
             style="color:#10b981;font-weight:600">Audit Gratuit</a>
           <a href="https://tally.so/r/QKD61l" target="_blank" class="en-content"
             style="display:none;color:#10b981;font-weight:600">Free Audit</a>
-        </div>
-        <div class="footer-social" style="display:flex;align-items:center;gap:12px;margin-top:16px">
-          <a href="https://x.com/Sel_wwl" target="_blank" rel="noopener" title="X / Twitter"
-            style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.2s;font-size:0.95rem;"
-            onmouseover="this.style.borderColor='#10b981';this.style.color='#10b981';this.style.boxShadow='0 0 10px rgba(16,185,129,0.3)'"
-            onmouseout="this.style.borderColor='';this.style.color='';this.style.boxShadow=''">
-            𝕏
-          </a>
-          <a href="https://www.linkedin.com/in/selyan-pourquey-a75796382/" target="_blank" rel="noopener"
-            title="LinkedIn"
-            style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;border:1px solid var(--border);color:var(--text-secondary);transition:all 0.2s;font-size:0.9rem;"
-            onmouseover="this.style.borderColor='#10b981';this.style.color='#10b981';this.style.boxShadow='0 0 10px rgba(16,185,129,0.3)'"
-            onmouseout="this.style.borderColor='';this.style.color='';this.style.boxShadow=''">
-            in
-          </a>
         </div>
         <div class="footer-copy">
           <span class="fr-content">© 2026 Nexus — Expert n8n &amp; Automatisation IA pour e-commerçants</span>
