@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ Audit en cours… | Nexus</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f172a'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-family='Outfit%2C sans-serif' font-weight='800' font-size='68' fill='%2310b981'%3EN%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --green: #10b981;
+            --green-light: #34d399;
+            --green-glow: rgba(16, 185, 129, 0.35);
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.75);
+            --border: rgba(16, 185, 129, 0.18);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Orbs */
+        .bg-orb {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.13) 0%, transparent 70%);
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 0;
+            animation: breathe 8s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        .bg-orb-2 {
+            position: absolute;
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.07) 0%, transparent 70%);
+            bottom: -100px;
+            right: -80px;
+            z-index: 0;
+            animation: breathe 12s ease-in-out infinite alternate-reverse;
+            pointer-events: none;
+        }
+
+        @keyframes breathe {
+            from {
+                opacity: 0.5;
+                transform: translateX(-50%) scale(1);
+            }
+
+            to {
+                opacity: 0.9;
+                transform: translateX(-50%) scale(1.1);
+            }
+        }
+
+        /* Grid dots */
+        body::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 32px 32px;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Lang switcher */
+        .lang-bar {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 100;
+            display: flex;
+            gap: 6px;
+        }
+
+        .lang-btn {
+            padding: 5px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.2s;
+        }
+
+        .lang-btn.active {
+            background: var(--green);
+            color: #000;
+            border-color: transparent;
+            font-weight: 700;
+        }
+
+        /* Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 480px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        /* Logo */
+        .brand {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--green);
+            margin-bottom: 2rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 24px;
+            padding: 2.5rem 2rem 2rem;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5), 0 0 80px rgba(16, 185, 129, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* top line glow */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+        }
+
+        /* Spinner (état loading) */
+        .spinner-wrap {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.75rem;
+            position: relative;
+        }
+
+        .ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+        }
+
+        .ring-outer {
+            border-top-color: var(--green);
+            border-right-color: var(--green);
+            animation: spin 1.4s linear infinite;
+        }
+
+        .ring-inner {
+            inset: 12px;
+            border-bottom-color: var(--green-light);
+            border-left-color: var(--green-light);
+            animation: spin 0.9s linear infinite reverse;
+        }
+
+        .spinner-icon {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Icône succès (état done) */
+        .success-icon {
+            display: none;
+            width: 80px;
+            height: 80px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.75rem;
+            font-size: 2.2rem;
+            box-shadow: 0 0 30px var(--green-glow);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 900;
+            line-height: 1.15;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(to right, #fff, #d1fae5);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 0.93rem;
+            line-height: 1.65;
+            margin-bottom: 1.75rem;
+        }
+
+        /* File chip */
+        .file-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            background: rgba(15, 23, 42, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .file-emoji {
+            font-size: 1.8rem;
+        }
+
+        .file-meta h4 {
+            font-size: 0.88rem;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+
+        .file-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            letter-spacing: 0.05em;
+        }
+
+        .file-badge.generating {
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .file-badge.ready {
+            color: var(--green);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        /* Steps */
+        .steps {
+            list-style: none;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.75rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            font-size: 0.88rem;
+            color: var(--muted);
+            transition: color 0.4s;
+        }
+
+        .step.done {
+            color: #d1fae5;
+        }
+
+        .step.active {
+            color: #fff;
+        }
+
+        .step-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.68rem;
+            flex-shrink: 0;
+            transition: all 0.4s;
+        }
+
+        .step.pending .step-dot {
+            border: 2px solid #334155;
+            color: #334155;
+        }
+
+        .step.active .step-dot {
+            border: 2px solid var(--green);
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--green);
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        .step.done .step-dot {
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid var(--green);
+            color: var(--green);
+        }
+
+        @keyframes pulse-dot {
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+            }
+        }
+
+        /* Progress bar */
+        .progress-wrap {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 99px;
+            height: 5px;
+            overflow: hidden;
+            margin-bottom: 1.25rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 99px;
+            background: var(--green);
+            width: 0%;
+            transition: width 0.8s cubic-bezier(.4, 0, .2, 1);
+            box-shadow: 0 0 10px var(--green-glow);
+        }
+
+        /* Timer */
+        .timer-line {
+            color: var(--muted);
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .timer-line strong {
+            color: var(--green-light);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* CTA Bouton (caché pendant loading) */
+        .btn-download {
+            display: none;
+            width: 100%;
+            padding: 1.1rem;
+            background: var(--green);
+            color: #000;
+            font-weight: 800;
+            font-size: 1rem;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px -10px var(--green-glow);
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px -10px var(--green-glow);
+            filter: brightness(1.1);
+        }
+
+        /* Shine animation */
+        .btn-download::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        /* Footer note */
+        .footer-note {
+            margin-top: 1.5rem;
+            font-size: 0.76rem;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        /* Polling indicator */
+        .poll-dot {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--green);
+            margin-right: 6px;
+            animation: blink 2s ease-in-out infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="lang-bar">
+        <button class="lang-btn active" id="btn-fr" onclick="setLang('fr')">🇫🇷 FR</button>
+        <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 EN</button>
+    </div>
+
+    <div class="bg-orb"></div>
+    <div class="bg-orb-2"></div>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="brand">NEXUS</div>
+
+        <div class="card">
+            <!-- Spinner (loading) -->
+            <div class="spinner-wrap" id="spinner">
+                <div class="ring ring-outer"></div>
+                <div class="ring ring-inner"></div>
+                <div class="spinner-icon">🤖</div>
+            </div>
+
+            <!-- Icône succès -->
+            <div class="success-icon" id="success-icon">⚡</div>
+
+            <h1 id="main-title"></h1>
+            <p class="subtitle" id="main-sub"></p>
+
+            <!-- File chip -->
+            <div class="file-chip">
+                <div class="file-emoji">📋</div>
+                <div class="file-meta">
+                    <h4 id="file-name">Nexus_Audit_Ecommerce.pdf</h4>
+                    <span class="file-badge generating" id="file-badge"></span>
+                </div>
+            </div>
+
+            <!-- Steps (visibles seulement en loading) -->
+            <ul class="steps" id="steps-list">
+                <li class="step done" id="step-0">
+                    <div class="step-dot">✓</div><span id="step-0-text"></span>
+                </li>
+                <li class="step active" id="step-1">
+                    <div class="step-dot">◉</div><span id="step-1-text"></span>
+                </li>
+                <li class="step pending" id="step-2">
+                    <div class="step-dot">○</div><span id="step-2-text"></span>
+                </li>
+                <li class="step pending" id="step-3">
+                    <div class="step-dot">○</div><span id="step-3-text"></span>
+                </li>
+                <li class="step pending" id="step-4">
+                    <div class="step-dot">○</div><span id="step-4-text"></span>
+                </li>
+            </ul>
+
+            <!-- Progress bar -->
+            <div class="progress-wrap" id="progress-wrap">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+
+            <!-- Timer -->
+            <div class="timer-line" id="timer-line">
+                <span id="timer-label"></span>&nbsp;<strong id="countdown">2:00</strong>
+            </div>
+
+            <!-- Bouton téléchargement (caché jusqu'à prêt) -->
+            <a href="#" id="btn-download" class="btn-download" target="_blank"></a>
+        </div>
+
+        <div class="footer-note" id="footer-note"></div>
+    </div>
+
+    <script>
+        // ── i18n ──
+        const i18n = {
+            fr: {
+                title_loading: 'Votre audit<br>est en cours…',
+                title_done: 'Votre audit est<br>prêt ! 🎉',
+                sub_loading: 'Notre IA analyse votre boutique et prépare vos recommandations personnalisées. Restez sur cette page.',
+                sub_done: 'Votre rapport personnalisé est disponible. Téléchargez-le ci-dessous — il vous a aussi été envoyé par email.',
+                badge_loading: 'EN GÉNÉRATION…',
+                badge_done: 'PRÊT À TÉLÉCHARGER ✓',
+                steps: [
+                    'Formulaire reçu & données sécurisées',
+                    'Analyse de votre profil e-commerce',
+                    'Génération des recommandations IA',
+                    'Mise en page du rapport PDF',
+                    'Envoi par email à votre adresse'
+                ],
+                timer_label: '⏱ Disponible dans environ',
+                btn_download: '📄 Télécharger mon audit',
+                footer: '🔒 Vos données sont traitées de manière confidentielle',
+                poll_check: '<span class="poll-dot"></span>Vérification en cours…'
+            },
+            en: {
+                title_loading: 'Your audit<br>is being generated…',
+                title_done: 'Your audit is<br>ready! 🎉',
+                sub_loading: 'Our AI is analysing your store and preparing your personalised recommendations. Stay on this page.',
+                sub_done: 'Your personalised report is available. Download it below — it has also been sent to your email.',
+                badge_loading: 'GENERATING…',
+                badge_done: 'READY TO DOWNLOAD ✓',
+                steps: [
+                    'Form received & data secured',
+                    'Analysing your e-commerce profile',
+                    'Generating AI recommendations',
+                    'Formatting the PDF report',
+                    'Sending to your email address'
+                ],
+                timer_label: '⏱ Ready in approximately',
+                btn_download: '📄 Download my audit',
+                footer: '🔒 Your data is handled confidentially',
+                poll_check: '<span class="poll-dot"></span>Checking…'
+            }
+        };
+
+        // ── Config ──
+        // URL du webhook n8n qui renvoie { status, pdfLink } selon le respondent_id
+        // NOTE: Si vous testez en direct dans n8n, utilisez /webhook-test/. Si le workflow est ACTIVÉ, utilisez /webhook/.
+        const urlParams = new URLSearchParams(window.location.search);
+        const isTest = urlParams.has('test');
+        const N8N_STATUS_URL = isTest
+            ? 'https://n8n.morganjaouen.fr/webhook-test/get-audit-status'
+            : 'https://n8n.morganjaouen.fr/webhook/get-audit-status';
+        const POLL_INTERVAL_MS = 6000;   // vérif toutes les 6s
+        const TOTAL_SECS = 120;          // durée estimée affichée
+        const STEPS_TIMING = [
+            { id: 'step-1', activate: 0, complete: 22, progress: 20 },
+            { id: 'step-2', activate: 22, complete: 55, progress: 50 },
+            { id: 'step-3', activate: 55, complete: 95, progress: 78 },
+            { id: 'step-4', activate: 95, complete: 118, progress: 95 },
+        ];
+
+        // ── State ──
+        let lang = 'fr';
+        let elapsed = 0;
+        let finished = false;
+        let pollTimer, countdownTimer;
+
+        // ── Helpers ──
+        function fmt(s) {
+            return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+        }
+
+        function setStep(id, state) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.className = 'step ' + state;
+            el.querySelector('.step-dot').textContent =
+                state === 'done' ? '✓' : state === 'active' ? '◉' : '○';
+        }
+
+        // ── Render ──
+        function render() {
+            const t = i18n[lang];
+            document.documentElement.lang = lang;
+            document.getElementById('main-title').innerHTML = finished ? t.title_done : t.title_loading;
+            document.getElementById('main-sub').textContent = finished ? t.sub_done : t.sub_loading;
+            document.getElementById('timer-label').textContent = t.timer_label;
+            document.getElementById('footer-note').textContent = t.footer;
+            document.getElementById('btn-download').textContent = t.btn_download;
+            t.steps.forEach((s, i) => {
+                const el = document.getElementById(`step-${i}-text`);
+                if (el) el.textContent = s;
+            });
+        }
+
+        function setLang(l) {
+            lang = l;
+            document.getElementById('btn-fr').classList.toggle('active', l === 'fr');
+            document.getElementById('btn-en').classList.toggle('active', l === 'en');
+            try { localStorage.setItem('nexus-lang', l); } catch (e) { }
+            render();
+        }
+
+        // ── Transition vers état "done" ──
+        function markDone(pdfLink) {
+            if (finished) return;
+            finished = true;
+
+            // Arrêter les timers
+            clearInterval(countdownTimer);
+            clearInterval(pollTimer);
+
+            // UI : spinner → icône succès
+            document.getElementById('spinner').style.display = 'none';
+            const si = document.getElementById('success-icon');
+            si.style.display = 'flex';
+
+            // Steps & progress
+            for (let i = 0; i <= 4; i++) setStep('step-' + i, 'done');
+            document.getElementById('progress').style.width = '100%';
+
+            // Badge
+            const badge = document.getElementById('file-badge');
+            badge.className = 'file-badge ready';
+
+            // Cacher timer, steps, progress
+            document.getElementById('timer-line').style.display = 'none';
+            document.getElementById('steps-list').style.display = 'none';
+            document.getElementById('progress-wrap').style.display = 'none';
+
+            // Bouton download
+            const btn = document.getElementById('btn-download');
+            btn.href = pdfLink;
+            btn.style.display = 'block';
+
+            // Nommer le fichier dans le chip
+            document.getElementById('file-name').textContent = 'Audit_Nexus.pdf';
+
+            render();
+        }
+
+        // ── Countdown tick ──
+        function tick() {
+            elapsed++;
+            const remaining = Math.max(0, TOTAL_SECS - elapsed);
+            document.getElementById('countdown').textContent = fmt(remaining);
+
+            STEPS_TIMING.forEach(step => {
+                if (elapsed >= step.complete) setStep(step.id, 'done');
+                else if (elapsed >= step.activate) setStep(step.id, 'active');
+                if (elapsed >= step.activate && elapsed < step.complete) {
+                    document.getElementById('progress').style.width = step.progress + '%';
+                }
+            });
+
+            // Si countdown écoulé mais pas encore de réponse → on attend le poll
+            if (elapsed >= TOTAL_SECS) {
+                clearInterval(countdownTimer);
+                document.getElementById('countdown').textContent = '…';
+                document.getElementById('progress').style.width = '99%';
+            }
+        }
+
+        // ── Polling n8n ──
+        async function checkStatus(respondentId) {
+            if (finished) return;
+            console.log(`Polling status for ID: [${respondentId}] via ${N8N_STATUS_URL}`);
+            try {
+                const res = await fetch(N8N_STATUS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ respondent_id: respondentId })
+                });
+                //... (rest of function)
+
+
+                if (res.status === 404) {
+                    console.warn('Status webhook not found or not active.');
+                    return;
+                }
+
+                if (!res.ok) {
+                    throw new Error('Server error');
+                }
+
+                const data = await res.json();
+
+                // n8n répond { status: 'ready', pdfLink: 'https://...' } quand c'est prêt
+                if (data.status === 'ready' && data.pdfLink) {
+                    markDone(data.pdfLink);
+                } else if (data.status === 'processing') {
+                    // Update UI if we want to show real progress
+                    console.log('Audit still processing...');
+                }
+            } catch (e) {
+                console.error('Polling error:', e);
+                // Si l'erreur persiste trop longtemps, on peut afficher un message
+                // mais ici on reste discret pour ne pas effrayer l'utilisateur
+            }
+        }
+
+        // ── Init ──
+        (function init() {
+            // Langue
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
+            let saved = null;
+            try { saved = localStorage.getItem('nexus-lang'); } catch (e) { }
+            const detected = urlLang || saved || (navigator.language.startsWith('en') ? 'en' : 'fr');
+            setLang(detected);
+
+            // Badge initial
+            document.getElementById('file-badge').textContent = i18n[lang].badge_loading;
+            document.getElementById('progress').style.width = '5%';
+
+            // Respondent ID depuis l'URL (le segment final ou paramètre)
+            let respondentId = urlParams.get('respondent_id') || urlParams.get('id');
+
+            // Si pas trouvé dans les params, on cherche dans le path (ex: .../wait.html/7RNyVjZ...)
+            if (!respondentId) {
+                const pathParts = window.location.pathname.split('/');
+                const lastPart = pathParts[pathParts.length - 1];
+                if (lastPart && lastPart !== 'audit-wait.html' && lastPart !== '') {
+                    respondentId = lastPart;
+                }
+            }
+
+            if (respondentId) {
+                // Nettoyage de l'ID : on décode et on garde le premier bloc (le vrai ID Tally)
+                // Cela enlève les suffixes comme "🇺🇸 English"
+                const decoded = decodeURIComponent(respondentId);
+                const cleanedId = decoded.trim().split(/[\s🇺🇸🇬🇧🇫🇷]/)[0];
+
+                console.log('Detected respondentId:', cleanedId);
+
+                // Auto-détection langue si présente dans l'URL brute
+                const rawUrl = window.location.href.toLowerCase();
+                if (rawUrl.includes('english') || rawUrl.includes('🇺🇸') || rawUrl.includes('🇬🇧')) {
+                    setLang('en');
+                }
+
+                // Lancer countdown
+                countdownTimer = setInterval(tick, 1000);
+
+                // Lancer polling (première vérif après 15s, puis toutes les 6s)
+                setTimeout(() => {
+                    checkStatus(cleanedId);
+                    pollTimer = setInterval(() => checkStatus(cleanedId), POLL_INTERVAL_MS);
+                }, 15000);
+            } else {
+                // Pas d'ID : mode démo — on simule juste le countdown
+                countdownTimer = setInterval(tick, 1000);
+                // Après TOTAL_SECS, on simule un audit prêt avec un lien factice
+                setTimeout(() => {
+                    markDone('#demo');
+                }, (TOTAL_SECS + 2) * 1000);
+            }
+
+            render();
+        })();
+    </script>
+</body>
+
+</html>
