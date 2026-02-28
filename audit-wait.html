@@ -597,7 +597,12 @@
 
         // ── Config ──
         // URL du webhook n8n qui renvoie { status, pdfLink } selon le respondent_id
-        const N8N_STATUS_URL = 'https://n8n.morganjaouen.fr/webhook/get-audit-status';
+        // NOTE: Si vous testez en direct dans n8n, utilisez /webhook-test/. Si le workflow est ACTIVÉ, utilisez /webhook/.
+        const urlParams = new URLSearchParams(window.location.search);
+        const isTest = urlParams.has('test');
+        const N8N_STATUS_URL = isTest
+            ? 'https://n8n.morganjaouen.fr/webhook-test/get-audit-status'
+            : 'https://n8n.morganjaouen.fr/webhook/get-audit-status';
         const POLL_INTERVAL_MS = 6000;   // vérif toutes les 6s
         const TOTAL_SECS = 120;          // durée estimée affichée
         const STEPS_TIMING = [

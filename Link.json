@@ -1,0 +1,147 @@
+{
+  "name": "Link",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-audit-status",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "756682cf-77e7-429e-99a3-d843c94a0a31",
+      "name": "Webhook Status Check",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -352,
+        -128
+      ],
+      "webhookId": "get-audit-status"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1ZkS74AW0AKYpdAgYpXYsk0F3gVnWfFacjIZrw0SMdQY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "respondentId",
+              "lookupValue": "={{ $json.body.respondent_id || $json.respondent_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1ccc7e97-dd2b-4bab-9aa1-fa1f12f34837",
+      "name": "Lookup Status GS",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -112,
+        -128
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tYrkqO5ZTN61u0XJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $input.first().json;\nif (lead.audit_ready === 'true' || lead.audit_ready === true) {\n  return [{ json: { status: 'ready', pdfLink: lead.pdf_url } }];\n}\nreturn [{ json: { status: 'processing' } }];"
+      },
+      "id": "e708ca4a-3e4f-49c7-9010-1bdcefadf6ad",
+      "name": "Status Logic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -128
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "032da63d-f1b3-4134-8db7-593bc784d6a0",
+      "name": "Respond Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        -128
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook Status Check": {
+      "main": [
+        [
+          {
+            "node": "Lookup Status GS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Status GS": {
+      "main": [
+        [
+          {
+            "node": "Status Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status Logic": {
+      "main": [
+        [
+          {
+            "node": "Respond Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "326ad29d-abc0-47d7-8a6e-1bd7ed82c8fa",
+  "meta": {
+    "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
+  },
+  "id": "uE1j4ObaEWDnYfhM",
+  "tags": []
+}

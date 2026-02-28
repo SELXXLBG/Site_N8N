@@ -1,7 +1,0 @@
-# Redirections CloudFlare Pages
-
-# Redirection www vers apex
-https://www.:splat https://:splat 301!
-
-# SPA routing fallback
-/*    /index.html   200

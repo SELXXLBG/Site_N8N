@@ -8,13 +8,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "cd65ee7c-1933-45a0-ac95-321e30ff47c4",
+      "id": "270c980f-1c2a-42c1-8a97-de3828ce8add",
       "name": "Webhook Tally",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        2624,
-        736
+        5856,
+        1408
       ],
       "webhookId": "00ba3fc8-e2e5-410f-b792-52bbfd2ee900"
     },
@@ -26,26 +26,26 @@
           "responseCode": 200
         }
       },
-      "id": "20413439-b3b8-4715-acaa-6c9b20794899",
+      "id": "58789f6f-2f2a-4810-918c-50d95581ccc2",
       "name": "Répondre au Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        2864,
-        624
+        6096,
+        1296
       ]
     },
     {
       "parameters": {
         "jsCode": "const body = $input.first().json.body;\nif (!body || !body.data || !Array.isArray(body.data.fields)) {\n  throw new Error('Structure Tally invalide');\n}\nconst fields = body.data.fields;\n\n// Résout un champ : si MULTIPLE_CHOICE/CHECKBOXES, mappe les UUIDs → textes via options[]\nfunction resolve(field) {\n  if (!field) return 'Non renseigné';\n  const v = field.value;\n  if (v === null || v === undefined || v === '' || v === false) return 'Non renseigné';\n  if (typeof v === 'boolean') return v ? 'Oui' : 'Non';\n  if (Array.isArray(v) && field.options && field.options.length > 0) {\n    const texts = v.map(uuid => {\n      const opt = field.options.find(o => o.id === uuid);\n      return opt ? opt.text : uuid;\n    }).filter(Boolean);\n    return texts.length > 0 ? texts.join(', ') : 'Non renseigné';\n  }\n  if (Array.isArray(v)) return v.join(', ') || 'Non renseigné';\n  return String(v).trim() || 'Non renseigné';\n}\n\n// Cherche par label (insensible casse, trim)\nfunction getByLabel(...labels) {\n  for (const lbl of labels) {\n    const f = fields.find(f => f.label && f.label.trim().toLowerCase() === lbl.trim().toLowerCase());\n    if (f) return resolve(f);\n  }\n  return 'Non renseigné';\n}\n\n// Détection langue via champ dédié ou valeur par défaut FR\nconst langueRaw = getByLabel('Langue', 'Language', 'Langue préférée');\nconst langue = langueRaw.toLowerCase().includes('en') || langueRaw.toLowerCase().includes('english') ? 'en' : 'fr';\n\nreturn [{\n  json: {\n    respondentId: body.data.respondentId || '',\n    submissionId: body.data.submissionId || '',\n    nom:        getByLabel('Prénom et Nom', 'Nom complet', 'Nom', 'Prénom'),\n    email:      getByLabel('Email professionnel', 'Email', 'Adresse email'),\n    site:       getByLabel('Site e-commerce (URL)', 'Site web', 'URL du site', 'Site'),\n    plateforme: getByLabel('Plateforme utilisée', 'Plateforme e-commerce', 'Plateforme'),\n    ca:         getByLabel('Taille de la boutique', 'Chiffre d\\'affaires mensuel', 'CA mensuel', 'Revenus'),\n    probleme:   getByLabel('Problème principal', 'Probleme principal', 'Défi principal'),\n    objectif:   getByLabel('Objectif business principal', 'Objectif principal', 'Objectif'),\n    budget:     getByLabel('Budget estimé', 'Budget mensuel', 'Budget'),\n    urgence:    getByLabel('Urgence', 'Délai souhaité', 'Timeline'),\n    autoExist:  getByLabel('Automatisations déjà en place', 'Automatisations existantes', 'Outils actuels'),\n    source:     getByLabel('Source de découverte', 'Source', 'Comment nous avez-vous trouvé'),\n    langue\n  }\n}];"
       },
-      "id": "9a57997f-f343-43b3-8afb-5bfe1164bc91",
+      "id": "5fdb766d-538b-4c51-bafe-87502d7a9e63",
       "name": "Extraire données Tally",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2864,
-        832
+        6096,
+        1504
       ]
     },
     {
@@ -64,13 +64,13 @@
         },
         "options": {}
       },
-      "id": "31fbb356-b992-4656-a0b0-6fcc97f84247",
+      "id": "17392c77-b7a8-4b2d-9318-85e90756d7aa",
       "name": "Anti-Spam — Vérif Google Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        3120,
-        832
+        6352,
+        1504
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -84,13 +84,13 @@
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r.email);\nconst lead = $('Extraire données Tally').first().json;\nconst alreadyDone = rows.length > 0;\nreturn [{ json: { ...lead, alreadyDone } }];"
       },
-      "id": "0d4ea369-1489-4fbf-ab56-f43956769a79",
+      "id": "88d55135-d263-4fd3-97f6-029c474cff60",
       "name": "Déjà soumis ?",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3360,
-        832
+        6592,
+        1504
       ]
     },
     {
@@ -117,13 +117,13 @@
         },
         "options": {}
       },
-      "id": "85365173-fb82-4c38-9a7b-c3898f2c9036",
+      "id": "4472d7d5-25cf-4f5d-b486-125dd9fb84d2",
       "name": "IF — Doublon",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        3600,
-        832
+        6832,
+        1504
       ]
     },
     {
@@ -134,13 +134,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "da125139-f6a7-4066-9c55-a5d6bb7130a5",
+      "id": "6c494a91-0272-4604-925e-322f7822ad65",
       "name": "Telegram — Doublon Bloqué",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        3840,
-        688
+        7072,
+        1360
       ],
       "webhookId": "ca8896f2-b681-4f9b-a1be-2625c7ec0752",
       "credentials": {
@@ -199,13 +199,13 @@
         },
         "options": {}
       },
-      "id": "760cdb91-b2b8-46f5-9116-59cb85a54c52",
+      "id": "11f366cd-4dc5-4036-b76d-55098620c42b",
       "name": "Enregistrer Lead Google Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        3840,
-        976
+        7072,
+        1648
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -222,13 +222,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "c589833b-6f7d-4637-bb31-fa369fab2c04",
+      "id": "303127a4-99d7-4be8-858a-1c38d63b7715",
       "name": "Notif Telegram — Nouveau Lead",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        4080,
-        832
+        7312,
+        1504
       ],
       "webhookId": "a9c25040-3cc4-4f56-b05d-d4e5bc2b9887",
       "credentials": {
@@ -255,18 +255,18 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.langue === 'en' ? 'You are a senior n8n automation expert. Write a concise, actionable e-commerce automation audit in English. Return ONLY inner HTML content (no html/head/body tags), using h2, h3, p, ul, li tags. Be concrete and specific to the client data provided.' : 'Tu es un expert senior en automatisation n8n. Rédige un audit d\\'automatisation e-commerce concis et actionnable en français. Retourne UNIQUEMENT du contenu HTML interne (sans balises html/head/body), en utilisant h2, h3, p, ul, li. Sois concret et adapté aux données du client.' }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.langue === 'en' ? 'Client: ' + $json.nom + ' | Site: ' + $json.site + ' | Platform: ' + $json.plateforme + ' | Monthly revenue: ' + $json.ca + ' | Main problem: ' + $json.probleme + ' | Goal: ' + $json.objectif + ' | Budget: ' + $json.budget + ' | Timeline: ' + $json.urgence + ' | Existing tools: ' + $json.autoExist + '. Write a 3-section audit: 1) Current situation analysis, 2) Top 3 recommended automations with expected ROI, 3) Next steps.' : 'Client : ' + $json.nom + ' | Site : ' + $json.site + ' | Plateforme : ' + $json.plateforme + ' | CA mensuel : ' + $json.ca + ' | Problème principal : ' + $json.probleme + ' | Objectif : ' + $json.objectif + ' | Budget : ' + $json.budget + ' | Urgence : ' + $json.urgence + ' | Outils existants : ' + $json.autoExist + '. Rédige un audit en 3 sections : 1) Analyse de la situation actuelle, 2) Top 3 automatisations recommandées avec ROI estimé, 3) Prochaines étapes concrètes.' }}\"\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.langue === 'en' ? 'You are a senior n8n automation expert. Write a concise, actionable e-commerce automation audit in English. Return ONLY inner HTML content (no html/head/body tags), using h2, h3, p, ul, li tags. Be concrete and specific to the client data provided.' : 'Tu es un expert senior en automatisation n8n. Rédige un audit d\\'automatisation e-commerce concis et actionnable en français. Retourne UNIQUEMENT du contenu HTML interne (sans balises html/head/body), en utilisant h2, h3, p, ul, li. Sois concret et adapté aux données du client.' }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.langue === 'en' ? 'Client: ' + $json.nom + ' | Site: ' + $json.site + ' | Platform: ' + $json.plateforme + ' | Monthly revenue: ' + $json.ca + ' | Main problem: ' + $json.probleme + ' | Goal: ' + $json.objectif + ' | Budget: ' + $json.budget + ' | Timeline: ' + $json.urgence + ' | Existing tools: ' + $json.autoExist + '. Write a 3-section audit: 1) Current situation analysis, 2) Top 3 recommended automations with expected ROI, 3) Next steps.' : 'Client : ' + $json.nom + ' | Site : ' + $json.site + ' | Plateforme : ' + $json.plateforme + ' | CA mensuel : ' + $json.ca + ' | Problème principal : ' + $json.probleme + ' | Objectif : ' + $json.objectif + ' | Budget : ' + $json.budget + ' | Urgence : ' + $json.urgence + ' | Outils existants : ' + $json.autoExist + '. Rédige un audit en 3 sections : 1) Analyse de la situation actuelle, 2) Top 3 automatisations recommandées avec ROI estimé, 3) Prochaines étapes concrètes.' }}\"\n    }\n  ]\n}",
         "options": {
           "timeout": 60000
         }
       },
-      "id": "e8a15c53-3b43-4985-a062-a8cd30a88ae3",
+      "id": "983679e1-9e84-411e-a7cb-22ba5f306ada",
       "name": "Générer Audit HTML (Groq)",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        4320,
-        832
+        7552,
+        1504
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -279,13 +279,13 @@
       "parameters": {
         "jsCode": "let aiContent = '';\ntry {\n  aiContent = $input.first().json.choices[0].message.content || '';\n  aiContent = aiContent.replace(/^```html\\s*/i, '').replace(/```\\s*$/i, '').trim();\n} catch(e) {\n  aiContent = '<p>Contenu indisponible — contactez Nexus directement.</p>';\n}\n\nconst client = $('Extraire données Tally').first().json;\nconst isFR = client.langue !== 'en';\n\nconst html = `<!DOCTYPE html><html lang=\"${client.langue}\"><head><meta charset=\"UTF-8\"><title>Audit Nexus — ${client.nom}</title><style>body{font-family:Arial,sans-serif;background:#0a0f1e;color:#f1f5f9;margin:0;padding:40px}h1{color:#10b981;font-size:2rem;margin-bottom:8px}h2{color:#10b981;font-size:1.3rem;margin-top:32px;border-bottom:1px solid rgba(16,185,129,0.3);padding-bottom:8px}h3{color:#34d399;font-size:1.1rem;margin-top:20px}p,li{color:#94a3b8;line-height:1.7;font-size:0.95rem}.header{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:24px;margin-bottom:32px}.meta span{display:inline-block;background:rgba(255,255,255,0.05);border-radius:6px;padding:4px 12px;margin:4px;font-size:0.85rem;color:#94a3b8}.footer{margin-top:48px;text-align:center;color:#475569;font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:24px}</style></head><body><div class=\"header\"><h1>⚡ ${isFR ? 'Audit Automatisation Nexus' : 'Nexus Automation Audit'}</h1><p style=\"color:#10b981;margin:0\">${isFR ? 'Rapport personnalisé pour' : 'Personalised report for'} <strong>${client.nom}</strong></p><div class=\"meta\" style=\"margin-top:16px\"><span>🌐 ${client.site}</span><span>🛒 ${client.plateforme}</span><span>💰 ${client.ca}</span><span>🌍 ${client.langue.toUpperCase()}</span></div></div>${aiContent}<div class=\"footer\">© ${new Date().getFullYear()} Nexus — nexus-auto.fr</div></body></html>`;\n\nreturn [{ json: { ...client, html } }];"
       },
-      "id": "0b6885c6-81f3-4c3d-b636-3d0a9a70a3f3",
+      "id": "be381123-9fbf-4993-ba77-97f4f777f0e6",
       "name": "Préparer HTML Rapport",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4512,
-        832
+        7744,
+        1504
       ]
     },
     {
@@ -306,13 +306,13 @@
         },
         "options": {}
       },
-      "id": "bfdc1a97-82bd-4657-9b17-ebebf5573862",
+      "id": "9aff4705-ed26-4b9c-ace6-d662c836f5db",
       "name": "Convertir HTML en PDF (Google Drive)",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        4928,
-        832
+        8160,
+        1504
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -337,13 +337,13 @@
         },
         "options": {}
       },
-      "id": "37eb3181-5de6-4245-93da-e4cc93b59957",
+      "id": "c9bab122-e280-4160-b4e5-4fdfa348c70e",
       "name": "Créer Lien Partageable",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        5136,
-        832
+        8368,
+        1504
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -356,30 +356,30 @@
       "parameters": {
         "jsCode": "const fileId      = $('Convertir HTML en PDF (Google Drive)').first().json.id;\nconst client      = $('Préparer HTML Rapport').first().json;\nconst pdfLink     = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;\nconst downloadLink= `https://drive.google.com/uc?export=download&id=${fileId}`;\nreturn [{ json: { ...client, pdfLink, downloadLink, fileId } }];"
       },
-      "id": "8cce4b80-45b0-4370-b4cc-3ee2a47182c3",
+      "id": "1bd3c6ec-8f6a-433a-af1c-14788b3da709",
       "name": "Préparer lien PDF",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        5376,
-        832
+        8608,
+        1504
       ]
     },
     {
       "parameters": {
-        "fromEmail": "audit@nexus-auto.fr",
-        "toEmail": "{{ $node['Extraire données Tally'].json.email }}",
-        "subject": "{{ $node['Extraire données Tally'].json.langue === 'en' ? '⚡ Your Nexus audit is ready!' : '⚡ Votre audit Nexus est prêt !' }}",
-        "html": "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#0a0f1e;font-family:Arial,sans-serif'><table width='100%' cellpadding='0' cellspacing='0'><tr><td align='center' style='padding:40px 20px'><table width='600' cellpadding='0' cellspacing='0' style='background:#1e293b;border:1px solid rgba(16,185,129,0.2);border-radius:16px;overflow:hidden'><tr><td style='background:rgba(16,185,129,0.08);padding:32px;text-align:center;border-bottom:1px solid rgba(16,185,129,0.15)'><h1 style='margin:0;color:#10b981;font-size:1.5rem;font-weight:800'>⚡ {{ $node['Extraire données Tally'].json.langue === 'en' ? 'Your audit is ready' : 'Votre audit est prêt' }}</h1><p style='margin:8px 0 0;color:#64748b;font-size:0.85rem'>NEXUS</p></td></tr><tr><td style='padding:36px 32px'><p style='color:#f1f5f9;margin:0 0 12px'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Hi' : 'Bonjour' }} <strong style='color:#10b981'>{{ $node['Extraire données Tally'].json.nom }}</strong>,</p><p style='color:#94a3b8;line-height:1.7;margin:0 0 28px'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Your personalised audit for <strong style=\"color:#fff\">' + $node['Extraire données Tally'].json.site + '</strong> is ready. Click below to download it:' : 'Votre audit personnalisé pour <strong style=\"color:#fff\">' + $node['Extraire données Tally'].json.site + '</strong> est prêt. Cliquez ci-dessous pour le télécharger :' }}</p><div style='text-align:center;margin:32px 0'><a href='{{ $json.pdfLink }}' target='_blank' style='display:inline-block;background:#10b981;color:#000;font-weight:800;padding:16px 40px;border-radius:12px;text-decoration:none;font-size:1rem'>📄 {{ $node['Extraire données Tally'].json.langue === 'en' ? 'Download my audit' : 'Télécharger mon audit' }}</a></div><p style='background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:14px 16px;color:#34d399;font-size:0.8rem;word-break:break-all;margin:0 0 20px'><strong style='color:#10b981;display:block;margin-bottom:4px'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Direct link:' : 'Lien direct :' }}</strong><a href='{{ $json.pdfLink }}' style='color:#34d399'>{{ $json.pdfLink }}</a></p><p style='color:#475569;font-size:0.82rem;text-align:center;margin:0'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Questions? Reply to this email.' : 'Questions ? Répondez à cet email.' }}</p></td></tr><tr><td style='padding:16px 32px;border-top:1px solid rgba(255,255,255,0.05);text-align:center'><p style='color:#334155;font-size:0.75rem;margin:0'>Nexus &middot; nexus-auto.fr</p></td></tr></table></td></tr></table></body></html>",
+        "fromEmail": "selyanpourqueyouhab@gmail.com",
+        "toEmail": "={{ $node['Extraire données Tally'].json.email }}",
+        "subject": "={{ $node['Extraire données Tally'].json.langue === 'en' ? '⚡ Your Nexus audit is ready!' : '⚡ Votre audit Nexus est prêt !' }}",
+        "html": "=<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#0a0f1e;font-family:Arial,sans-serif'><table width='100%' cellpadding='0' cellspacing='0'><tr><td align='center' style='padding:40px 20px'><table width='600' cellpadding='0' cellspacing='0' style='background:#1e293b;border:1px solid rgba(16,185,129,0.2);border-radius:16px;overflow:hidden'><tr><td style='background:rgba(16,185,129,0.08);padding:32px;text-align:center;border-bottom:1px solid rgba(16,185,129,0.15)'><h1 style='margin:0;color:#10b981;font-size:1.5rem;font-weight:800'>⚡ {{ $node['Extraire données Tally'].json.langue === 'en' ? 'Your audit is ready' : 'Votre audit est prêt' }}</h1><p style='margin:8px 0 0;color:#64748b;font-size:0.85rem'>NEXUS</p></td></tr><tr><td style='padding:36px 32px'><p style='color:#f1f5f9;margin:0 0 12px'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Hi' : 'Bonjour' }} <strong style='color:#10b981'>{{ $node['Extraire données Tally'].json.nom }}</strong>,</p><p style='color:#94a3b8;line-height:1.7;margin:0 0 28px'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Your personalised audit for <strong style=\"color:#fff\">' + $node['Extraire données Tally'].json.site + '</strong> is ready. Click below to download it:' : 'Votre audit personnalisé pour <strong style=\"color:#fff\">' + $node['Extraire données Tally'].json.site + '</strong> est prêt. Cliquez ci-dessous pour le télécharger :' }}</p><div style='text-align:center;margin:32px 0'><a href='{{ $json.pdfLink }}' target='_blank' style='display:inline-block;background:#10b981;color:#000;font-weight:800;padding:16px 40px;border-radius:12px;text-decoration:none;font-size:1rem'>📄 {{ $node['Extraire données Tally'].json.langue === 'en' ? 'Download my audit' : 'Télécharger mon audit' }}</a></div><p style='background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:14px 16px;color:#34d399;font-size:0.8rem;word-break:break-all;margin:0 0 20px'><strong style='color:#10b981;display:block;margin-bottom:4px'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Direct link:' : 'Lien direct :' }}</strong><a href='{{ $json.pdfLink }}' style='color:#34d399'>{{ $json.pdfLink }}</a></p><p style='color:#475569;font-size:0.82rem;text-align:center;margin:0'>{{ $node['Extraire données Tally'].json.langue === 'en' ? 'Questions? Reply to this email.' : 'Questions ? Répondez à cet email.' }}</p></td></tr><tr><td style='padding:16px 32px;border-top:1px solid rgba(255,255,255,0.05);text-align:center'><p style='color:#334155;font-size:0.75rem;margin:0'>Nexus &middot; nexus-auto.fr</p></td></tr></table></td></tr></table></body></html>",
         "options": {}
       },
-      "id": "5edd5b67-eacb-43f3-a821-ac162f220b6d",
+      "id": "6e38bfd4-3238-4529-b852-c8c66bb55e3a",
       "name": "Envoyer Email Client",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        5616,
-        832
+        8848,
+        1504
       ],
       "webhookId": "cd4bc6cd-75d5-4cc4-a96e-308d4f611a44",
       "credentials": {
@@ -398,13 +398,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "6f180540-e3f3-4fda-9085-33f2eb1398b4",
+      "id": "088ea8fc-ca23-4889-a6f8-259e871b5b13",
       "name": "Telegram — PDF Livré",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        5856,
-        832
+        9088,
+        1504
       ],
       "webhookId": "7180c983-31e6-40f7-983a-35c49d7a3303",
       "credentials": {
@@ -433,7 +433,9 @@
           "mappingMode": "defineBelow",
           "value": {
             "pdf_url": "={{ $json.pdfLink }}",
-            "audit_ready": "true"
+            "audit_ready": "true",
+            "row_number": 0,
+            "email": "={{ $json.email }}"
           },
           "matchingColumns": [
             "email"
@@ -450,13 +452,133 @@
               "removed": false
             },
             {
-              "id": "pdf_url",
-              "displayName": "pdf_url",
+              "id": "nom",
+              "displayName": "nom",
               "required": false,
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": false,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "site",
+              "displayName": "site",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "plateforme",
+              "displayName": "plateforme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ca",
+              "displayName": "ca",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "probleme",
+              "displayName": "probleme",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "objectif",
+              "displayName": "objectif",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "urgence",
+              "displayName": "urgence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "autoExist",
+              "displayName": "autoExist",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "langue",
+              "displayName": "langue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alreadyDone",
+              "displayName": "alreadyDone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "respondentId",
+              "displayName": "respondentId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
               "removed": false
             },
             {
@@ -466,20 +588,53 @@
               "defaultMatch": false,
               "display": true,
               "type": "string",
-              "canBeUsedToMatch": false,
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pdf_url",
+              "displayName": "pdf_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "submissionId",
+              "displayName": "submissionId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
               "removed": false
             }
-          ]
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
-      "id": "f1bcb18c-ff02-4281-a427-a739b54ad30a",
+      "id": "7bd9f1c4-c295-49ff-b0fb-5b59e5695740",
       "name": "Update Status Google Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        5616,
-        624
+        8848,
+        1296
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -487,422 +642,56 @@
           "name": "Google Sheets account"
         }
       }
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "get-audit-status",
-        "responseMode": "responseNode",
-        "options": {
-          "allowedOrigins": "*"
-        }
-      },
-      "id": "a879e215-5156-4b08-9663-a307f373e255",
-      "name": "Webhook Status Check",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        2640,
-        1024
-      ],
-      "webhookId": "get-audit-status"
-    },
-    {
-      "parameters": {
-        "documentId": {
-          "__rl": true,
-          "value": "https://docs.google.com/spreadsheets/d/1ZkS74AW0AKYpdAgYpXYsk0F3gVnWfFacjIZrw0SMdQY/edit?gid=0#gid=0",
-          "mode": "url"
-        },
-        "sheetName": {
-          "__rl": true,
-          "value": "gid=0",
-          "mode": "list"
-        },
-        "filtersUI": {
-          "values": [
-            {
-              "lookupColumn": "respondentId",
-              "lookupValue": "={{ $json.body.respondent_id }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "id": "3907e732-40bc-463b-81e9-f586a3bc00f0",
-      "name": "Lookup Status GS",
-      "type": "n8n-nodes-base.googleSheets",
-      "typeVersion": 4.5,
-      "position": [
-        2880,
-        1024
-      ],
-      "alwaysOutputData": true,
-      "credentials": {
-        "googleSheetsOAuth2Api": {
-          "id": "tYrkqO5ZTN61u0XJ",
-          "name": "Google Sheets account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const lead = $input.first().json;\nif (lead.audit_ready === 'true' || lead.audit_ready === true) {\n  return [{ json: { status: 'ready', pdfLink: lead.pdf_url } }];\n}\nreturn [{ json: { status: 'processing' } }];"
-      },
-      "id": "bf2d09f4-d5c4-41c8-b0c6-37d2bee8847f",
-      "name": "Status Logic",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        3120,
-        1024
-      ]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ $json }}",
-        "options": {
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Access-Control-Allow-Origin",
-                "value": "*"
-              }
-            ]
-          }
-        }
-      },
-      "id": "bf63b59a-c1fa-4589-8360-40af84d576c2",
-      "name": "Respond Status",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        3360,
-        1024
-      ]
     },
     {
       "parameters": {
         "jsCode": "const client = $input.first().json;\nconst htmlString = client.html;\n\n// Convertit le HTML string en binaire pour Google Drive upload\nconst buffer = Buffer.from(htmlString, 'utf8');\n\nreturn [{\n  json: { ...client },\n  binary: {\n    data: await this.helpers.prepareBinaryData(\n      buffer,\n      'Audit_Nexus_' + (client.nom || 'client').replace(/ /g,'_') + '.html',\n      'text/html'\n    )\n  }\n}];"
       },
-      "id": "5aa1f387-daf8-45a4-8468-53f5c7e0cba9",
+      "id": "b377ab5d-9c36-40ec-b0fe-c45d073e3a0e",
       "name": "Préparer Binaire HTML",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        4720,
-        832
+        7952,
+        1504
       ]
     }
   ],
   "pinData": {
-    "Webhook Tally": [
+    "Générer Audit HTML (Groq)": [
       {
         "json": {
-          "headers": {
-            "connection": "upgrade",
-            "host": "n8n.morganjaouen.fr",
-            "x-real-ip": "34.96.41.14",
-            "x-forwarded-for": "34.96.41.14",
-            "x-forwarded-proto": "https",
-            "content-length": "5395",
-            "accept": "application/json, text/plain, */*",
-            "content-type": "application/json",
-            "user-agent": "Tally Webhooks",
-            "accept-encoding": "gzip, compress, deflate, br",
-            "sentry-trace": "9c1d216bd43fcf0f41017612177df104-196b64c8de1bc875-0",
-            "baggage": "sentry-environment=production,sentry-release=5e1849cbe502b12751b635b5348889c2d60254e4,sentry-public_key=6af4b6673f1648edaa8fef3f2ca43405,sentry-trace_id=9c1d216bd43fcf0f41017612177df104,sentry-org_id=407628,sentry-sampled=false,sentry-sample_rand=0.6075234180208021,sentry-sample_rate=0"
-          },
-          "params": {},
-          "query": {},
-          "body": {
-            "eventId": "946fa2e7-d502-4c11-a065-68646c089594",
-            "eventType": "FORM_RESPONSE",
-            "createdAt": "2026-02-26T18:06:56.08Z",
-            "data": {
-              "responseId": "xXOWRxy",
-              "submissionId": "xXOWRxy",
-              "respondentId": "7RNyVjZ",
-              "formId": "QKD61l",
-              "formName": "Qualification Leads IA n8n - E-commerce",
-              "createdAt": "2026-02-26T18:06:55Z",
-              "fields": [
-                {
-                  "key": "question_EPbM6A",
-                  "label": "Plateforme utilisée",
-                  "type": "MULTIPLE_CHOICE",
-                  "value": [
-                    "1fd2074a-2a77-485b-ab9a-247dc999b0e5"
-                  ],
-                  "options": [
-                    {
-                      "id": "e23c353a-d153-49ea-9152-f7bba78e2e6e",
-                      "text": "Shopify"
-                    },
-                    {
-                      "id": "eff038c1-a158-4097-bb5a-19607106f245",
-                      "text": "WooCommerce"
-                    },
-                    {
-                      "id": "1fd2074a-2a77-485b-ab9a-247dc999b0e5",
-                      "text": "PrestaShop"
-                    },
-                    {
-                      "id": "7fb34be1-4aa0-4b48-aebe-82087cc30576",
-                      "text": "Magento"
-                    },
-                    {
-                      "id": "e50f9ed2-ce9e-40d0-a6b3-1c0bab10f4b1",
-                      "text": "Autre",
-                      "isOtherOption": true,
-                      "optionId": "e50f9ed2-ce9e-40d0-a6b3-1c0bab10f4b1"
-                    }
-                  ]
-                },
-                {
-                  "key": "question_YZz9j0",
-                  "label": "Taille de la boutique",
-                  "type": "MULTIPLE_CHOICE",
-                  "value": [
-                    "ea70eeaa-5ec6-4488-b91d-e43883c20cb2"
-                  ],
-                  "options": [
-                    {
-                      "id": "5d657a16-50e9-47db-a24c-41a588da0d1a",
-                      "text": "Moins de 1 000 €/mois"
-                    },
-                    {
-                      "id": "ea70eeaa-5ec6-4488-b91d-e43883c20cb2",
-                      "text": "1 000 – 10 000 €/mois"
-                    },
-                    {
-                      "id": "cd043632-e1d8-4218-bbb0-f897a5ec4b73",
-                      "text": "10 000 – 50 000 €/mois"
-                    },
-                    {
-                      "id": "d911c51b-7cbe-4a16-b4da-0717d105d1c8",
-                      "text": "Plus de 50 000 €/mois"
-                    }
-                  ]
-                },
-                {
-                  "key": "question_24xo4D",
-                  "label": "Objectif business principal",
-                  "type": "MULTIPLE_CHOICE",
-                  "value": [
-                    "0c94f736-fb60-424a-95a1-872dbf92d7ed"
-                  ],
-                  "options": [
-                    {
-                      "id": "9581caa8-6d53-4d07-9dbd-1156b24f562e",
-                      "text": "Gagner du temps sur les tâches répétitives"
-                    },
-                    {
-                      "id": "0918eaab-757b-4bc8-a32f-64b94b52f54a",
-                      "text": "Augmenter mon chiffre d'affaires"
-                    },
-                    {
-                      "id": "0c94f736-fb60-424a-95a1-872dbf92d7ed",
-                      "text": "Réduire les erreurs humaines"
-                    },
-                    {
-                      "id": "d0015548-4c92-4417-8359-71b2cada3fc1",
-                      "text": "Améliorer mon service client"
-                    },
-                    {
-                      "id": "e4dfabea-e239-464d-be38-8cc0f73af2d1",
-                      "text": "Scaler sans recruter"
-                    }
-                  ]
-                },
-                {
-                  "key": "question_xdNzdv",
-                  "label": "Problème principal",
-                  "type": "TEXTAREA",
-                  "value": "hg"
-                },
-                {
-                  "key": "question_ZdRede",
-                  "label": "Automatisations déjà en place",
-                  "type": "CHECKBOXES",
-                  "value": [
-                    "db3be883-c3d8-4abf-82de-74f7c9c77552"
-                  ],
-                  "options": [
-                    {
-                      "id": "2bdd1927-5ffc-4105-92f1-9a8557cc01d7",
-                      "text": "Aucune"
-                    },
-                    {
-                      "id": "c7ec4c95-d468-4f41-8ab4-6fc66a1662a3",
-                      "text": "Email marketing automatisé"
-                    },
-                    {
-                      "id": "db3be883-c3d8-4abf-82de-74f7c9c77552",
-                      "text": "CRM connecté"
-                    },
-                    {
-                      "id": "38ee6d29-dee6-4d83-ad6b-eae93fa272f8",
-                      "text": "Gestion des stocks automatisée"
-                    },
-                    {
-                      "id": "6b8eebba-d4ce-416f-9c06-19a6dbca19e5",
-                      "text": "Reporting automatique"
-                    },
-                    {
-                      "id": "dd9f4395-c8d2-46f3-97e1-45d956cacba3",
-                      "text": "Autre"
-                    }
-                  ]
-                },
-                {
-                  "key": "question_ZdRede_2bdd1927-5ffc-4105-92f1-9a8557cc01d7",
-                  "label": "Automatisations déjà en place (Aucune)",
-                  "type": "CHECKBOXES",
-                  "value": false
-                },
-                {
-                  "key": "question_ZdRede_c7ec4c95-d468-4f41-8ab4-6fc66a1662a3",
-                  "label": "Automatisations déjà en place (Email marketing automatisé)",
-                  "type": "CHECKBOXES",
-                  "value": false
-                },
-                {
-                  "key": "question_ZdRede_db3be883-c3d8-4abf-82de-74f7c9c77552",
-                  "label": "Automatisations déjà en place (CRM connecté)",
-                  "type": "CHECKBOXES",
-                  "value": true
-                },
-                {
-                  "key": "question_ZdRede_38ee6d29-dee6-4d83-ad6b-eae93fa272f8",
-                  "label": "Automatisations déjà en place (Gestion des stocks automatisée)",
-                  "type": "CHECKBOXES",
-                  "value": false
-                },
-                {
-                  "key": "question_ZdRede_6b8eebba-d4ce-416f-9c06-19a6dbca19e5",
-                  "label": "Automatisations déjà en place (Reporting automatique)",
-                  "type": "CHECKBOXES",
-                  "value": false
-                },
-                {
-                  "key": "question_ZdRede_dd9f4395-c8d2-46f3-97e1-45d956cacba3",
-                  "label": "Automatisations déjà en place (Autre)",
-                  "type": "CHECKBOXES",
-                  "value": false
-                },
-                {
-                  "key": "question_NABPAO",
-                  "label": "Budget estimé",
-                  "type": "MULTIPLE_CHOICE",
-                  "value": [
-                    "99310471-078f-4b49-8efb-f00427e7cf59"
-                  ],
-                  "options": [
-                    {
-                      "id": "af59b688-418e-4994-9540-5f8fe46fb2bc",
-                      "text": "Moins de 500 €"
-                    },
-                    {
-                      "id": "7569ba9b-93b2-4d65-b28f-260753ca790b",
-                      "text": "500 – 1 500 €"
-                    },
-                    {
-                      "id": "99310471-078f-4b49-8efb-f00427e7cf59",
-                      "text": "1 500 – 5 000 €"
-                    },
-                    {
-                      "id": "7b003253-f56d-46da-9f8d-5cf53118601e",
-                      "text": "Plus de 5 000 €"
-                    },
-                    {
-                      "id": "2fd4b47e-4d00-427c-85c1-d560d75f191d",
-                      "text": "Je ne sais pas encore"
-                    }
-                  ]
-                },
-                {
-                  "key": "question_qbEzbg",
-                  "label": "Urgence",
-                  "type": "MULTIPLE_CHOICE",
-                  "value": [
-                    "1badf7db-1f3d-4ef3-abfe-07e91b575d32"
-                  ],
-                  "options": [
-                    {
-                      "id": "52723de1-7489-476a-bf06-f69b1add7bd4",
-                      "text": "Urgent — cette semaine"
-                    },
-                    {
-                      "id": "4af086bf-46f3-4eb4-afe0-51f3c81e5eba",
-                      "text": "Dans le mois"
-                    },
-                    {
-                      "id": "fd2d0081-9e2d-4522-be7c-94e5b9e3efbd",
-                      "text": "Dans 3 mois"
-                    },
-                    {
-                      "id": "1badf7db-1f3d-4ef3-abfe-07e91b575d32",
-                      "text": "J'explore les options pour l'instant"
-                    }
-                  ]
-                },
-                {
-                  "key": "question_Alb9b0",
-                  "label": "Prénom et Nom",
-                  "type": "INPUT_TEXT",
-                  "value": "Selyan Pourquey"
-                },
-                {
-                  "key": "question_BGbeb5",
-                  "label": "Email professionnel",
-                  "type": "INPUT_EMAIL",
-                  "value": "selyanpourqueyouhab@gmail.com"
-                },
-                {
-                  "key": "question_kYRzR1",
-                  "label": "Site e-commerce (URL)",
-                  "type": "INPUT_LINK",
-                  "value": "https://admin.shopify.com/store/djq1xk-00/access_account"
-                },
-                {
-                  "key": "question_vNxzxv",
-                  "label": "Source de découverte",
-                  "type": "MULTIPLE_CHOICE",
-                  "value": [
-                    "74934b9d-1af0-48b9-b588-2fb20c8efc88"
-                  ],
-                  "options": [
-                    {
-                      "id": "bc760626-8e3d-46b9-9818-3488ec433dbf",
-                      "text": "LinkedIn"
-                    },
-                    {
-                      "id": "74934b9d-1af0-48b9-b588-2fb20c8efc88",
-                      "text": "Twitter/X"
-                    },
-                    {
-                      "id": "cb63e096-8a51-4c3a-90c7-0f21d5cd4601",
-                      "text": "Recommandation d'un proche"
-                    },
-                    {
-                      "id": "9f7acb9b-3179-4579-97e2-65d3ea6f2d32",
-                      "text": "Recherche Google"
-                    },
-                    {
-                      "id": "851de990-f0c2-441b-88f3-cc587bb5202b",
-                      "text": "Autre",
-                      "isOtherOption": true,
-                      "optionId": "851de990-f0c2-441b-88f3-cc587bb5202b"
-                    }
-                  ]
-                }
-              ]
+          "id": "chatcmpl-1ab66aa4-37d9-4b51-bc46-5581182312b5",
+          "object": "chat.completion",
+          "created": 1772292040,
+          "model": "llama-3.3-70b-versatile",
+          "choices": [
+            {
+              "index": 0,
+              "message": {
+                "role": "assistant",
+                "content": "## Analyse de la situation actuelle\n<h2>État des lieux</h2>\n<p>Étant donné les informations fournies, il est difficile de procéder à une analyse détaillée de la situation actuelle du client. Cependant, nous pouvons établir une liste des éléments clés qui devraient être évalués pour comprendre les besoins en automatisation du processus e-commerce.</p>\n<ul>\n  <li>Plateforme e-commerce utilisée</li>\n  <li>Volume des commandes et chiffre d'affaires mensuel</li>\n  <li>Problèmes ou goulots d'étranglement actuels dans les processus</li>\n  <li>Objectifs à court et long terme pour l'automatisation</li>\n  <li>Budget alloué pour les initiatives d'automatisation</li>\n  <li>Outils et systèmes actuellement utilisés</li>\n</ul>\n\n## Top 3 automatisations recommandées avec ROI estimé\n<h2>Recommandations d'automatisation</h2>\n<p>Sur la base d'expériences générales dans le secteur e-commerce, voici trois automatisations qui pourraient apporter une valeur significative, même si les détails spécifiques du client ne sont pas disponibles.</p>\n<ul>\n  <li><strong>Automatisation des réponses aux courriels de suivi des commandes</strong> : Utiliser n8n pour automatiser les réponses aux courriels des clients concernant le suivi de leurs commandes, ce qui pourrait réduire le temps consacré par les équipes de support à des tâches répétitives.</li>\n  <li><strong>Intégration des systèmes de gestion de stock et de commande</li>\n  <li><strong>Automatisation des campagnes de marketing ciblées</strong> : Utilisation de n8n pour automatiser le déclenchement de campagnes marketing basées sur les interactions des clients avec le site web, comme les abandons de panier ou les achats récents.</li>\n</ul>\n\n## Prochaines étapes concrètes\n<h3>Mise en œuvre et suivi</h3>\n<p>Pour procéder, il est essentiel de collecter les informations manquantes sur le client, son site, sa plateforme e-commerce, son chiffre d'affaires mensuel, ses problèmes principaux, ses objectifs, son budget, son niveau d'urgence et les outils existants.</p>\n<ul>\n  <li>Planifier une réunion de découverte pour recueillir ces informations</li>\n  <li>Établir une feuille de route pour l'automatisation basée sur les besoins et les objectifs du client</li>\n  <li>Proposer une démonstration ou un prototype pour la première automatisation recommandée</li>\n</ul>"
+              },
+              "logprobs": null,
+              "finish_reason": "stop"
             }
+          ],
+          "usage": {
+            "queue_time": 0.090771031,
+            "prompt_tokens": 208,
+            "prompt_time": 0.011316029,
+            "completion_tokens": 653,
+            "completion_time": 2.497344981,
+            "total_tokens": 861,
+            "total_time": 2.50866101
           },
-          "webhookUrl": "https://n8n.morganjaouen.fr/webhook-test/tally-leads",
-          "executionMode": "test"
+          "usage_breakdown": null,
+          "system_fingerprint": "fp_dae98b5ecb",
+          "x_groq": {
+            "id": "req_01kjjdcqc0e5xtx7enfe0v5w4r",
+            "seed": 1047608524
+          },
+          "service_tier": "on_demand"
         },
         "pairedItem": {
           "item": 0
@@ -1081,39 +870,6 @@
           }
         ]
       ]
-    },
-    "Webhook Status Check": {
-      "main": [
-        [
-          {
-            "node": "Lookup Status GS",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Lookup Status GS": {
-      "main": [
-        [
-          {
-            "node": "Status Logic",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Status Logic": {
-      "main": [
-        [
-          {
-            "node": "Respond Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     }
   },
   "active": false,
@@ -1122,7 +878,7 @@
     "binaryMode": "separate",
     "availableInMCP": false
   },
-  "versionId": "8cd33cb4-8999-4418-b6ef-8a82d352ee18",
+  "versionId": "89037631-9fb2-4ef0-a58e-384b3b182729",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
