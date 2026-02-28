@@ -717,12 +717,15 @@
         // ── Polling n8n ──
         async function checkStatus(respondentId) {
             if (finished) return;
+            console.log(`Polling status for ID: [${respondentId}] via ${N8N_STATUS_URL}`);
             try {
                 const res = await fetch(N8N_STATUS_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ respondent_id: respondentId })
                 });
+                //... (rest of function)
+
 
                 if (res.status === 404) {
                     console.warn('Status webhook not found or not active.');
