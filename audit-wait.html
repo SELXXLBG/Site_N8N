@@ -763,17 +763,39 @@
             document.getElementById('file-badge').textContent = i18n[lang].badge_loading;
             document.getElementById('progress').style.width = '5%';
 
-            // Respondent ID depuis l'URL (Tally l'ajoute automatiquement)
-            const respondentId = urlParams.get('respondent_id') || urlParams.get('id');
+            // Respondent ID depuis l'URL (le segment final ou paramètre)
+            let respondentId = urlParams.get('respondent_id') || urlParams.get('id');
+
+            // Si pas trouvé dans les params, on cherche dans le path (ex: .../wait.html/7RNyVjZ...)
+            if (!respondentId) {
+                const pathParts = window.location.pathname.split('/');
+                const lastPart = pathParts[pathParts.length - 1];
+                if (lastPart && lastPart !== 'audit-wait.html' && lastPart !== '') {
+                    respondentId = lastPart;
+                }
+            }
 
             if (respondentId) {
+                // Nettoyage de l'ID : on décode et on garde le premier bloc (le vrai ID Tally)
+                // Cela enlève les suffixes comme "🇺🇸 English"
+                const decoded = decodeURIComponent(respondentId);
+                const cleanedId = decoded.trim().split(/[\s🇺🇸🇬🇧🇫🇷]/)[0];
+
+                console.log('Detected respondentId:', cleanedId);
+
+                // Auto-détection langue si présente dans l'URL brute
+                const rawUrl = window.location.href.toLowerCase();
+                if (rawUrl.includes('english') || rawUrl.includes('🇺🇸') || rawUrl.includes('🇬🇧')) {
+                    setLang('en');
+                }
+
                 // Lancer countdown
                 countdownTimer = setInterval(tick, 1000);
 
                 // Lancer polling (première vérif après 15s, puis toutes les 6s)
                 setTimeout(() => {
-                    checkStatus(respondentId);
-                    pollTimer = setInterval(() => checkStatus(respondentId), POLL_INTERVAL_MS);
+                    checkStatus(cleanedId);
+                    pollTimer = setInterval(() => checkStatus(cleanedId), POLL_INTERVAL_MS);
                 }, 15000);
             } else {
                 // Pas d'ID : mode démo — on simule juste le countdown

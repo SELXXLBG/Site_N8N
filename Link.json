@@ -36,7 +36,7 @@
           "values": [
             {
               "lookupColumn": "respondentId",
-              "lookupValue": "={{ $json.body.respondent_id || $json.respondent_id }}"
+              "lookupValue": "={{ ($json.body.respondent_id || $json.respondent_id || \"\").toString().split(/[\\s🇺🇸🇬🇧🇫🇷]/)[0] }}"
             }
           ]
         },
