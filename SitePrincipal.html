@@ -386,15 +386,8 @@
     }
 
     @keyframes blink {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.3;
-      }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
     .hero h1 {
@@ -518,15 +511,11 @@
     }
 
     @media(max-width: 900px) {
-      .problems-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .problems-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media(max-width: 560px) {
-      .problems-grid {
-        grid-template-columns: 1fr;
-      }
+      .problems-grid { grid-template-columns: 1fr; }
     }
 
     .problem-card {
@@ -703,15 +692,11 @@
     }
 
     @media(max-width: 900px) {
-      .automations-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
+      .automations-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
     @media(max-width: 560px) {
-      .automations-grid {
-        grid-template-columns: 1fr;
-      }
+      .automations-grid { grid-template-columns: 1fr; }
     }
 
     .auto-card {
@@ -741,9 +726,7 @@
       box-shadow: var(--shadow-green);
     }
 
-    .auto-card:hover::after {
-      opacity: 1;
-    }
+    .auto-card:hover::after { opacity: 1; }
 
     .auto-icon {
       width: 52px;
@@ -1015,7 +998,7 @@
     }
 
     .slot.taken {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255,255,255,0.08);
     }
 
     .slot.available {
@@ -1933,7 +1916,7 @@
   <footer>
     <div class="container">
       <div class="footer-inner">
-        <div class="footer-logo"><span style="opacity:0.5;font-weight:700;font-size:0.85em">N //</span> NEXUS</div>
+        <div class="footer-logo">NEXUS</div>
         <div class="footer-links">
           <a href="#problems" class="fr-content">Problèmes</a>
           <a href="#problems" class="en-content" style="display:none">Problems</a>
@@ -1996,13 +1979,13 @@
       }
 
       // Save preference
-      try { localStorage.setItem('nexus-lang', lang); } catch (e) { }
+      try { localStorage.setItem('autoflow-lang', lang); } catch (e) { }
     }
 
     // Init on load
     (function () {
       var saved = null;
-      try { saved = localStorage.getItem('nexus-lang'); } catch (e) { }
+      try { saved = localStorage.getItem('autoflow-lang'); } catch (e) { }
       var lang = saved || detectLang();
       setLang(lang);
     })();
@@ -2104,13 +2087,13 @@
         document.documentElement.removeAttribute('data-theme');
         document.getElementById('themeToggle').textContent = '🌙';
       }
-      try { localStorage.setItem('nexus-theme', theme); } catch (e) { }
+      try { localStorage.setItem('autoflow-theme', theme); } catch (e) { }
     }
 
     // Init theme on load
     (function () {
       var saved = null;
-      try { saved = localStorage.getItem('nexus-theme'); } catch (e) { }
+      try { saved = localStorage.getItem('autoflow-theme'); } catch (e) { }
       var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
       applyTheme(saved || (prefersLight ? 'light' : 'dark'));
     })();

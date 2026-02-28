@@ -7,7 +7,9 @@
     <title>⚡ Audit en cours… | Nexus</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="icon" type="image/svg+xml"
         href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230f172a'/%3E%3Ctext x='50' y='68' text-anchor='middle' font-family='Outfit%2C sans-serif' font-weight='800' font-size='68' fill='%2310b981'%3EN%3C/text%3E%3C/svg%3E">
     <style>
@@ -22,7 +24,11 @@
             --muted: #94a3b8;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', sans-serif;
@@ -64,8 +70,15 @@
         }
 
         @keyframes breathe {
-            from { opacity: 0.5; transform: translateX(-50%) scale(1); }
-            to   { opacity: 0.9; transform: translateX(-50%) scale(1.1); }
+            from {
+                opacity: 0.5;
+                transform: translateX(-50%) scale(1);
+            }
+
+            to {
+                opacity: 0.9;
+                transform: translateX(-50%) scale(1.1);
+            }
         }
 
         /* Grid dots */
@@ -146,9 +159,11 @@
         .card::before {
             content: '';
             position: absolute;
-            top: 0; left: 50%;
+            top: 0;
+            left: 50%;
             transform: translateX(-50%);
-            width: 180px; height: 1px;
+            width: 180px;
+            height: 1px;
             background: linear-gradient(90deg, transparent, var(--green), transparent);
         }
 
@@ -189,7 +204,11 @@
             font-size: 1.8rem;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* Icône succès (état done) */
         .success-icon {
@@ -238,7 +257,9 @@
             text-align: left;
         }
 
-        .file-emoji { font-size: 1.8rem; }
+        .file-emoji {
+            font-size: 1.8rem;
+        }
 
         .file-meta h4 {
             font-size: 0.88rem;
@@ -256,8 +277,8 @@
 
         .file-badge.generating {
             color: var(--muted);
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .file-badge.ready {
@@ -285,11 +306,17 @@
             transition: color 0.4s;
         }
 
-        .step.done  { color: #d1fae5; }
-        .step.active { color: #fff; }
+        .step.done {
+            color: #d1fae5;
+        }
+
+        .step.active {
+            color: #fff;
+        }
 
         .step-dot {
-            width: 22px; height: 22px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -299,7 +326,10 @@
             transition: all 0.4s;
         }
 
-        .step.pending .step-dot { border: 2px solid #334155; color: #334155; }
+        .step.pending .step-dot {
+            border: 2px solid #334155;
+            color: #334155;
+        }
 
         .step.active .step-dot {
             border: 2px solid var(--green);
@@ -315,8 +345,15 @@
         }
 
         @keyframes pulse-dot {
-            0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
-            50%       { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+            }
         }
 
         /* Progress bar */
@@ -383,16 +420,26 @@
         .btn-download::after {
             content: '';
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
             animation: shine 3s infinite;
         }
 
         @keyframes shine {
-            0%  { left: -100%; }
-            20% { left: 100%; }
-            100%{ left: 100%; }
+            0% {
+                left: -100%;
+            }
+
+            20% {
+                left: 100%;
+            }
+
+            100% {
+                left: 100%;
+            }
         }
 
         /* Footer note */
@@ -409,7 +456,8 @@
         /* Polling indicator */
         .poll-dot {
             display: inline-block;
-            width: 6px; height: 6px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--green);
             margin-right: 6px;
@@ -418,8 +466,15 @@
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50%       { opacity: 0.2; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.2;
+            }
         }
     </style>
 </head>
@@ -463,11 +518,21 @@
 
             <!-- Steps (visibles seulement en loading) -->
             <ul class="steps" id="steps-list">
-                <li class="step done"    id="step-0"><div class="step-dot">✓</div><span id="step-0-text"></span></li>
-                <li class="step active"  id="step-1"><div class="step-dot">◉</div><span id="step-1-text"></span></li>
-                <li class="step pending" id="step-2"><div class="step-dot">○</div><span id="step-2-text"></span></li>
-                <li class="step pending" id="step-3"><div class="step-dot">○</div><span id="step-3-text"></span></li>
-                <li class="step pending" id="step-4"><div class="step-dot">○</div><span id="step-4-text"></span></li>
+                <li class="step done" id="step-0">
+                    <div class="step-dot">✓</div><span id="step-0-text"></span>
+                </li>
+                <li class="step active" id="step-1">
+                    <div class="step-dot">◉</div><span id="step-1-text"></span>
+                </li>
+                <li class="step pending" id="step-2">
+                    <div class="step-dot">○</div><span id="step-2-text"></span>
+                </li>
+                <li class="step pending" id="step-3">
+                    <div class="step-dot">○</div><span id="step-3-text"></span>
+                </li>
+                <li class="step pending" id="step-4">
+                    <div class="step-dot">○</div><span id="step-4-text"></span>
+                </li>
             </ul>
 
             <!-- Progress bar -->
@@ -492,11 +557,11 @@
         const i18n = {
             fr: {
                 title_loading: 'Votre audit<br>est en cours…',
-                title_done:    'Votre audit est<br>prêt ! 🎉',
-                sub_loading:   'Notre IA analyse votre boutique et prépare vos recommandations personnalisées. Restez sur cette page.',
-                sub_done:      'Votre rapport personnalisé est disponible. Téléchargez-le ci-dessous — il vous a aussi été envoyé par email.',
+                title_done: 'Votre audit est<br>prêt ! 🎉',
+                sub_loading: 'Notre IA analyse votre boutique et prépare vos recommandations personnalisées. Restez sur cette page.',
+                sub_done: 'Votre rapport personnalisé est disponible. Téléchargez-le ci-dessous — il vous a aussi été envoyé par email.',
                 badge_loading: 'EN GÉNÉRATION…',
-                badge_done:    'PRÊT À TÉLÉCHARGER ✓',
+                badge_done: 'PRÊT À TÉLÉCHARGER ✓',
                 steps: [
                     'Formulaire reçu & données sécurisées',
                     'Analyse de votre profil e-commerce',
@@ -511,11 +576,11 @@
             },
             en: {
                 title_loading: 'Your audit<br>is being generated…',
-                title_done:    'Your audit is<br>ready! 🎉',
-                sub_loading:   'Our AI is analysing your store and preparing your personalised recommendations. Stay on this page.',
-                sub_done:      'Your personalised report is available. Download it below — it has also been sent to your email.',
+                title_done: 'Your audit is<br>ready! 🎉',
+                sub_loading: 'Our AI is analysing your store and preparing your personalised recommendations. Stay on this page.',
+                sub_done: 'Your personalised report is available. Download it below — it has also been sent to your email.',
                 badge_loading: 'GENERATING…',
-                badge_done:    'READY TO DOWNLOAD ✓',
+                badge_done: 'READY TO DOWNLOAD ✓',
                 steps: [
                     'Form received & data secured',
                     'Analysing your e-commerce profile',
@@ -532,25 +597,25 @@
 
         // ── Config ──
         // URL du webhook n8n qui renvoie { status, pdfLink } selon le respondent_id
-        const N8N_STATUS_URL = 'https://YOUR-N8N-INSTANCE.app.n8n.cloud/webhook/get-audit-status';
+        const N8N_STATUS_URL = 'https://n8n.morganjaouen.fr/webhook/get-audit-status';
         const POLL_INTERVAL_MS = 6000;   // vérif toutes les 6s
         const TOTAL_SECS = 120;          // durée estimée affichée
         const STEPS_TIMING = [
-            { id: 'step-1', activate: 0,  complete: 22,  progress: 20 },
-            { id: 'step-2', activate: 22, complete: 55,  progress: 50 },
-            { id: 'step-3', activate: 55, complete: 95,  progress: 78 },
+            { id: 'step-1', activate: 0, complete: 22, progress: 20 },
+            { id: 'step-2', activate: 22, complete: 55, progress: 50 },
+            { id: 'step-3', activate: 55, complete: 95, progress: 78 },
             { id: 'step-4', activate: 95, complete: 118, progress: 95 },
         ];
 
         // ── State ──
-        let lang     = 'fr';
-        let elapsed  = 0;
+        let lang = 'fr';
+        let elapsed = 0;
         let finished = false;
         let pollTimer, countdownTimer;
 
         // ── Helpers ──
         function fmt(s) {
-            return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+            return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
         }
 
         function setStep(id, state) {
@@ -565,8 +630,8 @@
         function render() {
             const t = i18n[lang];
             document.documentElement.lang = lang;
-            document.getElementById('main-title').innerHTML  = finished ? t.title_done    : t.title_loading;
-            document.getElementById('main-sub').textContent  = finished ? t.sub_done      : t.sub_loading;
+            document.getElementById('main-title').innerHTML = finished ? t.title_done : t.title_loading;
+            document.getElementById('main-sub').textContent = finished ? t.sub_done : t.sub_loading;
             document.getElementById('timer-label').textContent = t.timer_label;
             document.getElementById('footer-note').textContent = t.footer;
             document.getElementById('btn-download').textContent = t.btn_download;
@@ -580,7 +645,7 @@
             lang = l;
             document.getElementById('btn-fr').classList.toggle('active', l === 'fr');
             document.getElementById('btn-en').classList.toggle('active', l === 'en');
-            try { localStorage.setItem('nexus-lang', l); } catch(e) {}
+            try { localStorage.setItem('nexus-lang', l); } catch (e) { }
             render();
         }
 
@@ -653,26 +718,40 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ respondent_id: respondentId })
                 });
-                if (!res.ok) return;
+
+                if (res.status === 404) {
+                    console.warn('Status webhook not found or not active.');
+                    return;
+                }
+
+                if (!res.ok) {
+                    throw new Error('Server error');
+                }
+
                 const data = await res.json();
 
                 // n8n répond { status: 'ready', pdfLink: 'https://...' } quand c'est prêt
                 if (data.status === 'ready' && data.pdfLink) {
                     markDone(data.pdfLink);
+                } else if (data.status === 'processing') {
+                    // Update UI if we want to show real progress
+                    console.log('Audit still processing...');
                 }
-            } catch(e) {
-                // Silencieux — on réessaie au prochain intervalle
+            } catch (e) {
+                console.error('Polling error:', e);
+                // Si l'erreur persiste trop longtemps, on peut afficher un message
+                // mais ici on reste discret pour ne pas effrayer l'utilisateur
             }
         }
 
         // ── Init ──
         (function init() {
             // Langue
-            const urlParams  = new URLSearchParams(window.location.search);
-            const urlLang    = urlParams.get('lang');
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlLang = urlParams.get('lang');
             let saved = null;
-            try { saved = localStorage.getItem('nexus-lang'); } catch(e) {}
-            const detected   = urlLang || saved || (navigator.language.startsWith('en') ? 'en' : 'fr');
+            try { saved = localStorage.getItem('nexus-lang'); } catch (e) { }
+            const detected = urlLang || saved || (navigator.language.startsWith('en') ? 'en' : 'fr');
             setLang(detected);
 
             // Badge initial
@@ -706,4 +785,3 @@
 </body>
 
 </html>
-

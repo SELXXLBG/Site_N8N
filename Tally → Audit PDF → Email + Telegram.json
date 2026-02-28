@@ -182,6 +182,16 @@
               "type": "string",
               "canBeUsedToMatch": true,
               "removed": false
+            },
+            {
+              "id": "respondentId",
+              "displayName": "respondentId",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -359,8 +369,8 @@
       "parameters": {
         "fromEmail": "audit@nexus-auto.fr",
         "toEmail": "={{ $json.email }}",
-        "subject": "={{ $json.langue === 'en' ? '⚡ Your Nexus audit is ready!' : '⚡ Votre audit Nexus est prêt !' }}",
-        "html": "=<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#0a0f1e;font-family:Arial,sans-serif'><table width='100%' cellpadding='0' cellspacing='0'><tr><td align='center' style='padding:40px 20px'><table width='600' cellpadding='0' cellspacing='0' style='background:#1e293b;border:1px solid rgba(16,185,129,0.2);border-radius:16px;overflow:hidden'><tr><td style='background:rgba(16,185,129,0.08);padding:32px;text-align:center;border-bottom:1px solid rgba(16,185,129,0.15)'><h1 style='margin:0;color:#10b981;font-size:1.5rem;font-weight:800'>&#x26A1; {{ $json.langue === &apos;en&apos; ? &apos;Your audit is ready&apos; : &apos;Votre audit est pret&apos; }}</h1><p style='margin:8px 0 0;color:#64748b;font-size:0.85rem'>NEXUS</p></td></tr><tr><td style='padding:36px 32px'><p style='color:#f1f5f9;margin:0 0 12px'>{{ $json.langue === &apos;en&apos; ? &apos;Hi&apos; : &apos;Bonjour&apos; }} <strong style='color:#10b981'>{{ $json.nom }}</strong>,</p><p style='color:#94a3b8;line-height:1.7;margin:0 0 28px'>{{ $json.langue === &apos;en&apos; ? &apos;Your personalised audit is ready. Click below to download it:&apos; : &apos;Votre audit personnalise est pret. Cliquez ci-dessous pour le telecharger :&apos; }}</p><div style='text-align:center;margin:32px 0'><a href='{{ $json.pdfLink }}' target='_blank' style='display:inline-block;background:#10b981;color:#000;font-weight:800;padding:16px 40px;border-radius:12px;text-decoration:none;font-size:1rem'>&#x1F4C4; {{ $json.langue === &apos;en&apos; ? &apos;Download my audit&apos; : &apos;Telecharger mon audit&apos; }}</a></div><p style='background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:14px 16px;color:#34d399;font-size:0.8rem;word-break:break-all;margin:0 0 20px'><strong style='color:#10b981;display:block;margin-bottom:4px'>{{ $json.langue === &apos;en&apos; ? &apos;Direct link:&apos; : &apos;Lien direct :&apos; }}</strong><a href='{{ $json.pdfLink }}' style='color:#34d399'>{{ $json.pdfLink }}</a></p><p style='color:#475569;font-size:0.82rem;text-align:center;margin:0'>{{ $json.langue === &apos;en&apos; ? &apos;Questions? Reply to this email.&apos; : &apos;Questions ? Repondez a cet email.&apos; }}</p></td></tr><tr><td style='padding:16px 32px;border-top:1px solid rgba(255,255,255,0.05);text-align:center'><p style='color:#334155;font-size:0.75rem;margin:0'>Nexus &middot; nexus-auto.fr</p></td></tr></table></td></tr></table></body></html>",
+        "subject": "={{ $node[\"Extraire données Tally\"].json.langue === 'en' ? '⚡ Your Nexus audit is ready!' : '⚡ Votre audit Nexus est prêt !' }}",
+        "html": "=<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#0a0f1e;font-family:Arial,sans-serif'><table width='100%' cellpadding='0' cellspacing='0'><tr><td align='center' style='padding:40px 20px'><table width='600' cellpadding='0' cellspacing='0' style='background:#1e293b;border:1px solid rgba(16,185,129,0.2);border-radius:16px;overflow:hidden'><tr><td style='background:rgba(16,185,129,0.08);padding:32px;text-align:center;border-bottom:1px solid rgba(16,185,129,0.15)'><h1 style='margin:0;color:#10b981;font-size:1.5rem;font-weight:800'>&#x26A1; {{ $node[\"Extraire données Tally\"].json.langue === 'en' ? 'Your audit is ready' : 'Votre audit est pret' }}</h1><p style='margin:8px 0 0;color:#64748b;font-size:0.85rem'>NEXUS</p></td></tr><tr><td style='padding:36px 32px'><p style='color:#f1f5f9;margin:0 0 12px'>{{ $node[\"Extraire données Tally\"].json.langue === 'en' ? 'Hi' : 'Bonjour' }} <strong style='color:#10b981'>{{ $node[\"Extraire données Tally\"].json.nom }}</strong>,</p><p style='color:#94a3b8;line-height:1.7;margin:0 0 28px'>{{ $node[\"Extraire données Tally\"].json.langue === 'en' ? 'Your personalised audit for <strong style=\"color:#fff\">' + $node[\"Extraire données Tally\"].json.site + '</strong> is ready. Click below to download it:' : 'Votre audit personnalise pour <strong style=\"color:#fff\">' + $node[\"Extraire données Tally\"].json.site + '</strong> est pret. Cliquez ci-dessous pour le telecharger :' }}</p><div style='text-align:center;margin:32px 0'><a href='{{ $json.pdfLink }}' target='_blank' style='display:inline-block;background:#10b981;color:#000;font-weight:800;padding:16px 40px;border-radius:12px;text-decoration:none;font-size:1rem'>&#x1F4C4; {{ $node[\"Extraire données Tally\"].json.langue === 'en' ? 'Download my audit' : 'Telecharger mon audit' }}</a></div><p style='background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:14px 16px;color:#34d399;font-size:0.8rem;word-break:break-all;margin:0 0 20px'><strong style='color:#10b981;display:block;margin-bottom:4px'>{{ $node[\"Extraire données Tally\"].json.langue === 'en' ? 'Direct link:' : 'Lien direct :' }}</strong><a href='{{ $json.pdfLink }}' style='color:#34d399'>{{ $json.pdfLink }}</a></p><p style='color:#475569;font-size:0.82rem;text-align:center;margin:0'>{{ $node[\"Extraire données Tally\"].json.langue === 'en' ? 'Questions? Reply to this email.' : 'Questions ? Repondez a cet email.' }}</p></td></tr><tr><td style='padding:16px 32px;border-top:1px solid rgba(255,255,255,0.05);text-align:center'><p style='color:#334155;font-size:0.75rem;margin:0'>Nexus &middot; nexus-auto.fr</p></td></tr></table></td></tr></table></body></html>",
         "options": {}
       },
       "id": "626ea256-dbcb-4cf5-b52e-14f900678007",
@@ -403,6 +413,174 @@
           "name": "YTB auto poster"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1ZkS74AW0AKYpdAgYpXYsk0F3gVnWfFacjIZrw0SMdQY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "NewLead",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ZkS74AW0AKYpdAgYpXYsk0F3gVnWfFacjIZrw0SMdQY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pdf_url": "={{ $json.pdfLink }}",
+            "audit_ready": "true"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "pdf_url",
+              "displayName": "pdf_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            },
+            {
+              "id": "audit_ready",
+              "displayName": "audit_ready",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "update-gs-status",
+      "name": "Update Status Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        5584,
+        1552
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tYrkqO5ZTN61u0XJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "get-audit-status",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "id": "webhook-status",
+      "name": "Webhook Status Check",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        2200
+      ],
+      "webhookId": "get-audit-status"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1ZkS74AW0AKYpdAgYpXYsk0F3gVnWfFacjIZrw0SMdQY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "respondentId",
+              "lookupValue": "={{ $json.body.respondent_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "gs-lookup-status",
+      "name": "Lookup Status GS",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2832,
+        2200
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "tYrkqO5ZTN61u0XJ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const lead = $input.first().json;\nif (lead.audit_ready === 'true' || lead.audit_ready === true) {\n  return [{ json: { status: 'ready', pdfLink: lead.pdf_url } }];\n}\nreturn [{ json: { status: 'processing' } }];"
+      },
+      "id": "code-status-logic",
+      "name": "Status Logic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3072,
+        2200
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "respond-status",
+      "name": "Respond Status",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3312,
+        2200
+      ]
     },
     {
       "parameters": {
@@ -933,6 +1111,39 @@
         [
           {
             "node": "Convertir HTML en PDF (Google Drive)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Status Check": {
+      "main": [
+        [
+          {
+            "node": "Lookup Status GS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lookup Status GS": {
+      "main": [
+        [
+          {
+            "node": "Status Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Status Logic": {
+      "main": [
+        [
+          {
+            "node": "Respond Status",
             "type": "main",
             "index": 0
           }
