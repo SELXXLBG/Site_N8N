@@ -1,5 +1,5 @@
 ﻿{
-  "name": "Tally ÔåÆ Audit PDF ÔåÆ Email + Telegram",
+  "name": "Tally -> Audit PDF -> Email + Telegram",
   "nodes": [
     {
       "parameters": {
@@ -27,7 +27,7 @@
         }
       },
       "id": "2350c5e3-0a34-4a1b-96b6-9538cc1ad2a8",
-      "name": "R├®pondre au Webhook",
+      "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
@@ -37,10 +37,10 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body;\nif (!body || !body.data || !Array.isArray(body.data.fields)) {\n  throw new Error('Structure Tally invalide');\n}\nconst fields = body.data.fields;\n\n// R├®sout un champ\nfunction resolve(field) {\n  if (!field) return 'Non renseign├®';\n  const v = field.value;\n  if (v === null || v === undefined || v === '' || v === false) return 'Non renseign├®';\n  if (typeof v === 'boolean') return v ? 'Oui' : 'Non';\n  if (Array.isArray(v) && field.options && field.options.length > 0) {\n    const texts = v.map(uuid => {\n      const opt = field.options.find(o => o.id === uuid);\n      return opt ? opt.text : uuid;\n    }).filter(Boolean);\n    return texts.length > 0 ? texts.join(', ') : 'Non renseign├®';\n  }\n  if (Array.isArray(v)) return v.join(', ') || 'Non renseign├®';\n  return String(v).trim() || 'Non renseign├®';\n}\n\n// Cherche par label (fuzzy match)\nfunction getByLabel(...labels) {\n  const normalizedLabels = labels.map(l => l.toLowerCase().trim());\n  const f = fields.find(field => {\n    if (!field.label) return false;\n    const fl = field.label.toLowerCase();\n    return normalizedLabels.some(nl => fl.includes(nl));\n  });\n  return f ? resolve(f) : 'Non renseign├®';\n}\n\n// D├®tection langue via payload root de Tally ou labels sp├®cifiques\nconst langPayload = body.data.formLanguage || body.data.lang || '';\nconst langueRaw = getByLabel('Langue', 'Language', 'Langue pr├®f├®r├®e', 'Preferred language');\nconst isEnglish = langPayload.toLowerCase().includes('en') || \n                  langueRaw.toLowerCase().includes('en') || \n                  langueRaw.toLowerCase().includes('english') ||\n                  langueRaw === 'English';\n\nconst langue = isEnglish ? 'en' : 'fr';\n\n// Nettoyage de l'ID (certains param├¿tres peuvent inclure des suffixes comme emojis/langue)\nconst rawId = body.data.respondentId || '';\nconst respondentId = rawId.trim().split(/[\\s­ƒç║­ƒç©­ƒç¼­ƒçº­ƒç½­ƒçÀ]/)[0] || rawId;\n\nreturn [{\n  json: {\n    respondentId,\n    submissionId: body.data.submissionId || '',\n    nom:        getByLabel('Pr├®nom et Nom', 'Nom complet', 'Nom', 'Name'),\n    email:      getByLabel('Email professionnel', 'Email', 'Adresse email'),\n    site:       getByLabel('Site e-commerce (URL)', 'Site web', 'URL du site', 'Website'),\n    plateforme: getByLabel('Plateforme utilis├®e', 'Plateforme e-commerce', 'Platform'),\n    ca:         getByLabel('Taille de la boutique', 'Chiffre d\\'affaires mensuel', 'CA mensuel', 'Revenue'),\n    probleme:   getByLabel('Probl├¿me principal', 'Probleme principal', 'Main problem'),\n    objectif:   getByLabel('Objectif business principal', 'Objectif principal', 'Goal'),\n    budget:     getByLabel('Budget estim├®', 'Budget mensuel', 'Budget'),\n    urgence:    getByLabel('Urgence', 'D├®lai souhait├®', 'Timeline'),\n    autoExist:  getByLabel('Automatisations d├®j├á en place', 'Automatisations existantes', 'Existing tools'),\n    source:     getByLabel('Source de d├®couverte', 'Source', 'How did you find us'),\n    langue\n  }\n}];"
+        "jsCode": "const body = $input.first().json.body;\nif (!body || !body.data || !Array.isArray(body.data.fields)) {\n  throw new Error('Structure Tally invalide');\n}\nconst fields = body.data.fields;\n\n// Résout un champ\nfunction resolve(field) {\n  if (!field) return 'Non renseigné';\n  const v = field.value;\n  if (v === null || v === undefined || v === '' || v === false) return 'Non renseigné';\n  if (typeof v === 'boolean') return v ? 'Oui' : 'Non';\n  if (Array.isArray(v) && field.options && field.options.length > 0) {\n    const texts = v.map(uuid => {\n      const opt = field.options.find(o => o.id === uuid);\n      return opt ? opt.text : uuid;\n    }).filter(Boolean);\n    return texts.length > 0 ? texts.join(', ') : 'Non renseigné';\n  }\n  if (Array.isArray(v)) return v.join(', ') || 'Non renseigné';\n  return String(v).trim() || 'Non renseigné';\n}\n\n// Cherche par label (fuzzy match)\nfunction getByLabel(...labels) {\n  const normalizedLabels = labels.map(l => l.toLowerCase().trim());\n  const f = fields.find(field => {\n    if (!field.label) return false;\n    const fl = field.label.toLowerCase();\n    return normalizedLabels.some(nl => fl.includes(nl));\n  });\n  return f ? resolve(f) : 'Non renseigné';\n}\n\n// Détection langue via payload root de Tally ou labels spécifiques\nconst langPayload = body.data.formLanguage || body.data.lang || '';\nconst langueRaw = getByLabel('Langue', 'Language', 'Langue préférée', 'Preferred language');\nconst isEnglish = langPayload.toLowerCase().includes('en') || \n                  langueRaw.toLowerCase().includes('en') || \n                  langueRaw.toLowerCase().includes('english') ||\n                  langueRaw === 'English';\n\nconst langue = isEnglish ? 'en' : 'fr';\n\n// Nettoyage de l'ID (on enlève les emojis et le texte en trop)\nconst rawId = body.data.respondentId || '';\nconst respondentId = rawId.trim().split(/[\\s🇺🇸🇬🇧🇫🇷]/)[0] || rawId;\n\nreturn [{\n  json: {\n    respondentId,\n    submissionId: body.data.submissionId || '',\n    nom:        getByLabel('Prénom et Nom', 'Nom complet', 'Nom', 'Name'),\n    email:      getByLabel('Email professionnel', 'Email', 'Adresse email'),\n    site:       getByLabel('Site e-commerce (URL)', 'Site web', 'URL du site', 'Website'),\n    plateforme: getByLabel('Plateforme utilisée', 'Plateforme e-commerce', 'Platform'),\n    ca:         getByLabel('Taille de la boutique', 'Chiffre d\\'affaires mensuel', 'CA mensuel', 'Revenue'),\n    probleme:   getByLabel('Problème principal', 'Probleme principal', 'Main problem'),\n    objectif:   getByLabel('Objectif business principal', 'Objectif principal', 'Goal'),\n    budget:     getByLabel('Budget estimé', 'Budget mensuel', 'Budget'),\n    urgence:    getByLabel('Urgence', 'Délai souhaité', 'Timeline'),\n    autoExist:  getByLabel('Automatisations déjà en place', 'Automatisations existantes', 'Existing tools'),\n    source:     getByLabel('Source de découverte', 'Source', 'How did you find us'),\n    langue\n  }\n}];"
       },
       "id": "47d53968-9906-4ee5-a5f9-512bc7de7a29",
-      "name": "Extraire donn├®es Tally",
+      "name": "Extract Tally Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -65,7 +65,7 @@
         "options": {}
       },
       "id": "903ef2f1-09d0-44ca-bf4c-99687c8745fa",
-      "name": "Anti-Spam ÔÇö V├®rif Google Sheet",
+      "name": "Check Google Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
@@ -82,10 +82,10 @@
     },
     {
       "parameters": {
-        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r && r.email && String(r.email).includes('@'));\nconst lead = $('Extraire donn\u00e9es Tally').first().json;\nconst alreadyDone = rows.length > 0;\nreturn [{ json: { ...lead, alreadyDone } }];"
+        "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r && r.email && String(r.email).includes('@'));\nconst lead = $('Extract Tally Data').first().json;\nconst alreadyDone = rows.length > 0;\nreturn [{ json: { ...lead, alreadyDone } }];"
       },
       "id": "a91495c2-0c2d-484d-938a-120916e88999",
-      "name": "D├®j├á soumis ?",
+      "name": "Already Submitted",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -118,7 +118,7 @@
         "options": {}
       },
       "id": "fbef880f-619e-4906-be06-bf7b2b5afa35",
-      "name": "IF ÔÇö Doublon",
+      "name": "IF Duplicate",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
@@ -129,13 +129,13 @@
     {
       "parameters": {
         "chatId": "8229030669",
-        "text": "=Ôøö *Doublon bloqu├®*\n­ƒæñ {{ $json.nom }}\n­ƒôº {{ $json.email }}\nCet email a d├®j├á soumis un formulaire. Aucun cr├®dit Groq consomm├®.",
+        "text": "=⛔ *Doublon bloqué*\n👤 {{ $json.nom }}\n📧 {{ $json.email }}\nCet email a déjà soumis un formulaire. Aucun crédit Groq consommé.",
         "additionalFields": {
           "parse_mode": "Markdown"
         }
       },
       "id": "555378ba-5ceb-4742-99c8-2c0e1436f2bc",
-      "name": "Telegram ÔÇö Doublon Bloqu├®",
+      "name": "Telegram Duplicate Locked",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
@@ -294,8 +294,8 @@
               "removed": false
             },
             {
-              "id": "respondentId ",
-              "displayName": "respondentId ",
+              "id": "respondentId",
+              "displayName": "respondentId",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -342,16 +342,6 @@
               "type": "string",
               "canBeUsedToMatch": true,
               "removed": false
-            },
-            {
-              "id": "respondentId",
-              "displayName": "respondentId",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -360,7 +350,7 @@
         "options": {}
       },
       "id": "c996395e-8579-4318-b96f-7ccea672f806",
-      "name": "Enregistrer Lead Google Sheet",
+      "name": "Register Lead GS",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
@@ -377,20 +367,19 @@
     {
       "parameters": {
         "chatId": "8229030669",
-        "text": "=­ƒöö *Nouveau Lead E-commerce*\nÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü\n­ƒæñ *Nom :* {{ $json.nom }}\n­ƒôº *Email :* {{ $json.email }}\n­ƒîÉ *Site :* {{ $json.site }}\n­ƒøÆ *Plateforme :* {{ $json.plateforme }}\n­ƒÆ░ *CA mensuel :* {{ $json.ca }}\n­ƒîì *Langue :* {{ $json.langue === 'en' ? '­ƒç¼­ƒçº EN' : '­ƒç½­ƒçÀ FR' }}\nÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü\n­ƒÄ» *Probl├¿me :* {{ $json.probleme }}\n­ƒÆ╝ *Objectif :* {{ $json.objectif }}\n­ƒÆÂ *Budget :* {{ $json.budget }}\nÔÜí *Urgence :* {{ $json.urgence }}\n­ƒöº *Outils existants :* {{ $json.autoExist }}\nÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöüÔöü\nÔÅ░ {{ $now.format('DD/MM/YYYY HH:mm') }}",
+        "text": "=🔔 *Nouveau Lead E-commerce*\n━━━━━━━━━━━━━━━━━━━━\n👤 *Nom :* {{ $json.nom }}\n📧 *Email :* {{ $json.email }}\n🌐 *Site :* {{ $json.site }}\n🛒 *Plateforme :* {{ $json.plateforme }}\n💰 *CA mensuel :* {{ $json.ca }}\n🌍 *Langue :* {{ $json.langue === 'en' ? '🇬🇧 EN' : '🇫🇷 FR' }}\n━━━━━━━━━━━━━━━━━━━━\n🎯 *Problème :* {{ $json.probleme }}\n💼 *Objectif :* {{ $json.objectif }}\n💶 *Budget :* {{ $json.budget }}\n⚡ *Urgence :* {{ $json.urgence }}\n🔧 *Outils existants :* {{ $json.autoExist }}\n━━━━━━━━━━━━━━━━━━━━\n⏰ {{ $now.format('DD/MM/YYYY HH:mm') }}",
         "additionalFields": {
           "parse_mode": "Markdown"
         }
       },
       "id": "4fc4f2f9-2a7a-4ea6-981a-cc64f2cede35",
-      "name": "Notif Telegram ÔÇö Nouveau Lead",
+      "name": "Notif Telegram New Lead",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
         10208,
         3472
       ],
-      "webhookId": "a9c25040-3cc4-4f56-b05d-d4e5bc2b9887",
       "credentials": {
         "telegramApi": {
           "id": "5qHObKcvTDWQZ7uY",
@@ -415,13 +404,13 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.langue === 'en' ? 'You are a senior n8n automation expert. Write a concise, actionable e-commerce automation audit in English. Return ONLY inner HTML content (no html/head/body tags), using h2, h3, p, ul, li tags. Be concrete and specific to the client data provided.' : 'Tu es un expert senior en automatisation n8n. R├®dige un audit d\\'automatisation e-commerce concis et actionnable en fran├ºais. Retourne UNIQUEMENT du contenu HTML interne (sans balises html/head/body), en utilisant h2, h3, p, ul, li. Sois concret et adapt├® aux donn├®es du client.' }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.langue === 'en' ? 'Client: ' + $json.nom + ' | Site: ' + $json.site + ' | Platform: ' + $json.plateforme + ' | Monthly revenue: ' + $json.ca + ' | Main problem: ' + $json.probleme + ' | Goal: ' + $json.objectif + ' | Budget: ' + $json.budget + ' | Timeline: ' + $json.urgence + ' | Existing tools: ' + $json.autoExist + '. Write a 3-section audit: 1) Current situation analysis, 2) Top 3 recommended automations with expected ROI, 3) Next steps.' : 'Client : ' + $json.nom + ' | Site : ' + $json.site + ' | Plateforme : ' + $json.plateforme + ' | CA mensuel : ' + $json.ca + ' | Probl├¿me principal : ' + $json.probleme + ' | Objectif : ' + $json.objectif + ' | Budget : ' + $json.budget + ' | Urgence : ' + $json.urgence + ' | Outils existants : ' + $json.autoExist + '. R├®dige un audit en 3 sections : 1) Analyse de la situation actuelle, 2) Top 3 automatisations recommand├®es avec ROI estim├®, 3) Prochaines ├®tapes concr├¿tes.' }}\"\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.langue === 'en' ? 'You are a senior n8n automation expert. Write a concise, actionable e-commerce automation audit in English. Return ONLY inner HTML content (no html/head/body tags), using h2, h3, p, ul, li tags. Be concrete and specific to the client data provided.' : 'Tu es un expert senior en automatisation n8n. Rédige un audit d\\'automatisation e-commerce concis et actionnable en français. Retourne UNIQUEMENT du contenu HTML interne (sans balises html/head/body), en utilisant h2, h3, p, ul, li. Sois concret et adapté aux données du client.' }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.langue === 'en' ? 'Client: ' + $json.nom + ' | Site: ' + $json.site + ' | Platform: ' + $json.plateforme + ' | Monthly revenue: ' + $json.ca + ' | Main problem: ' + $json.probleme + ' | Goal: ' + $json.objectif + ' | Budget: ' + $json.budget + ' | Timeline: ' + $json.urgence + ' | Existing tools: ' + $json.autoExist + '. Write a 3-section audit: 1) Current situation analysis, 2) Top 3 recommended automations with expected ROI, 3) Next steps.' : 'Client : ' + $json.nom + ' | Site : ' + $json.site + ' | Plateforme : ' + $json.plateforme + ' | CA mensuel : ' + $json.ca + ' | Problème principal : ' + $json.probleme + ' | Objectif : ' + $json.objectif + ' | Budget : ' + $json.budget + ' | Urgence : ' + $json.urgence + ' | Outils existants : ' + $json.autoExist + '. Rédige un audit en 3 sections : 1) Analyse de la situation actuelle, 2) Top 3 automatisations recommandées avec ROI estimé, 3) Prochaines étapes concrètes.' }}\"\n    }\n  ]\n}",
         "options": {
           "timeout": 60000
         }
       },
       "id": "69893749-09a6-4f84-a3b1-4003690ccab5",
-      "name": "G├®n├®rer Audit HTML (Groq)",
+      "name": "Generate Audit Groq",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -437,14 +426,27 @@
     },
     {
       "parameters": {
-        "jsCode": "// R├®cup├¿re les lignes du Google Sheet (peut ├¬tre vide)\nconst rows = $input.all()\n  .map(i => i.json)\n  .filter(r => r && r.email && String(r.email).includes('@'));\n\n// R├®cup├¿re les donn├®es du lead depuis le n┼ôud pr├®c├®dent\nconst lead = $('Extraire donn├®es Tally').first().json;\n\nconst alreadyDone = rows.length > 0;\n\nreturn [{ json: { ...lead, alreadyDone } }];\n"
+        "jsCode": "let aiContent = '';\ntry {\n  aiContent = $input.first().json.choices[0].message.content || '';\n  aiContent = aiContent.replace(/^```html\\s*/i, '').replace(/```\\s*$/i, '').trim();\n} catch(e) {\n  aiContent = '<p>Contenu indisponible — contactez Nexus directement.</p>';\n}\n\nconst client = $('Extract Tally Data').first().json;\nconst isFR = client.langue !== 'en';\n\nconst html = `<!DOCTYPE html><html lang=\"${client.langue}\"><head><meta charset=\"UTF-8\"><title>Audit Nexus — ${client.nom}</title><style>body{font-family:Arial,sans-serif;background:#0a0f1e;color:#f1f5f9;margin:0;padding:40px}h1{color:#10b981;font-size:2rem;margin-bottom:8px}h2{color:#10b981;font-size:1.3rem;margin-top:32px;border-bottom:1px solid rgba(16,185,129,0.3);padding-bottom:8px}h3{color:#34d399;font-size:1.1rem;margin-top:20px}p,li{color:#94a3b8;line-height:1.7;font-size:0.95rem}.header{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:24px;margin-bottom:32px}.meta span{display:inline-block;background:rgba(255,255,255,0.05);border-radius:6px;padding:4px 12px;margin:4px;font-size:0.85rem;color:#94a3b8}.footer{margin-top:48px;text-align:center;color:#475569;font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:24px}</style></head><body><div class=\"header\"><h1>⚡ ${isFR ? 'Audit Automatisation Nexus' : 'Nexus Automation Audit'}</h1><p style=\"color:#10b981;margin:0\">${isFR ? 'Rapport personnalisé pour' : 'Personalised report for'} <strong>${client.nom}</strong></p><div class=\"meta\" style=\"margin-top:16px\"><span>🌐 ${client.site}</span><span>🛒 ${client.plateforme}</span><span>💰 ${client.ca}</span><span>🌍 ${client.langue.toUpperCase()}</span></div></div>${aiContent}<div class=\"footer\">© ${new Date().getFullYear()} Nexus — nexus-auto.fr</div></body></html>`;\n\nreturn [{ json: { ...client, html } }];"
       },
       "id": "bfa2531b-0dc7-485c-8328-b74dbcec2cc3",
-      "name": "Pr├®parer HTML Rapport",
+      "name": "Prepare HTML Report",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
         10640,
+        3472
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const client = $input.first().json;\nconst htmlString = client.html;\n\n// Convertit le HTML string en binaire pour Google Drive upload\nconst buffer = Buffer.from(htmlString, 'utf8');\n\nreturn [{\n  json: { ...client },\n  binary: {\n    data: await this.helpers.prepareBinaryData(\n      buffer,\n      'Audit_Nexus_' + (client.nom || 'client').replace(/ /g,'_') + '.html',\n      'text/html'\n    )\n  }\n}];"
+      },
+      "id": "203a4604-6884-430a-bd42-b8d00997abb0",
+      "name": "Prepare Binary HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        10848,
         3472
       ]
     },
@@ -464,10 +466,13 @@
           "cachedResultName": "Audits gratuits",
           "cachedResultUrl": "https://drive.google.com/drive/folders/1oE-19SMjijuF3q1xj1bZkggeH5vGTpVn"
         },
-        "options": {}
+        "fileContent": "data",
+        "options": {
+          "convert": true
+        }
       },
       "id": "6e96f0e1-4865-4080-869b-8e5987b9ff09",
-      "name": "Convertir HTML en PDF (Google Drive)",
+      "name": "Convert HTML to PDF",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
@@ -498,7 +503,7 @@
         "options": {}
       },
       "id": "80d8412c-d654-4be3-b045-f173b6f996bf",
-      "name": "Cr├®er Lien Partageable",
+      "name": "Create Shareable Link",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
@@ -514,10 +519,10 @@
     },
     {
       "parameters": {
-        "jsCode": "const fileId      = $('Convertir HTML en PDF (Google Drive)').first().json.id;\nconst client      = $('Pr├®parer HTML Rapport').first().json;\n// Lien d'export direct en PDF pour ├®viter l'ouverture en mode HTML/Doc\nconst pdfLink     = `https://docs.google.com/document/d/${fileId}/export?format=pdf`;\nconst downloadLink= `https://docs.google.com/document/d/${fileId}/export?format=pdf`;\nreturn [{ json: { ...client, pdfLink, downloadLink, fileId } }];"
+        "jsCode": "const fileId      = $('Convert HTML to PDF').first().json.id;\nconst client      = $('Prepare HTML Report').first().json;\n// Lien d'export direct en PDF pour éviter l'ouverture en mode HTML/Doc\nconst pdfLink     = `https://docs.google.com/document/d/${fileId}/export?format=pdf`;\nconst downloadLink= pdfLink;\nreturn [{ json: { ...client, pdfLink, downloadLink, fileId } }];"
       },
       "id": "2454a182-698a-42e4-a88d-9731b5f4744a",
-      "name": "Pr├®parer lien PDF",
+      "name": "Prepare PDF Link",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
@@ -528,20 +533,19 @@
     {
       "parameters": {
         "fromEmail": "selyanpourqueyouhab@gmail.com",
-        "toEmail": "={{ $('Webhook Tally').item.json.body.data.fields[14].value }}",
-        "subject": "={{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? 'ÔÜí Your Nexus audit is ready!' : 'ÔÜí Votre audit Nexus est pr├¬t !' }}",
-        "html": "=<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#0a0f1e;font-family:Arial,sans-serif'><table width='100%' cellpadding='0' cellspacing='0'><tr><td align='center' style='padding:40px 20px'><table width='600' cellpadding='0' cellspacing='0' style='background:#1e293b;border:1px solid rgba(16,185,129,0.2);border-radius:16px;overflow:hidden'><tr><td style='background:rgba(16,185,129,0.08);padding:32px;text-align:center;border-bottom:1px solid rgba(16,185,129,0.15)'><h1 style='margin:0;color:#10b981;font-size:1.5rem;font-weight:800'>ÔÜí {{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? 'Your audit is ready' : 'Votre audit est pr├¬t' }}</h1><p style='margin:8px 0 0;color:#64748b;font-size:0.85rem'>NEXUS</p></td></tr><tr><td style='padding:36px 32px'><p style='color:#f1f5f9;margin:0 0 12px'>{{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? 'Hi' : 'Bonjour' }} <strong style='color:#10b981'>{{ $node['Extraire donn├®es Tally'].json.nom }}</strong>,</p><p style='color:#94a3b8;line-height:1.7;margin:0 0 28px'>{{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? 'Your personalised audit for <strong style=\"color:#fff\">' + $node['Extraire donn├®es Tally'].json.site + '</strong> is ready. Click below to download it:' : 'Votre audit personnalis├® pour <strong style=\"color:#fff\">' + $node['Extraire donn├®es Tally'].json.site + '</strong> est pr├¬t. Cliquez ci-dessous pour le t├®l├®charger :' }}</p><div style='text-align:center;margin:32px 0'><a href='{{ $json.pdfLink }}' target='_blank' style='display:inline-block;background:#10b981;color:#000;font-weight:800;padding:16px 40px;border-radius:12px;text-decoration:none;font-size:1rem'>­ƒôä {{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? 'Download my audit' : 'T├®l├®charger mon audit' }}</a></div><p style='background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:14px 16px;color:#34d399;font-size:0.8rem;word-break:break-all;margin:0 0 20px'><strong style='color:#10b981;display:block;margin-bottom:4px'>{{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? 'Direct link:' : 'Lien direct :' }}</strong><a href='{{ $json.pdfLink }}' style='color:#34d399'>{{ $json.pdfLink }}</a></p><p style='color:#475569;font-size:0.82rem;text-align:center;margin:0'>{{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? 'Questions? Reply to this email.' : 'Questions ? R├®pondez ├á cet email.' }}</p></td></tr><tr><td style='padding:16px 32px;border-top:1px solid rgba(255,255,255,0.05);text-align:center'><p style='color:#334155;font-size:0.75rem;margin:0'>Nexus &middot; nexus-auto.fr</p></td></tr></table></td></tr></table></body></html>",
+        "toEmail": "={{ $node['Extract Tally Data'].json.email }}",
+        "subject": "={{ $node['Extract Tally Data'].json.langue === 'en' ? '⚡ Your Nexus audit is ready!' : '⚡ Votre audit Nexus est prêt !' }}",
+        "html": "=<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='margin:0;padding:0;background:#0a0f1e;font-family:Arial,sans-serif'><table width='100%' cellpadding='0' cellspacing='0'><tr><td align='center' style='padding:40px 20px'><table width='600' cellpadding='0' cellspacing='0' style='background:#1e293b;border:1px solid rgba(16,185,129,0.2);border-radius:16px;overflow:hidden'><tr><td style='background:rgba(16,185,129,0.08);padding:32px;text-align:center;border-bottom:1px solid rgba(16,185,129,0.15)'><h1 style='margin:0;color:#10b981;font-size:1.5rem;font-weight:800'>⚡ {{ $node['Extract Tally Data'].json.langue === 'en' ? 'Your audit is ready' : 'Votre audit est prêt' }}</h1><p style='margin:8px 0 0;color:#64748b;font-size:0.85rem'>NEXUS</p></td></tr><tr><td style='padding:36px 32px'><p style='color:#f1f5f9;margin:0 0 12px'>{{ $node['Extract Tally Data'].json.langue === 'en' ? 'Hi' : 'Bonjour' }} <strong style='color:#10b981'>{{ $node['Extract Tally Data'].json.nom }}</strong>,</p><p style='color:#94a3b8;line-height:1.7;margin:0 0 28px'>{{ $node['Extract Tally Data'].json.langue === 'en' ? 'Your personalised audit for <strong style=\"color:#fff\">' + $node['Extract Tally Data'].json.site + '</strong> is ready. Click below to download it:' : 'Votre audit personnalisé pour <strong style=\"color:#fff\">' + $node['Extract Tally Data'].json.site + '</strong> est prêt. Cliquez ci-dessous pour le télécharger :' }}</p><div style='text-align:center;margin:32px 0'><a href='{{ $json.pdfLink }}' target='_blank' style='display:inline-block;background:#10b981;color:#000;font-weight:800;padding:16px 40px;border-radius:12px;text-decoration:none;font-size:1rem'>📄 {{ $node['Extract Tally Data'].json.langue === 'en' ? 'Download my audit' : 'Télécharger mon audit' }}</a></div><p style='background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.12);border-radius:8px;padding:14px 16px;color:#34d399;font-size:0.8rem;word-break:break-all;margin:0 0 20px'><strong style='color:#10b981;display:block;margin-bottom:4px'>{{ $node['Extract Tally Data'].json.langue === 'en' ? 'Direct link:' : 'Lien direct :' }}</strong><a href='{{ $json.pdfLink }}' style='color:#34d399'>{{ $json.pdfLink }}</a></p><p style='color:#475569;font-size:0.82rem;text-align:center;margin:0'>{{ $node['Extract Tally Data'].json.langue === 'en' ? 'Questions? Reply to this email.' : 'Questions ? Répondez à cet email.' }}</p></td></tr><tr><td style='padding:16px 32px;border-top:1px solid rgba(255,255,255,0.05);text-align:center'><p style='color:#334155;font-size:0.75rem;margin:0'>Nexus &middot; nexus-auto.fr</p></td></tr></table></td></tr></table></body></html>",
         "options": {}
       },
       "id": "803a3e45-f29e-4656-bbeb-7251a8bd62ce",
-      "name": "Envoyer Email Client",
+      "name": "Send Email Client",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
         11664,
         3472
       ],
-      "webhookId": "cd4bc6cd-75d5-4cc4-a96e-308d4f611a44",
       "credentials": {
         "smtp": {
           "id": "GovnnvbYUC6tz8Wn",
@@ -552,21 +556,20 @@
     {
       "parameters": {
         "chatId": "8229030669",
-        "text": "=Ô£à *Audit livr├® !*\n­ƒæñ {{ $node['Extraire donn├®es Tally'].json.nom }}\n­ƒôº {{ $node['Extraire donn├®es Tally'].json.email }}\n­ƒîì {{ $node['Extraire donn├®es Tally'].json.langue === 'en' ? '­ƒç¼­ƒçº EN' : '­ƒç½­ƒçÀ FR' }}\n­ƒôä [Voir le PDF]({{ $json.pdfLink }})",
+        "text": "=✅ *Audit livré !*\n👤 {{ $node['Extract Tally Data'].json.nom }}\n📧 {{ $node['Extract Tally Data'].json.email }}\n🌍 {{ $node['Extract Tally Data'].json.langue === 'en' ? '🇬🇧 EN' : '🇫🇷 FR' }}\n📄 [Voir le PDF]({{ $json.pdfLink }})",
         "additionalFields": {
           "disable_web_page_preview": true,
           "parse_mode": "Markdown"
         }
       },
       "id": "45f47696-d96b-43a0-81f0-373bde38d923",
-      "name": "Telegram ÔÇö PDF Livr├®",
+      "name": "Telegram PDF Delivered",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
         11872,
         3472
       ],
-      "webhookId": "7180c983-31e6-40f7-983a-35c49d7a3303",
       "credentials": {
         "telegramApi": {
           "id": "5qHObKcvTDWQZ7uY",
@@ -593,9 +596,7 @@
           "mappingMode": "defineBelow",
           "value": {
             "pdf_url": "={{ $json.pdfLink }}",
-            "audit_ready": "true",
-            "row_number": 0,
-            "email": "={{ $('Webhook Tally').item.json.body.data.fields[14].value }}"
+            "audit_ready": "true"
           },
           "matchingColumns": [
             "email"
@@ -604,146 +605,6 @@
             {
               "id": "email",
               "displayName": "email",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "nom",
-              "displayName": "nom",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "site",
-              "displayName": "site",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "plateforme",
-              "displayName": "plateforme",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "ca",
-              "displayName": "ca",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "probleme",
-              "displayName": "probleme",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "objectif",
-              "displayName": "objectif",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "budget",
-              "displayName": "budget",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "urgence",
-              "displayName": "urgence",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "autoExist",
-              "displayName": "autoExist",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "langue",
-              "displayName": "langue",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "alreadyDone",
-              "displayName": "alreadyDone",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "respondentId ",
-              "displayName": "respondentId ",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "submissionId",
-              "displayName": "submissionId",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "source",
-              "displayName": "source",
               "required": false,
               "defaultMatch": false,
               "display": true,
@@ -770,27 +631,6 @@
               "type": "string",
               "canBeUsedToMatch": true,
               "removed": false
-            },
-            {
-              "id": "respondentId",
-              "displayName": "respondentId",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "string",
-              "canBeUsedToMatch": true,
-              "removed": false
-            },
-            {
-              "id": "row_number",
-              "displayName": "row_number",
-              "required": false,
-              "defaultMatch": false,
-              "display": true,
-              "type": "number",
-              "canBeUsedToMatch": true,
-              "readOnly": true,
-              "removed": false
             }
           ],
           "attemptToConvertTypes": false,
@@ -799,7 +639,7 @@
         "options": {}
       },
       "id": "8d36aac4-9a31-4b72-8636-f703e8e87e68",
-      "name": "Update Status Google Sheet",
+      "name": "Update Status GS",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
@@ -812,229 +652,174 @@
           "name": "Google Sheets account"
         }
       }
-    },
-    {
-      "parameters": {
-        "jsCode": "const fileId = $('Convertir HTML en PDF (Google Drive)').first().json.id;\nconst client  = $('Pr├®parer HTML Rapport').first().json;\n\n// Export Google Doc ÔåÆ PDF direct (vrai PDF t├®l├®chargeable)\nconst pdfLink      = `https://docs.google.com/document/d/${fileId}/export?format=pdf`;\nconst downloadLink = pdfLink;\n\nreturn [{ json: { ...client, pdfLink, downloadLink, fileId } }];\n"
-      },
-      "id": "203a4604-6884-430a-bd42-b8d00997abb0",
-      "name": "Pr├®parer Binaire HTML",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        10848,
-        3472
-      ]
     }
   ],
-  "pinData": {
-    "G├®n├®rer Audit HTML (Groq)": [
-      {
-        "json": {
-          "id": "chatcmpl-1ab66aa4-37d9-4b51-bc46-5581182312b5",
-          "object": "chat.completion",
-          "created": 1772292040,
-          "model": "llama-3.3-70b-versatile",
-          "choices": [
-            {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## Analyse de la situation actuelle\n<h2>├ëtat des lieux</h2>\n<p>├ëtant donn├® les informations fournies, il est difficile de proc├®der ├á une analyse d├®taill├®e de la situation actuelle du client. Cependant, nous pouvons ├®tablir une liste des ├®l├®ments cl├®s qui devraient ├¬tre ├®valu├®s pour comprendre les besoins en automatisation du processus e-commerce.</p>\n<ul>\n  <li>Plateforme e-commerce utilis├®e</li>\n  <li>Volume des commandes et chiffre d'affaires mensuel</li>\n  <li>Probl├¿mes ou goulots d'├®tranglement actuels dans les processus</li>\n  <li>Objectifs ├á court et long terme pour l'automatisation</li>\n  <li>Budget allou├® pour les initiatives d'automatisation</li>\n  <li>Outils et syst├¿mes actuellement utilis├®s</li>\n</ul>\n\n## Top 3 automatisations recommand├®es avec ROI estim├®\n<h2>Recommandations d'automatisation</h2>\n<p>Sur la base d'exp├®riences g├®n├®rales dans le secteur e-commerce, voici trois automatisations qui pourraient apporter une valeur significative, m├¬me si les d├®tails sp├®cifiques du client ne sont pas disponibles.</p>\n<ul>\n  <li><strong>Automatisation des r├®ponses aux courriels de suivi des commandes</strong> : Utiliser n8n pour automatiser les r├®ponses aux courriels des clients concernant le suivi de leurs commandes, ce qui pourrait r├®duire le temps consacr├® par les ├®quipes de support ├á des t├óches r├®p├®titives.</li>\n  <li><strong>Int├®gration des syst├¿mes de gestion de stock et de commande</li>\n  <li><strong>Automatisation des campagnes de marketing cibl├®es</strong> : Utilisation de n8n pour automatiser le d├®clenchement de campagnes marketing bas├®es sur les interactions des clients avec le site web, comme les abandons de panier ou les achats r├®cents.</li>\n</ul>\n\n## Prochaines ├®tapes concr├¿tes\n<h3>Mise en ┼ôuvre et suivi</h3>\n<p>Pour proc├®der, il est essentiel de collecter les informations manquantes sur le client, son site, sa plateforme e-commerce, son chiffre d'affaires mensuel, ses probl├¿mes principaux, ses objectifs, son budget, son niveau d'urgence et les outils existants.</p>\n<ul>\n  <li>Planifier une r├®union de d├®couverte pour recueillir ces informations</li>\n  <li>├ëtablir une feuille de route pour l'automatisation bas├®e sur les besoins et les objectifs du client</li>\n  <li>Proposer une d├®monstration ou un prototype pour la premi├¿re automatisation recommand├®e</li>\n</ul>"
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
-            }
-          ],
-          "usage": {
-            "queue_time": 0.090771031,
-            "prompt_tokens": 208,
-            "prompt_time": 0.011316029,
-            "completion_tokens": 653,
-            "completion_time": 2.497344981,
-            "total_tokens": 861,
-            "total_time": 2.50866101
-          },
-          "usage_breakdown": null,
-          "system_fingerprint": "fp_dae98b5ecb",
-          "x_groq": {
-            "id": "req_01kjjdcqc0e5xtx7enfe0v5w4r",
-            "seed": 1047608524
-          },
-          "service_tier": "on_demand"
-        },
-        "pairedItem": {
-          "item": 0
-        }
-      }
-    ]
-  },
   "connections": {
     "Webhook Tally": {
       "main": [
         [
           {
-            "node": "R├®pondre au Webhook",
+            "node": "Respond to Webhook",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Extraire donn├®es Tally",
+            "node": "Extract Tally Data",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Extraire donn├®es Tally": {
+    "Extract Tally Data": {
       "main": [
         [
           {
-            "node": "Anti-Spam ÔÇö V├®rif Google Sheet",
+            "node": "Check Google Sheet",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Anti-Spam ÔÇö V├®rif Google Sheet": {
+    "Check Google Sheet": {
       "main": [
         [
           {
-            "node": "D├®j├á soumis ?",
+            "node": "Already Submitted",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "D├®j├á soumis ?": {
+    "Already Submitted": {
       "main": [
         [
           {
-            "node": "IF ÔÇö Doublon",
+            "node": "IF Duplicate",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "IF ÔÇö Doublon": {
+    "IF Duplicate": {
       "main": [
         [
           {
-            "node": "Telegram ÔÇö Doublon Bloqu├®",
+            "node": "Telegram Duplicate Locked",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Enregistrer Lead Google Sheet",
+            "node": "Register Lead GS",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Enregistrer Lead Google Sheet": {
+    "Register Lead GS": {
       "main": [
         [
           {
-            "node": "Notif Telegram ÔÇö Nouveau Lead",
+            "node": "Notif Telegram New Lead",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Notif Telegram ÔÇö Nouveau Lead": {
+    "Notif Telegram New Lead": {
       "main": [
         [
           {
-            "node": "G├®n├®rer Audit HTML (Groq)",
+            "node": "Generate Audit Groq",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "G├®n├®rer Audit HTML (Groq)": {
+    "Generate Audit Groq": {
       "main": [
         [
           {
-            "node": "Pr├®parer HTML Rapport",
+            "node": "Prepare HTML Report",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Pr├®parer HTML Rapport": {
+    "Prepare HTML Report": {
       "main": [
         [
           {
-            "node": "Pr├®parer Binaire HTML",
+            "node": "Prepare Binary HTML",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Convertir HTML en PDF (Google Drive)": {
+    "Prepare Binary HTML": {
       "main": [
         [
           {
-            "node": "Cr├®er Lien Partageable",
+            "node": "Convert HTML to PDF",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Cr├®er Lien Partageable": {
+    "Convert HTML to PDF": {
       "main": [
         [
           {
-            "node": "Pr├®parer lien PDF",
+            "node": "Create Shareable Link",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Pr├®parer lien PDF": {
+    "Create Shareable Link": {
       "main": [
         [
           {
-            "node": "Envoyer Email Client",
+            "node": "Prepare PDF Link",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare PDF Link": {
+      "main": [
+        [
+          {
+            "node": "Send Email Client",
             "type": "main",
             "index": 0
           },
           {
-            "node": "Update Status Google Sheet",
+            "node": "Update Status GS",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Envoyer Email Client": {
+    "Send Email Client": {
       "main": [
         [
           {
-            "node": "Telegram ÔÇö PDF Livr├®",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pr├®parer Binaire HTML": {
-      "main": [
-        [
-          {
-            "node": "Convertir HTML en PDF (Google Drive)",
+            "node": "Telegram PDF Delivered",
             "type": "main",
             "index": 0
           }
@@ -1042,17 +827,10 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
-  },
-  "versionId": "cdc647a5-a1ad-4080-b046-8b4dabed9057",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
-  },
-  "id": "X5WOC2CvZTOikqVA",
-  "tags": []
+  }
 }

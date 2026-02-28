@@ -18,7 +18,7 @@
         -352,
         -128
       ],
-      "webhookId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      "webhookId": "get-audit-status"
     },
     {
       "parameters": {
@@ -96,7 +96,6 @@
       ]
     }
   ],
-  "pinData": {},
   "connections": {
     "Webhook Status Check": {
       "main": [
@@ -137,11 +136,5 @@
     "executionOrder": "v1",
     "binaryMode": "separate",
     "availableInMCP": false
-  },
-  "versionId": "326ad29d-abc0-47d7-8a6e-1bd7ed82c8fa",
-  "meta": {
-    "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
-  },
-  "id": "uE1j4ObaEWDnYfhM",
-  "tags": []
+  }
 }
