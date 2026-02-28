@@ -907,261 +907,366 @@
         "pairedItem": {
           "item": 0
         }
+      },
+      {
+        "parameters": {
+          "operation": "update",
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1ZkS74AW0AKYpdAgYpXYsk0F3gVnWfFacjIZrw0SMdQY/edit?gid=0#gid=0",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list"
+          },
+          "columns": {
+            "mappingMode": "defineBelow",
+            "value": {
+              "pdf_url": "={{ $json.pdfLink }}",
+              "audit_ready": "true"
+            },
+            "matchingColumns": [
+              "email"
+            ],
+            "schema": [
+              {
+                "id": "email",
+                "displayName": "email",
+                "required": false,
+                "defaultMatch": false,
+                "display": true,
+                "type": "string",
+                "canBeUsedToMatch": true,
+                "removed": false
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "update-gs-status",
+        "name": "Update Status Google Sheet",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          5584,
+          1552
+        ],
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "tYrkqO5ZTN61u0XJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "get-audit-status",
+          "responseMode": "responseNode",
+          "options": {
+            "allowedOrigins": "*"
+          }
+        },
+        "id": "webhook-status",
+        "name": "Webhook Status Check",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          2592,
+          2200
+        ],
+        "webhookId": "get-audit-status"
+      },
+      {
+        "parameters": {
+          "documentId": {
+            "__rl": true,
+            "value": "https://docs.google.com/spreadsheets/d/1ZkS74AW0AKYpdAgYpXYsk0F3gVnWfFacjIZrw0SMdQY/edit?gid=0#gid=0",
+            "mode": "url"
+          },
+          "sheetName": {
+            "__rl": true,
+            "value": "gid=0",
+            "mode": "list"
+          },
+          "filtersUI": {
+            "values": [
+              {
+                "lookupColumn": "respondentId",
+                "lookupValue": "={{ $json.body.respondent_id }}"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "gs-lookup-status",
+        "name": "Lookup Status GS",
+        "type": "n8n-nodes-base.googleSheets",
+        "typeVersion": 4.5,
+        "position": [
+          2832,
+          2200
+        ],
+        "alwaysOutputData": true,
+        "credentials": {
+          "googleSheetsOAuth2Api": {
+            "id": "tYrkqO5ZTN61u0XJ",
+            "name": "Google Sheets account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "const lead = $input.first().json;\nif (lead.audit_ready === 'true' || lead.audit_ready === true) {\n  return [{ json: { status: 'ready', pdfLink: lead.pdf_url } }];\n}\nreturn [{ json: { status: 'processing' } }];"
+        },
+        "id": "code-status-logic",
+        "name": "Status Logic",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          3072,
+          2200
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ $json }}",
+          "options": {
+            "responseHeaders": {
+              "entries": [
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ]
+            }
+          }
+        },
+        "id": "respond-status",
+        "name": "Respond Status",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          3312,
+          2200
+        ]
       }
     ],
-    "Générer Audit HTML (Groq)": [
-      {
-        "json": {
-          "id": "chatcmpl-5a505df6-a064-4326-8d16-eb80e92f411e",
-          "object": "chat.completion",
-          "created": 1772130338,
-          "model": "llama-3.3-70b-versatile",
-          "choices": [
+    "connections": {
+      "Webhook Tally": {
+        "main": [
+          [
             {
-              "index": 0,
-              "message": {
-                "role": "assistant",
-                "content": "## 1. Analyse de la situation actuelle\n<h2>Compréhension du contexte</h2>\n<p>Étant donné les informations limitées, nous allons procéder avec une approche générique pour établir une base de travail. L'audit sera axé sur les aspects généraux de l'e-commerce qui pourraient être appliqués à la plupart des entreprises du secteur.</p>\n<p>Les éléments clés à considérer incluent la plateforme e-commerce utilisée, le chiffre d'affaires mensuel, les problèmes principaux rencontrés par l'entreprise, les objectifs à court et à long terme, le budget alloué pour l'automatisation, le niveau d'urgence pour la mise en œuvre des solutions, et les outils ou systèmes déjà en place.</p>\n\n## 2. Top 3 automatisations recommandées avec ROI estimé\n<h3>Automatisations clés pour l'e-commerce</h3>\n<p>Les automatisations suivantes sont généralement bénéfiques pour les entreprises e-commerce, avec des retours sur investissement (ROI) potentiels significatifs :</p>\n<ul>\n  <li><strong>Gestion des commandes et des stocks</strong> : Automatiser les processus de gestion des commandes, des retours, et des stocks peut réduire les erreurs humaines, améliorer l'efficacité, et potentiellement augmenter la satisfaction client. ROI estimé : 15% à 20% de réduction des coûts opérationnels.</li>\n  <li><strong>Marketing automation et campagnes ciblées</strong> : L'automatisation du marketing permet de personnaliser les campagnes, d'augmenter l'engagement client, et de mieux cibler les publics. ROI estimé : 10% à 15% d'augmentation des ventes.</li>\n  <li><strong>Intégration des données et analyse</strong> : L'intégration et l'analyse des données provenant de différentes sources (ventes, marketing, client) peuvent aider à prendre des décisions éclairées, améliorer les stratégies, et identifier les opportunités de croissance. ROI estimé : 8% à 12% d'amélioration de la prise de décision.</li>\n</ul>\n\n## 3. Prochaines étapes concrètes\n<h2>Mise en œuvre de l'automatisation</h2>\n<p>Pour commencer, il est essentiel de collecter plus d'informations sur les spécificités de l'entreprise, telles que la plateforme e-commerce utilisée, le chiffre d'affaires mensuel, et les défis actuels. Cela permettra de personnaliser les recommandations d'automatisation et de mieux estimer le ROI.</p>\n<ul>\n  <li>Évaluation approfondie des processus actuels et identification des opportunités d'automatisation.</li>\n  <li>Sélection des outils et technologies d'automatisation appropriés en fonction des besoins spécifiques de l'entreprise.</li>\n  <li>Mise en œuvre des solutions d'automatisation, suivie d'une phase de test et d'ajustement.</li>\n  <li>Formation du personnel pour une adoption efficace des nouveaux processus automatisés.</li>\n  <li>Suivi et analyse continue des résultats pour ajuster les stratégies d'automatisation au besoin.</li>\n</ul>"
-              },
-              "logprobs": null,
-              "finish_reason": "stop"
+              "node": "Répondre au Webhook",
+              "type": "main",
+              "index": 0
+            },
+            {
+              "node": "Extraire données Tally",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Extraire données Tally": {
+        "main": [
+          [
+            {
+              "node": "Anti-Spam — Vérif Google Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Anti-Spam — Vérif Google Sheet": {
+        "main": [
+          [
+            {
+              "node": "Déjà soumis ?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Déjà soumis ?": {
+        "main": [
+          [
+            {
+              "node": "IF — Doublon",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "IF — Doublon": {
+        "main": [
+          [
+            {
+              "node": "Telegram — Doublon Bloqué",
+              "type": "main",
+              "index": 0
             }
           ],
-          "usage": {
-            "queue_time": 0.090717842,
-            "prompt_tokens": 208,
-            "prompt_time": 0.019944908,
-            "completion_tokens": 784,
-            "completion_time": 3.273135544,
-            "total_tokens": 992,
-            "total_time": 3.293080452
-          },
-          "usage_breakdown": null,
-          "system_fingerprint": "fp_c06d5113ec",
-          "x_groq": {
-            "id": "req_01kjdk5ydtez4v59dpy935efn7",
-            "seed": 1679487409
-          },
-          "service_tier": "on_demand"
-        },
-        "pairedItem": {
-          "item": 0
-        }
+          [
+            {
+              "node": "Enregistrer Lead Google Sheet",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Enregistrer Lead Google Sheet": {
+        "main": [
+          [
+            {
+              "node": "Notif Telegram — Nouveau Lead",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Notif Telegram — Nouveau Lead": {
+        "main": [
+          [
+            {
+              "node": "Générer Audit HTML (Groq)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Générer Audit HTML (Groq)": {
+        "main": [
+          [
+            {
+              "node": "Préparer HTML Rapport",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Préparer HTML Rapport": {
+        "main": [
+          [
+            {
+              "node": "Préparer Binaire HTML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Convertir HTML en PDF (Google Drive)": {
+        "main": [
+          [
+            {
+              "node": "Créer Lien Partageable",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Créer Lien Partageable": {
+        "main": [
+          [
+            {
+              "node": "Préparer lien PDF",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Préparer lien PDF": {
+        "main": [
+          [
+            {
+              "node": "Envoyer Email Client",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Envoyer Email Client": {
+        "main": [
+          [
+            {
+              "node": "Telegram — PDF Livré",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Préparer Binaire HTML": {
+        "main": [
+          [
+            {
+              "node": "Convertir HTML en PDF (Google Drive)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Webhook Status Check": {
+        "main": [
+          [
+            {
+              "node": "Lookup Status GS",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Lookup Status GS": {
+        "main": [
+          [
+            {
+              "node": "Status Logic",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Status Logic": {
+        "main": [
+          [
+            {
+              "node": "Respond Status",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
       }
-    ]
-  },
-  "connections": {
-    "Webhook Tally": {
-      "main": [
-        [
-          {
-            "node": "Répondre au Webhook",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Extraire données Tally",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
     },
-    "Extraire données Tally": {
-      "main": [
-        [
-          {
-            "node": "Anti-Spam — Vérif Google Sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "active": false,
+    "settings": {
+      "executionOrder": "v1",
+      "binaryMode": "separate",
+      "availableInMCP": false
     },
-    "Anti-Spam — Vérif Google Sheet": {
-      "main": [
-        [
-          {
-            "node": "Déjà soumis ?",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "versionId": "53c440e5-371e-437f-8914-a72bd02fce4f",
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
     },
-    "Déjà soumis ?": {
-      "main": [
-        [
-          {
-            "node": "IF — Doublon",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF — Doublon": {
-      "main": [
-        [
-          {
-            "node": "Telegram — Doublon Bloqué",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Enregistrer Lead Google Sheet",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Enregistrer Lead Google Sheet": {
-      "main": [
-        [
-          {
-            "node": "Notif Telegram — Nouveau Lead",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Notif Telegram — Nouveau Lead": {
-      "main": [
-        [
-          {
-            "node": "Générer Audit HTML (Groq)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Générer Audit HTML (Groq)": {
-      "main": [
-        [
-          {
-            "node": "Préparer HTML Rapport",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Préparer HTML Rapport": {
-      "main": [
-        [
-          {
-            "node": "Préparer Binaire HTML",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Convertir HTML en PDF (Google Drive)": {
-      "main": [
-        [
-          {
-            "node": "Créer Lien Partageable",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Créer Lien Partageable": {
-      "main": [
-        [
-          {
-            "node": "Préparer lien PDF",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Préparer lien PDF": {
-      "main": [
-        [
-          {
-            "node": "Envoyer Email Client",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Envoyer Email Client": {
-      "main": [
-        [
-          {
-            "node": "Telegram — PDF Livré",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Préparer Binaire HTML": {
-      "main": [
-        [
-          {
-            "node": "Convertir HTML en PDF (Google Drive)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook Status Check": {
-      "main": [
-        [
-          {
-            "node": "Lookup Status GS",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Lookup Status GS": {
-      "main": [
-        [
-          {
-            "node": "Status Logic",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Status Logic": {
-      "main": [
-        [
-          {
-            "node": "Respond Status",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
-  "active": false,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
-  },
-  "versionId": "53c440e5-371e-437f-8914-a72bd02fce4f",
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "af0cf43e3f9e603b399bdeace168c60a3d389a1bf234ffd6d52093e577978cf4"
-  },
-  "id": "X5WOC2CvZTOikqVA",
-  "tags": []
-}
+    "id": "X5WOC2CvZTOikqVA",
+    "tags": []
+  }
