@@ -1,4 +1,6 @@
-/ /index.html 200
+/Web/* /Web/:splat 200
 /index.html /index.html 200
 /audit-wait.html /audit-wait.html 200
+/favicon.ico /favicon.ico 200
+/formtally.md /formtally.md 200
 /* /audit-wait.html 200

@@ -36,7 +36,7 @@
           "values": [
             {
               "lookupColumn": "respondentId",
-              "lookupValue": "={{ ($json.body.respondent_id || $json.respondent_id || \"\").toString().split(/[\\s🇺🇸🇬🇧🇫🇷]/)[0] }}"
+              "lookupValue": "={{ ($json.body.respondent_id || $json.respondent_id || \"\").toString().trim().split(/[\\s🇺🇸🇬🇧🇫🇷]/)[0] }}"
             }
           ]
         },
@@ -60,7 +60,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const lead = $input.first().json;\nif (lead.audit_ready === 'true' || lead.audit_ready === true) {\n  return [{ json: { status: 'ready', pdfLink: lead.pdf_url } }];\n}\nreturn [{ json: { status: 'processing' } }];"
+        "jsCode": "const lead = $input.first().json;\n// Flexible check for audit_ready (string or boolean)\nif (lead.audit_ready === 'true' || lead.audit_ready === true || lead.audit_ready === 'TRUE') {\n  return [{ json: { status: 'ready', pdfLink: lead.pdf_url } }];\n}\nreturn [{ json: { status: 'processing' } }];"
       },
       "id": "e708ca4a-3e4f-49c7-9010-1bdcefadf6ad",
       "name": "Status Logic",
@@ -131,10 +131,5 @@
       ]
     }
   },
-  "active": true,
-  "settings": {
-    "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
-  }
+  "active": true
 }

@@ -1,5 +1,5 @@
 {
-  "name": "Tally -> Audit PDF -> Email + Telegram",
+  "name": "Tally -_ Audit PDF -_ Email + Telegram",
   "nodes": [
     {
       "parameters": {
@@ -8,13 +8,13 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "id": "3fd4966e-a093-4db3-9194-94a3316aa78f",
+      "id": "1c74c34d-95e8-4a05-99f9-be69dcae9f65",
       "name": "Webhook Tally",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        23680,
-        6672
+        23264,
+        6496
       ],
       "webhookId": "00ba3fc8-e2e5-410f-b792-52bbfd2ee900"
     },
@@ -26,26 +26,26 @@
           "responseCode": 200
         }
       },
-      "id": "e70c798a-7f27-491a-951d-8c0aefb2394e",
+      "id": "53ca8eb9-1124-4491-8be8-ef31e893f297",
       "name": "Respond to Webhook",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
       "position": [
-        23920,
-        6560
+        23504,
+        6384
       ]
     },
     {
       "parameters": {
-        "jsCode": "const body = $input.first().json.body;\nif (!body || !body.data || !Array.isArray(body.data.fields)) {\n  throw new Error('Structure Tally invalide');\n}\nconst fields = body.data.fields;\n\nfunction resolve(field) {\n  if (!field) return 'Non renseigné';\n  const v = field.value;\n  if (v === null || v === undefined || v === '' || v === false) return 'Non renseigné';\n  if (typeof v === 'boolean') return v ? 'Oui' : 'Non';\n  if (Array.isArray(v) && field.options && field.options.length > 0) {\n    const texts = v.map(uuid => {\n      const opt = field.options.find(o => o.id === uuid);\n      return opt ? opt.text : uuid;\n    }).filter(Boolean);\n    return texts.length > 0 ? texts.join(', ') : 'Non renseigné';\n  }\n  if (Array.isArray(v)) return v.join(', ') || 'Non renseigné';\n  return String(v).trim() || 'Non renseigné';\n}\n\nfunction getByLabel(...labels) {\n  const normalizedLabels = labels.map(l => l.toLowerCase().trim());\n  // Exact match filter\n  let f = fields.find(field => field.label && normalizedLabels.includes(field.label.toLowerCase().trim()) && typeof field.value !== 'boolean');\n  // Fuzzy match if not found\n  if (!f) {\n    f = fields.find(field => {\n      if (!field.label) return false;\n      const fl = field.label.toLowerCase();\n      return normalizedLabels.some(nl => fl === nl || (fl.includes(nl) && fl.length < nl.length + 5)) && typeof field.value !== 'boolean';\n    });\n  }\n  return f ? resolve(f) : 'Non renseigné';\n}\n\nconst langPayload = body.data.formLanguage || body.data.lang || '';\nconst langueRaw = getByLabel('Langue', 'Language');\nconst isEnglish = langPayload.toLowerCase().includes('en') || langueRaw.toLowerCase().includes('en') || langueRaw.toLowerCase().includes('english');\nconst langue = isEnglish ? 'en' : 'fr';\n\nconst rawId = body.data.respondentId || '';\nconst respondentId = rawId.trim().split(/[\\s🇺🇸🇬🇧🇫🇷]/)[0] || rawId;\n\nreturn [{\n  json: {\n    respondentId,\n    submissionId: body.data.submissionId || '',\n    nom:        getByLabel('Prénom et Nom', 'Nom complet', 'Nom', 'Name'),\n    email:      getByLabel('Email professionnel', 'Email', 'Adresse email'),\n    site:       getByLabel('Site e-commerce (URL)', 'Site web', 'Website'),\n    plateforme: getByLabel('Plateforme utilisée', 'Platform'),\n    ca:         getByLabel('Taille de la boutique', 'CA mensuel', 'Revenue'),\n    probleme:   getByLabel('Problème principal', 'Main problem'),\n    objectif:   getByLabel('Objectif business principal', 'Goal'),\n    budget:     getByLabel('Budget estimé', 'Budget'),\n    urgence:    getByLabel('Urgence', 'Timeline'),\n    autoExist:  getByLabel('Automatisations déjà en place', 'Existing tools'),\n    source:     getByLabel('Source de découverte', 'Source'),\n    langue\n  }\n}];"
+        "jsCode": "const body = $input.first().json.body;\nif (!body || !body.data || !Array.isArray(body.data.fields)) {\n  throw new Error('Structure Tally invalide');\n}\nconst fields = body.data.fields;\n\nfunction resolve(field) {\n  if (!field) return 'Non renseigné';\n  const v = field.value;\n  if (v === null || v === undefined || v === '' || v === false) return 'Non renseigné';\n  if (typeof v === 'boolean') return v ? 'Oui' : 'Non';\n  if (Array.isArray(v) && field.options && field.options.length > 0) {\n    const texts = v.map(uuid => {\n      const opt = field.options.find(o => o.id === uuid);\n      return opt ? opt.text : uuid;\n    }).filter(Boolean);\n    return texts.length > 0 ? texts.join(', ') : 'Non renseigné';\n  }\n  if (Array.isArray(v)) return v.join(', ') || 'Non renseigné';\n  return String(v).trim() || 'Non renseigné';\n}\n\nfunction getByLabel(...labels) {\n  const normalizedLabels = labels.map(l => l.toLowerCase().trim());\n  // Filtrer pour ne pas prendre les booléens (étonnamment n8n renvoie 'Oui' pour l'email sometimes)\n  let f = fields.find(field => {\n     if (!field.label) return false;\n     const fl = field.label.toLowerCase().trim();\n     return normalizedLabels.includes(fl) && typeof field.value !== 'boolean';\n  });\n  if (!f) {\n    f = fields.find(field => {\n      if (!field.label) return false;\n      const fl = field.label.toLowerCase();\n      return normalizedLabels.some(nl => fl.includes(nl)) && typeof field.value !== 'boolean';\n    });\n  }\n  return f ? resolve(f) : 'Non renseigné';\n}\n\nconst langPayload = body.data.formLanguage || body.data.lang || '';\nconst langueRaw = getByLabel('Langue', 'Language');\nconst isEnglish = langPayload.toLowerCase().includes('en') || langueRaw.toLowerCase().includes('en') || langueRaw.toLowerCase().includes('english');\nconst langue = isEnglish ? 'en' : 'fr';\n\nconst rawId = body.data.respondentId || '';\nconst respondentId = rawId.trim().split(/[\\s🇺🇸🇬🇧🇫🇷]/)[0] || rawId;\n\nreturn [{\n  json: {\n    respondentId,\n    submissionId: body.data.submissionId || '',\n    nom:        getByLabel('Prénom et Nom', 'Nom complet', 'Nom', 'Name'),\n    email:      getByLabel('Email professionnel', 'Email', 'Adresse email'),\n    site:       getByLabel('Site e-commerce (URL)', 'Site web', 'Website'),\n    plateforme: getByLabel('Plateforme utilisée', 'Platform'),\n    ca:         getByLabel('Taille de la boutique', 'CA mensuel', 'Revenue'),\n    probleme:   getByLabel('Problème principal', 'Main problem'),\n    objectif:   getByLabel('Objectif business principal', 'Goal'),\n    budget:     getByLabel('Budget estimé', 'Budget'),\n    urgence:    getByLabel('Urgence', 'Timeline'),\n    autoExist:  getByLabel('Automatisations déjà en place', 'Existing tools'),\n    source:     getByLabel('Source de découverte', 'Source'),\n    langue\n  }\n}];"
       },
-      "id": "7c896e46-5d9e-4a2b-9772-c2fcd07185c4",
+      "id": "e81b6a8c-2156-4fd2-808b-6e8f0d74945e",
       "name": "Extract Tally Data",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        23920,
-        6768
+        23504,
+        6592
       ]
     },
     {
@@ -60,15 +60,23 @@
           "value": "gid=0",
           "mode": "list"
         },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "email",
+              "lookupValue": "={{ $json.email }}"
+            }
+          ]
+        },
         "options": {}
       },
-      "id": "3b640bc8-7384-42be-a848-d88126c01ca3",
+      "id": "3ea14984-ad18-4ff1-98f7-6e0e766334a5",
       "name": "Check Google Sheet",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        24112,
-        6768
+        23696,
+        6592
       ],
       "alwaysOutputData": true,
       "credentials": {
@@ -82,13 +90,13 @@
       "parameters": {
         "jsCode": "const rows = $input.all().map(i => i.json).filter(r => r && r.email && String(r.email).includes('@'));\nconst lead = $('Extract Tally Data').first().json;\nconst alreadyDone = rows.length > 0;\nreturn [{ json: { ...lead, alreadyDone } }];"
       },
-      "id": "caaa380e-9f50-46ab-a7cb-5fb32d382e62",
+      "id": "9f7a5b93-9a0d-4e59-b74b-ffaaadeb96ed",
       "name": "Already Submitted",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        24304,
-        6768
+        23888,
+        6592
       ]
     },
     {
@@ -115,30 +123,30 @@
         },
         "options": {}
       },
-      "id": "9c1f31bb-d716-42d3-85a0-ff9be7282031",
+      "id": "e5da4cf2-7ec4-47f6-a48f-1e3a37847eee",
       "name": "IF Duplicate",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2,
       "position": [
-        24496,
-        6768
+        24080,
+        6592
       ]
     },
     {
       "parameters": {
         "chatId": "8229030669",
-        "text": "=⛔ *Doublon bloqué*\n👤 {{ $json.nom }}\n📧 {{ $json.email }}\nCet email a déjà soumis un formulaire. Aucun crédit Groq consommé.",
+        "text": "=⛔ *Doublon bloqué*\n👤 {{ $json.nom }}\n📧 {{ $json.email }}\nCet email a déjà soumis un formulaire.",
         "additionalFields": {
           "parse_mode": "Markdown"
         }
       },
-      "id": "597c1d1f-735f-437f-87a9-1a6c67841a32",
+      "id": "15844a34-4f4c-4080-a9e1-c0fc1459571c",
       "name": "Telegram Duplicate Locked",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        24736,
-        6624
+        24320,
+        6448
       ],
       "credentials": {
         "telegramApi": {
@@ -186,18 +194,28 @@
               "id": "respondentId",
               "displayName": "respondentId",
               "type": "string"
+            },
+            {
+              "id": "audit_ready",
+              "displayName": "audit_ready",
+              "type": "string"
+            },
+            {
+              "id": "pdf_url",
+              "displayName": "pdf_url",
+              "type": "string"
             }
           ]
         },
         "options": {}
       },
-      "id": "6a2c11af-c4e9-4cfa-8ce0-d6b4317d5874",
+      "id": "82cb7786-8b4d-4780-a840-0ee8fc612751",
       "name": "Register Lead GS",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        24736,
-        6912
+        24320,
+        6736
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
@@ -209,18 +227,18 @@
     {
       "parameters": {
         "chatId": "8229030669",
-        "text": "=🔔 *Nouveau Lead E-commerce*\n━━━━━━━━━━━━━━━━━━━━\n👤 *Nom :* {{ $json.nom }}\n📧 *Email :* {{ $json.email }}\n🌐 *Site :* {{ $json.site }}\n🛒 *Plateforme :* {{ $json.plateforme }}\n💰 *CA mensuel :* {{ $json.ca }}\n🌍 *Langue :* {{ $json.langue === 'en' ? '🇬🇧 EN' : '🇫🇷 FR' }}\n━━━━━━━━━━━━━━━━━━━━\n🎯 *Problème :* {{ $json.probleme }}\n💼 *Objectif :* {{ $json.objectif }}\n💶 *Budget :* {{ $json.budget }}\n⚡ *Urgence :* {{ $json.urgence }}\n🔧 *Outils existants :* {{ $json.autoExist }}\n━━━━━━━━━━━━━━━━━━━━\n⏰ {{ $now.format('DD/MM/YYYY HH:mm') }}",
+        "text": "=🔔 *Nouveau Lead E-commerce*\n👤 {{ $json.nom }}\n📧 {{ $json.email }}\n🌐 {{ $json.site }}\n🌍 {{ $json.langue }}\n━━━━━━━━━━━━━━━━━━━━\n⏰ {{ $now.format('DD/MM/YYYY HH:mm') }}",
         "additionalFields": {
           "parse_mode": "Markdown"
         }
       },
-      "id": "3a3bb903-76d2-42f7-99ca-bf65d0c1aa80",
+      "id": "31e792ad-2222-468f-8597-e4bb82be1997",
       "name": "Notif Telegram New Lead",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        24976,
-        6768
+        24560,
+        6592
       ],
       "credentials": {
         "telegramApi": {
@@ -246,18 +264,18 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.langue === 'en' ? 'You are a senior n8n automation expert. Write a concise, actionable e-commerce automation audit in English. Return ONLY inner HTML content (no html/head/body tags), using h2, h3, p, ul, li tags. Be concrete and specific to the client data provided.' : 'Tu es un expert senior en automatisation n8n. Rédige un audit d\\'automatisation e-commerce concis et actionnable en français. Retourne UNIQUEMENT du contenu HTML interne (sans balises html/head/body), en utilisant h2, h3, p, ul, li. Sois concret et adapté aux données du client.' }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $json.langue === 'en' ? 'Client: ' + $json.nom + ' | Site: ' + $json.site + ' | Platform: ' + $json.plateforme + ' | Monthly revenue: ' + $json.ca + ' | Main problem: ' + $json.probleme + ' | Goal: ' + $json.objectif + ' | Budget: ' + $json.budget + ' | Timeline: ' + $json.urgence + ' | Existing tools: ' + $json.autoExist + '. Write a 3-section audit: 1) Current situation analysis, 2) Top 3 recommended automations with expected ROI, 3) Next steps.' : 'Client : ' + $json.nom + ' | Site : ' + $json.site + ' | Plateforme : ' + $json.plateforme + ' | CA mensuel : ' + $json.ca + ' | Problème principal : ' + $json.probleme + ' | Objectif : ' + $json.objectif + ' | Budget : ' + $json.budget + ' | Urgence : ' + $json.urgence + ' | Outils existants : ' + $json.autoExist + '. Rédige un audit en 3 sections : 1) Analyse de la situation actuelle, 2) Top 3 automatisations recommandées avec ROI estimé, 3) Prochaines étapes concrètes.' }}\"\n    }\n  ]\n}",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.6,\n  \"max_tokens\": 2500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"{{ $json.langue === 'en' ? 'You are a senior n8n automation expert. Write a concise, actionable e-commerce automation audit in English. Return ONLY inner HTML content (no html/head/body tags), using h2, h3, p, ul, li tags.' : 'Tu es un expert senior en automatisation n8n. Rédige un audit d\\'automatisation e-commerce concis et actionnable en français. Retourne UNIQUEMENT du contenu HTML interne (sans htm/head/body).' }}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Client : {{ $json.nom }} | Site : {{ $json.site }} | Plateforme : {{ $json.plateforme }} | Problème : {{ $json.probleme }}. Rédige l'audit.\"\n    }\n  ]\n}",
         "options": {
           "timeout": 60000
         }
       },
-      "id": "f716d522-8ae3-410f-8920-39df49c70e12",
+      "id": "9d78de0b-52c4-4944-9a57-edb16d250488",
       "name": "Generate Audit Groq",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        25216,
-        6768
+        24800,
+        6592
       ],
       "credentials": {
         "httpHeaderAuth": {
@@ -270,26 +288,26 @@
       "parameters": {
         "jsCode": "let aiContent = '';\ntry {\n  aiContent = $input.first().json.choices[0].message.content || '';\n  aiContent = aiContent.replace(/^```html\\s*/i, '').replace(/```\\s*$/i, '').trim();\n} catch(e) {\n  aiContent = '<p>Contenu indisponible — contactez Nexus directement.</p>';\n}\n\nconst client = $('Extract Tally Data').first().json;\nconst isFR = client.langue !== 'en';\n\nconst html = `<!DOCTYPE html><html lang=\"${client.langue}\"><head><meta charset=\"UTF-8\"><title>Audit Nexus — ${client.nom}</title><style>body{font-family:Arial,sans-serif;background:#0a0f1e;color:#f1f5f9;margin:0;padding:40px}h1{color:#10b981;font-size:2rem;margin-bottom:8px}h2{color:#10b981;font-size:1.3rem;margin-top:32px;border-bottom:1px solid rgba(16,185,129,0.3);padding-bottom:8px}h3{color:#34d399;font-size:1.1rem;margin-top:20px}p,li{color:#94a3b8;line-height:1.7;font-size:0.95rem}.header{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:24px;margin-bottom:32px}.meta span{display:inline-block;background:rgba(255,255,255,0.05);border-radius:6px;padding:4px 12px;margin:4px;font-size:0.85rem;color:#94a3b8}.footer{margin-top:48px;text-align:center;color:#475569;font-size:0.8rem;border-top:1px solid rgba(255,255,255,0.06);padding-top:24px}</style></head><body><div class=\"header\"><h1>⚡ ${isFR ? 'Audit Automatisation Nexus' : 'Nexus Automation Audit'}</h1><p style=\"color:#10b981;margin:0\">${isFR ? 'Rapport personnalisé pour' : 'Personalised report for'} <strong>${client.nom}</strong></p><div class=\"meta\" style=\"margin-top:16px\"><span>🌐 ${client.site}</span><span>🛒 ${client.plateforme}</span><span>💰 ${client.ca}</span><span>🌍 ${client.langue.toUpperCase()}</span></div></div>${aiContent}<div class=\"footer\">© ${new Date().getFullYear()} Nexus — nexus-auto.fr</div></body></html>`;\n\nreturn [{ json: { ...client, html } }];"
       },
-      "id": "89120849-689b-48b7-bd14-7675e50bce5d",
+      "id": "1c48779f-40c4-4661-a7d5-a8eb6fcf84e0",
       "name": "Prepare HTML Report",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        25408,
-        6768
+        24992,
+        6592
       ]
     },
     {
       "parameters": {
         "jsCode": "const client = $input.first().json;\nconst htmlString = client.html;\nconst buffer = Buffer.from(htmlString, 'utf8');\nreturn [{\n  json: { ...client },\n  binary: {\n    data: await this.helpers.prepareBinaryData(\n      buffer,\n      'Audit_Nexus_' + (client.nom || 'client').replace(/ /g,'_') + '.html',\n      'text/html'\n    )\n  }\n}];"
       },
-      "id": "5b4437ee-dcf2-4ff8-a2a8-4140649e1549",
+      "id": "5a011c9e-23e8-49c4-adef-f6a11192310e",
       "name": "Prepare Binary HTML",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        25616,
-        6768
+        25200,
+        6592
       ]
     },
     {
@@ -310,13 +328,13 @@
           "convert": true
         }
       },
-      "id": "0b46b17a-19f0-4e6f-a2cf-a7ab9f389ba7",
+      "id": "ad5a4659-9600-49ed-80d8-f44efa67c0a6",
       "name": "Convert HTML to PDF",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        25824,
-        6768
+        25408,
+        6592
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -334,15 +352,16 @@
             "role": "reader",
             "type": "anyone"
           }
-        }
+        },
+        "options": {}
       },
-      "id": "6d66d7a4-32ec-477e-a6f0-b20540d3f3e2",
+      "id": "0ac12454-971c-4e44-8d47-f89b35bc4243",
       "name": "Create Shareable Link",
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        26032,
-        6768
+        25616,
+        6592
       ],
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -353,15 +372,15 @@
     },
     {
       "parameters": {
-        "jsCode": "const fileId = $('Convert HTML to PDF').first().json.id;\nconst lead = $('Extract Tally Data').first().json;\nconst pdfLink = `https://docs.google.com/document/d/${fileId}/export?format=pdf`;\nreturn [{ json: { ...lead, pdfLink, fileId } }];"
+        "jsCode": "const fileId = $('Convert HTML to PDF').first().json.id;\nconst lead = $('Extract Tally Data').first().json;\n// Direct export link - this ensures PDF download даже s'il reste au format Doc\nconst pdfLink = `https://docs.google.com/document/d/${fileId}/export?format=pdf`;\nreturn [{ json: { ...lead, pdfLink, fileId } }];"
       },
-      "id": "0368ba67-5ac4-4984-8cdd-f4eb5cb6dfae",
+      "id": "20366b24-fc58-484d-8c8c-21a0e94464a3",
       "name": "Prepare PDF Link",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        26224,
-        6768
+        25808,
+        6592
       ]
     },
     {
@@ -369,15 +388,16 @@
         "fromEmail": "selyanpourqueyouhab@gmail.com",
         "toEmail": "={{ $json.email }}",
         "subject": "={{ $json.langue === 'en' ? '⚡ Your Nexus audit is ready!' : '⚡ Votre audit Nexus est prêt !' }}",
-        "html": "=<!DOCTYPE html><html><body style='background:#0a0f1e;color:#f1f5f9;font-family:Arial;'><h2>{{ $json.langue === 'en' ? 'Hi' : 'Bonjour' }} {{ $json.nom }},</h2><p>{{ $json.langue === 'en' ? 'Your audit is ready. Click below to download it as PDF:' : 'Votre audit est prêt. Cliquez ci-dessous pour le télécharger en PDF :' }}</p><a href='{{ $json.pdfLink }}' style='background:#10b981;padding:12px 24px;color:#000;text-decoration:none;border-radius:8px;'>{{ $json.langue === 'en' ? 'Download PDF' : 'Télécharger le PDF' }}</a></body></html>"
+        "html": "=<!DOCTYPE html><html><body style='background:#0a0f1e;color:#f1f5f9;font-family:Arial;'><h2>{{ $json.langue === 'en' ? 'Hi' : 'Bonjour' }} {{ $json.nom }},</h2><p>{{ $json.langue === 'en' ? 'Your audit is ready. Click below to download it as PDF:' : 'Votre audit est prêt. Cliquez ci-dessous pour le télécharger en PDF :' }}</p><a href='{{ $json.pdfLink }}' style='background:#10b981;padding:12px 24px;color:#000;text-decoration:none;border-radius:8px;'>{{ $json.langue === 'en' ? 'Download PDF' : 'Télécharger le PDF' }}</a></body></html>",
+        "options": {}
       },
-      "id": "5fe65f0c-c43c-482e-ba6d-0cffe7d21733",
+      "id": "a80c1703-be7c-4fdc-b021-8ae1f84270d7",
       "name": "Send Email Client",
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        26432,
-        6768
+        26016,
+        6592
       ],
       "credentials": {
         "smtp": {
@@ -394,13 +414,13 @@
           "parse_mode": "Markdown"
         }
       },
-      "id": "eb629ffd-7132-4b6b-898a-3a474bd2541d",
+      "id": "3ad3c7a0-ecf5-43d5-99fe-1754ce3b49f0",
       "name": "Telegram PDF Delivered",
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        26640,
-        6768
+        26224,
+        6592
       ],
       "credentials": {
         "telegramApi": {
@@ -431,15 +451,16 @@
           "matchingColumns": [
             "email"
           ]
-        }
+        },
+        "options": {}
       },
-      "id": "8d36aac4-9a31-4b72-8636-f703e8e87e68",
+      "id": "dd216ae4-8862-4f01-be91-27a2ccfcd56e",
       "name": "Update Status GS",
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.5,
       "position": [
-        26432,
-        6560
+        26016,
+        6384
       ],
       "credentials": {
         "googleSheetsOAuth2Api": {
